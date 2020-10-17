@@ -1,0 +1,27 @@
+Gift card :	
+
+And a Report of having 4 options (Canceled Card details, Consumed Card details, Active Card details, Expired Card details).
+
+Unknown price :
+
+Unknown should be entered as a discount in unknow field the remaining amount will be paid by user.
+
+Bonus point :
+
+Percentage of the bonus point is not applied correctly;
+Bonus point will expires after 6 months and if used then its date will be extended again 6 month from current date, the day it is used. 
+
+
+Coupon :
+
+if coupon is consumed then then remainin amount of the coupon will be made another coupon of after 3 months.
+
+Force price:
+
+Force price should be changed by each article.
+
+ALTER TABLE `transaction_payments` CHANGE `method` `method` ENUM('cash','card','cheque','bank_transfer','other','gift_card','coupon','unknown','force_price','bonus_points') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+
+
+
+

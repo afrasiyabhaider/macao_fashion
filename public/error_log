@@ -1,0 +1,2 @@
+[29-Jan-2020 20:03:44 Asia/Kolkata] PHP Fatal error:  Can't use method return value in write context in /home/jtvxoa2jr8nu/macaobe.com/app/Http/Controllers/SellController.php on line 73
+[29-Jan-2020 20:04:31 Asia/Kolkata] PHP Fatal error:  Can't use method return value in write context in /home/jtvxoa2jr8nu/macaobe.com/app/Http/Controllers/SellController.php on line 73
