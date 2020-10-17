@@ -2,7 +2,7 @@
 $location_id = App\BusinessLocation::where('name','Web Shop')->orWhere('name','webshop')->orWhere('name','web
 shop')->orWhere('name','Website')->orWhere('name','website')->orWhere('name','MACAO WEBSHOP')->pluck('id');
 
-$all_web_products = App\VariationLocationDetails::where('location_id','=',$location_id)->where('qty_available', '>',
+$all_web_products = App\VariationLocationDetails::where('qty_available', '>',
 0)->join('products as p','p.id','=','variation_location_details.product_id')->groupBy('p.refference')->orderBy('p.created_at','Desc')->get();
 @endphp
 <div class="row">

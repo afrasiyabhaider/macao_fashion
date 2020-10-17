@@ -27,11 +27,11 @@ class SiteController extends Controller
          *  so we did
          * 
         */
-        $data = VariationLocationDetails::where('location_id','=',$location_id)->join('products as p','p.id','=','variation_location_details.product_id')->where('qty_available','>',0)->groupBy('p.refference')->orderBy('p.created_at','Desc')->get();
+        $data = VariationLocationDetails::join('products as p','p.id','=','variation_location_details.product_id')->where('qty_available','>',0)->groupBy('p.refference')->orderBy('p.created_at','Desc')->get();
 
-        $featured = SpecialCategoryProduct::where('featured',1)->get();
-        $new_arrival = SpecialCategoryProduct::where('new_arrival',1)->get();
-        $sale = SpecialCategoryProduct::where('sale',1)->get();
+        $featured = SpecialCategoryProduct::where('featured',"1")->get();
+        $new_arrival = SpecialCategoryProduct::where('new_arrival',"1")->get();
+        $sale = SpecialCategoryProduct::where('sale',"1")->get();
         // dd($featured);
         
         
@@ -52,7 +52,7 @@ class SiteController extends Controller
         $product_id = Product::where('category_id', $id)->orWhere('sub_category_id', $id)->groupBy('refference')->pluck('id');
 
         $products = VariationLocationDetails::whereIn('product_id', $product_id)
-            ->where('location_id', $location_id)->where('qty_available','>',0)->paginate(12);
+            ->where('qty_available','>',0)->paginate(12);
 
         return view('site.listings.category_listing', compact('category', 'products'));
     }
@@ -86,11 +86,11 @@ class SiteController extends Controller
         
         $product_ids = Product::where('refference',$product->refference)->pluck('id');
         
-        $web_product = VariationLocationDetails::whereIn('product_id',$product_ids)->where('location_id',$location_id)->where('qty_available','>',0)->get();
+        $web_product = VariationLocationDetails::whereIn('product_id',$product_ids)->where('qty_available','>',0)->get();
         
         // dd($web_product-);
 
-        $all_web_products = VariationLocationDetails::where('location_id','=',$location_id)->where('qty_available', '>', 0)->join('products as p','p.id','=','variation_location_details.product_id')->groupBy('p.refference')->orderBy('p.created_at','Desc')->get();
+        $all_web_products = VariationLocationDetails::where('qty_available', '>', 0)->join('products as p','p.id','=','variation_location_details.product_id')->groupBy('p.refference')->orderBy('p.created_at','Desc')->get();
 
         // $social = Share::page('http://jorenvanhocht.be', 'Share title')
         //                 ->facebook()
@@ -114,9 +114,9 @@ class SiteController extends Controller
         // dd($products);
         $product_ids = $products->pluck('id');
 
-        $web_products = VariationLocationDetails::whereIn('product_id',$product_ids)->where('qty_available', '>', 0)->where('location_id',$location_id)->get();
+        $web_products = VariationLocationDetails::whereIn('product_id',$product_ids)->where('qty_available', '>', 0)->get();
 
-        $qty = VariationLocationDetails::whereIn('product_id',$product_ids)->where('location_id',$location_id)->where('qty_available', '>', 0)->sum('qty_available');
+        $qty = VariationLocationDetails::whereIn('product_id',$product_ids)->where('qty_available', '>', 0)->sum('qty_available');
 
         $size_ids = $products->pluck('sub_size_id');
 
@@ -141,9 +141,9 @@ class SiteController extends Controller
         // dd($products);
         $product_ids = $products->pluck('id');
 
-        $web_products = VariationLocationDetails::whereIn('product_id',$product_ids)->where('location_id',$location_id)->where('qty_available', '>', 0)->get();
+        $web_products = VariationLocationDetails::whereIn('product_id',$product_ids)->where('qty_available', '>', 0)->get();
 
-        $qty = VariationLocationDetails::whereIn('product_id',$product_ids)->where('location_id',$location_id)->where('qty_available', '>', 0)->sum('qty_available');
+        $qty = VariationLocationDetails::whereIn('product_id',$product_ids)->where('qty_available', '>', 0)->sum('qty_available');
 
         $size_ids = $products->pluck('sub_size_id');
 
@@ -167,9 +167,9 @@ class SiteController extends Controller
         // dd($products);
         $product_ids = $products->pluck('id');
 
-        $web_products = VariationLocationDetails::whereIn('product_id',$product_ids)->where('qty_available', '>', 0)->where('location_id',$location_id)->get();
+        $web_products = VariationLocationDetails::whereIn('product_id',$product_ids)->where('qty_available', '>', 0)->get();
 
-        $qty = VariationLocationDetails::whereIn('product_id',$product_ids)->where('location_id',$location_id)->where('qty_available', '>', 0)->sum('qty_available');
+        $qty = VariationLocationDetails::whereIn('product_id',$product_ids)->where('qty_available', '>', 0)->sum('qty_available');
 
         $size_ids = $products->pluck('sub_size_id');
 
@@ -188,7 +188,7 @@ class SiteController extends Controller
     {
         $location_id = BusinessLocation::where('name', 'Web Shop')->orWhere('name', 'webshop')->orWhere('name', 'web shop')->orWhere('name', 'Website')->orWhere('name', 'website')->orWhere('name', 'MACAO WEBSHOP')->first()->id;
 
-        $products = VariationLocationDetails::where('location_id', '=', $location_id)->where('qty_available', '>', 0)->join('products as p', 'p.id', '=', 'variation_location_details.product_id')->groupBy('p.refference')->orderBy('p.created_at', 'Desc')->paginate(12);
+        $products = VariationLocationDetails::where('qty_available', '>', 0)->join('products as p', 'p.id', '=', 'variation_location_details.product_id')->groupBy('p.refference')->orderBy('p.created_at', 'Desc')->paginate(12);
         
         return view('site.listings.all_products',compact('products'));
     }
