@@ -1,0 +1,6 @@
+- Transfer macaobe.com to macaofashion.be completly
+- Give an option of "Send to Web Shop" when user check boxes and click on       
+  button products should be in their locations but their references should must be on the webshop
+- Add multi image uploading
+- Remove image conflicts
+- Products should not be duplicated
