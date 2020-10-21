@@ -1422,7 +1422,7 @@ class ProductController extends Controller
 
                 $product[$i]->save();
 
-                $variation = Variation::where('product_id', '=', $request->input('product_id'))->first();
+                $variation = Variation::where('product_id', '=', $product[$i]->id)->first();
                 // $unit = str_replace($request->input('unit_price'),'.',',');
                 // dd($this->productUtil->num_uf($request->input('unit_price')));
                 // dd($unit);
