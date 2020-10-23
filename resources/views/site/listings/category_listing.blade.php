@@ -24,7 +24,7 @@
                          </div>
                          <div class="col-12">
                               <p>
-                                 {{$products->count()}} Product(s) Found  
+                                 {{$products->count() * $products->currentPage()}} of {{$products->total()}} Product(s) 
                               </p>
                          </div>
                     </div>

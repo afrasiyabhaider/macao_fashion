@@ -16,6 +16,8 @@ use App\Unit;
 use App\VariationLocationDetails;
 use App\Utils\ProductUtil;
 use App\Utils\Util;
+use App\WebsiteProducts;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -23,6 +25,62 @@ use Yajra\DataTables\Facades\DataTables;
 
 class WebsiteController extends Controller
 {
+    /**
+     * Add Product to Website 
+     * 
+     * 
+     **/
+    public function addToWebsite(Request $request)
+    {
+        // $validator = $request->validate([
+        //     'reffernce'
+        // ]);
+        try {
+            DB::beginTransaction();
+                $product = explode(",", $request->input('product_id'));
+                $i = 0;
+                $count = 0;
+                foreach ($product as $key => $value) {
+                    $product = Product::find($value);
+                    $count++;
+                    if (!WebsiteProducts::where('refference',$product->refference)->first()) {
+        
+                        $qty = VariationLocationDetails::where('product_refference',$product->refference)->sum('qty_available');
+                    
+                        $web_product = new WebsiteProducts();
+                        $web_product->product_id = $product->id;
+                        $web_product->refference = $product->refference;
+                        $web_product->quantity = $qty;
+                        $web_product->added_on = Carbon::now();
+                        $web_product->save();
+                        $i++;
+                    }
+                }
+                if($i >= 1){
+                    $output = [
+                           'success' => 1,
+                           'msg' => $i." of ".$count." products added into Website whose reffernces are unique"
+                       ]; 
+                }else{
+                    $output = [
+                        'success' => 1,
+                        'msg' => "All products of these reffernces already exists in website"
+                    ]; 
+
+                }
+            DB::commit();
+        } catch (\Exception $ex) {
+            DB::rollback();
+            $output = [
+                'success' => 0,
+                'msg' => __("messages.something_went_wrong") . "Message:" . $ex->getMessage() . ' on Line: ' . $ex->getLine() . ' of ' . $ex->getFile()
+            ];
+        }
+        return redirect()->back()->with('status', $output);
+
+        // dd(WebsiteProducts::get(),$product,$request->input());
+
+    }
     /**
      * Display a listing of the resource.
      *
@@ -44,8 +102,13 @@ class WebsiteController extends Controller
         //Update USER SESSION
         $selling_price_group_count = SellingPriceGroup::countSellingPriceGroups($business_id);
 
+        $websiteProducts = WebsiteProducts::pluck('refference');
+        // $websiteProducts = WebsiteProducts::pluck('refference');
+        // dd(Product::whereIn('refference', $websiteProducts)->get());
         if (request()->ajax()) {
-            $products = Product::leftJoin('variation_location_details as vlds', 'products.id', '=', 'vlds.product_id')
+            $products = WebsiteProducts::leftJoin('products', 'website_products.product_id', '=', 'products.id')
+            // $products = Product::leftJoin('website_products as wp', 'wp.refference', '=', 'products.refference')
+                // ->whereIn('products.refference',[$websiteProducts])
                 ->join('units', 'products.unit_id', '=', 'units.id')
                 ->leftJoin('categories as c1', 'products.category_id', '=', 'c1.id')
                 ->leftJoin('categories as c2', 'products.sub_category_id', '=', 'c2.id')
@@ -53,9 +116,10 @@ class WebsiteController extends Controller
                 ->leftJoin('sizes', 'products.sub_size_id', '=', 'sizes.id')
                 ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
                 ->leftJoin('variation_location_details as vld', 'vld.product_id', '=', 'products.id')
+                // ->join('website_products as wp', 'wp.refference', '=', 'products.refference')
                 ->join('variations as v', 'v.product_id', '=', 'products.id')->join('suppliers','suppliers.id','=','products.supplier_id')
                 ->where('products.business_id', $business_id)
-                ->where('vld.location_id', $business_location_id)
+                // ->where('vld.location_id', $business_location_id)
                 ->where('products.type', '!=', 'modifier')
                 ->select(
                     'products.id',
@@ -144,16 +208,18 @@ class WebsiteController extends Controller
                             $html .=
                                 '<li><a href="' . action('ProductController@edit', [$row->id]) . '"><i class="glyphicon glyphicon-edit"></i> ' . __("messages.edit") . '</a></li>';
                         }
+                        $html .=
+                                '<li><a href="' . action('WebsiteController@destroy', [$row->id]) . '"><i class="fa fa-trash"></i> Remove From Website</a></li>';
 
-                        if (auth()->user()->can('product.delete')) {
-                            $html .=
-                                '<li><a href="' . action('ProductController@destroy', [$row->id]) . '" class="delete-product"><i class="fa fa-trash"></i> ' . __("messages.delete") . '</a></li>';
-                        }
+                        // if (auth()->user()->can('product.delete')) {
+                        //     $html .=
+                        //         '<li><a href="' . action('ProductController@destroy', [$row->id]) . '" class="delete-product"><i class="fa fa-trash"></i> ' . __("messages.delete") . '</a></li>';
+                        // }
 
-                        if ($row->is_inactive == 1) {
-                            $html .=
-                                '<li><a href="' . action('ProductController@activate', [$row->id]) . '" class="activate-product"><i class="fa fa-circle-o"></i> ' . __("lang_v1.reactivate") . '</a></li>';
-                        }
+                        // if ($row->is_inactive == 1) {
+                        //     $html .=
+                        //         '<li><a href="' . action('ProductController@activate', [$row->id]) . '" class="activate-product"><i class="fa fa-circle-o"></i> ' . __("lang_v1.reactivate") . '</a></li>';
+                        // }
 
                         $html .= '<li class="divider"></li>';
 
@@ -272,17 +338,13 @@ class WebsiteController extends Controller
             'description' => 'required|min:20'
         ]);
         $product = Product::find($request->input('p_id'));
-        // dd($product->variations()->first()->dpp_inc_tax);
+        $website_product_id = WebsiteProducts::where('refference',$product->refference)->first()->id;
         if (!is_null($product->refference)) {
-           
-        // $special = SpecialCategoryProduct::where('product_id',$product->id)->first();
-        // if (is_null($special)) {
-        //     $special = new SpecialCategoryProduct();
-        // }
         
         $special = SpecialCategoryProduct::firstOrNew(['refference'=>$product->refference]);
         
         // dd($special);
+        $special->website_product_id = $website_product_id;
         if ($request->has('featured')) {
             $special->featured = '1';
         }else{
@@ -429,6 +491,20 @@ class WebsiteController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            WebsiteProducts::where('product_id',$id)->delete();
+            $output = [
+                'success' => 1,
+                'msg' => "Product Deleted from Website"
+            ];
+            // 'website/product/list'
+        } catch (\Exception $ex) {
+            $output = [
+                'success' => 0,
+                'msg' => "Product Could not be deleted"
+            ];
+        }
+        return redirect()->back()->with('status', $output);
+
     }
 }

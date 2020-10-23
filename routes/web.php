@@ -405,6 +405,8 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::get('variation_location_details/web_shop', 'DataMigrationController@variation_location_details_web_shop');
 
     // Website Routes
+    Route::post('website/product/', 'WebsiteController@addToWebsite');
+    Route::get('website/product/{id}/delete', 'WebsiteController@destroy');
     Route::get('website/product/list', 'WebsiteController@index');
     Route::get('website/product/{id}/special_category', 'WebsiteController@specialCategoriesForm');
     Route::post('website/product/special_category', 'WebsiteController@addspecialCategories');

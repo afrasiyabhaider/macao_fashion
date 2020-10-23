@@ -11,6 +11,7 @@ use App\ProductVariation;
 use App\Size;
 use App\SpecialCategoryProduct;
 use App\VariationLocationDetails;
+use App\WebsiteProducts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -27,7 +28,8 @@ class SiteController extends Controller
          *  so we did
          * 
         */
-        $data = VariationLocationDetails::join('products as p','p.id','=','variation_location_details.product_id')->where('qty_available','>',0)->groupBy('p.refference')->orderBy('p.created_at','Desc')->get();
+        // $data = VariationLocationDetails::join('products as p','p.id','=','variation_location_details.product_id')->where('qty_available','>',0)->groupBy('p.refference')->orderBy('p.created_at','Desc')->get();
+        $data = WebsiteProducts::join('products as p','p.refference','=','website_products.refference')->orderBy('p.created_at','Desc')->get();
 
         $featured = SpecialCategoryProduct::where('featured',"1")->get();
         $new_arrival = SpecialCategoryProduct::where('new_arrival',"1")->get();
@@ -51,8 +53,7 @@ class SiteController extends Controller
 
         $product_id = Product::where('category_id', $id)->orWhere('sub_category_id', $id)->groupBy('refference')->pluck('id');
 
-        $products = VariationLocationDetails::whereIn('product_id', $product_id)
-            ->where('qty_available','>',0)->paginate(12);
+        $products = WebsiteProducts::join('products as p', 'p.id', '=', 'website_products.product_id')->whereIn('p.id', $product_id)->orderBy('p.created_at', 'Desc')->paginate(12);
 
         return view('site.listings.category_listing', compact('category', 'products'));
     }

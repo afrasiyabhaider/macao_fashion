@@ -152,6 +152,14 @@
                                 Print Selected
                             </button>
                             {!! Form::close() !!}
+                            <form action="{{action('WebsiteController@addToWebsite')}}" method="post" class="ml-5" style="margin-left: 20px" id="add_to_website">
+                                @csrf
+                                <input type="hidden" name="product_id" id="product_id">
+                                <button type="submit" class="btn btn-info pull-left" id="add_to_website_button">
+                                    <i class="fa fa-copy"></i>
+                                    Add to Website
+                                </button>
+                            </form>
                             {!! Form::open(['url' => action('ProductController@massTransfer'), 'method' => 'post', 'id' =>
                             'bulkTransfer_form','class' => 'ml-5' ]) !!}
                             {!! Form::hidden('selected_products_bulkTransfer', null, ['id' => 'selected_products_bulkTransfer']); !!}
@@ -165,6 +173,7 @@
                                 Transfer Selected
                             </button>
                             {!! Form::close() !!}
+                            
                         </div>
                     </div>
                     <div class="row">
@@ -341,6 +350,30 @@
                     // });
                 } else{
                     $('input#selected_products_bulkTransfer').val('');
+                    swal('@lang("lang_v1.no_row_selected")');
+                }    
+            })
+            $(document).on('click', '#add_to_website_button', function(e){
+                e.preventDefault();
+                var selected_rows = [];
+                var i = 0;
+                $('.row-select:checked').each(function () {
+                    var selectedQty = $("#stock_qty_"+$(this).val()).val();
+                    var selectedMaxQty = $("#stock_qty_"+$(this).val()).attr('max');
+                    if(parseInt(selectedQty) <= parseInt(selectedMaxQty))
+                    {
+                        selected_rows[i++] = $(this).val();
+                    }
+                });
+                // console.log(selected_rows);
+                // return 0;
+                
+                
+                if(selected_rows.length > 0){
+                    $('input#product_id').val(selected_rows);
+                    $("form#add_to_website").submit();
+                } else{
+                    $('input#product_id').val('');
                     swal('@lang("lang_v1.no_row_selected")');
                 }    
             })

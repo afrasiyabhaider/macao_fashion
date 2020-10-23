@@ -1,9 +1,10 @@
 @php
     $location_id = \App\BusinessLocation::where('name','Web Shop')->orWhere('name','webshop')->orWhere('name','web shop')->orWhere('name','Website')->orWhere('name','website')->orWhere('name','MACAO WEBSHOP')->first()->id;
     
-    $products = App\VariationLocationDetails::where('qty_available','>',0)->join('products as p','p.id','=','variation_location_details.product_id')->groupBy('p.refference')->orderBy('p.created_at','Desc')->paginate(12);
+//     $products = App\VariationLocationDetails::where('qty_available','>',0)->join('products as p','p.id','=','variation_location_details.product_id')->groupBy('p.refference')->orderBy('p.created_at','Desc')->paginate(12);
+// dd("Hello");
+     $products = App\WebsiteProducts::join('products as p','p.id','=','website_products.product_id')->orderBy('p.created_at','Desc')->paginate(12);
 
-//     dd($products);
 @endphp
 <div class="page-header align-items-end" style="background-image: url(../../site_assets/images/page-header-bg-2.jpg)">
      <div class="container">
@@ -23,7 +24,7 @@
                               </h2>
                          <hr>
                          <p>
-                              {{$products->count()}} Product(s) Found
+                              {{$products->count() * $products->currentPage()}} of {{$products->total()}} Product(s)
                          </p>
                     </div>
                </div>

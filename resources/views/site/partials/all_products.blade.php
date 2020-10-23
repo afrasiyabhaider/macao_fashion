@@ -2,8 +2,11 @@
 $location_id = App\BusinessLocation::where('name','Web Shop')->orWhere('name','webshop')->orWhere('name','web
 shop')->orWhere('name','Website')->orWhere('name','website')->orWhere('name','MACAO WEBSHOP')->pluck('id');
 
-$all_web_products = App\VariationLocationDetails::where('qty_available', '>',
-0)->join('products as p','p.id','=','variation_location_details.product_id')->groupBy('p.refference')->orderBy('p.created_at','Desc')->get();
+$all_web_products = App\WebsiteProducts::join('products as p','p.id','=','website_products.product_id')->orderBy('p.created_at','Desc')->get();
+// $all_web_products = App\VariationLocationDetails::where('qty_available', '>',
+// 0)->join('products as
+// p',p.id','=','variation_location_details.product_id')->groupBy('p.refference')->orderBy('p.created_at','Desc')->get();
+// dd($all_web_products);
 @endphp
 <div class="row">
      <div class="col-12">
@@ -87,19 +90,19 @@ $all_web_products = App\VariationLocationDetails::where('qty_available', '>',
 @endforeach
 @else
 </div>
-     <div class="mt-5 mb-5">
-          <div class="col-12">
-               <div class="alert alert-info col-12">
-                    <h3>
-                         No Product Found
-                    </h3>
-                    <p>
-                         0 product found.
-                         Please<strong><a href="{{url('product/list')}}">click here</a></strong>
-                         to view all products
-                    </p>
-               </div>
+<div class="mt-5 mb-5">
+     <div class="col-12">
+          <div class="alert alert-info col-12">
+               <h3>
+                    No Product Found
+               </h3>
+               <p>
+                    0 product found.
+                    Please<strong><a href="{{url('product/list')}}">click here</a></strong>
+                    to view all products
+               </p>
           </div>
      </div>
+</div>
 @endif
 {{-- </div> --}}
