@@ -8,6 +8,7 @@ use App\BusinessLocation;
 use App\Category;
 use App\Product;
 use App\ProductImages;
+use App\SalePriority;
 use App\SellingPriceGroup;
 use App\SpecialCategoryProduct;
 use App\Supplier;
@@ -321,7 +322,6 @@ class WebsiteController extends Controller
 
         $special_product = SpecialCategoryProduct::where('refference',$product->refference)->first();
 
-        // dd($special_product);
 
         return view('website_products.special_category',compact('product','special_product'));
     }
@@ -359,15 +359,18 @@ class WebsiteController extends Controller
         }
         $product_price = $product->variations()->first()->dpp_inc_tax;
         if ($request->has('sale')) {
-            
-            // $percentage = $request->input('sale_percent')/100;
-            // $discounted_price =  $product_price * $percentage;
-            // $after_discount = $product_price - $discounted_price;
             $ut = new Util();
             $special->sale = '1';
-            $special->after_discount = $ut->num_uf($request->input('after_discount'));
-            // $special->sale_percentage = $request->input('sale_percent');
-            // $special->discounted_price = $discounted_price;
+            // dd($ut->num_uf($request->input('after_discount')) > $product_price);
+            // if ((float)$ut->num_uf($request->input('after_discount')) > $product_price) {
+            //     $output = [
+            //         'success' => 0,
+            //         'msg' => "Sale price could not be greater than original price"
+            //     ];
+            //     return redirect()->back()->with('status', $output);
+            // }
+            $special->after_discount = $request->input('after_discount');
+            // $special->after_discount = $ut->num_uf($request->input('after_discount'));
         }else{
             $special->sale = '0';
             // $special->sale_percentage = null;
@@ -422,20 +425,13 @@ class WebsiteController extends Controller
     public function addImages(Request $request,$id)
     {
         $product = Product::find($id);
-        
         try{
+            // dd($request->file('file'));
             $image_index[0] = null;
             $i=0;
-            foreach ($request->file('image') as $key => $value) {
-                $image_index[$i] = $key;
-                $i++;
-            }
-            for($i = 0; $i< count($image_index); $i++){
+            foreach ($request->file('file') as $key => $value) {
                 $product_images = new ProductImages();
-                
-                $file = $request->file('image')[$image_index[$i]];
-                $name = time().'.'.$file->extension();
-                $file->move(public_path().'/uploads/img/', $name);  
+                $name = Storage::put('img',$value);  
                 $product_images->product_id = $product->id;
                 $product_images->refference = $product->refference;
                 $product_images->image = $name;
@@ -467,6 +463,7 @@ class WebsiteController extends Controller
     {
         $product_image = ProductImages::find($id);
         try {
+            Storage::delete($product_image->image);
             $product_image->delete();
         $output = [
                     'success' => 1,
@@ -506,5 +503,51 @@ class WebsiteController extends Controller
         }
         return redirect()->back()->with('status', $output);
 
+    }
+    /**
+     * Set Priority of Products
+     *  
+     **/
+    public function setPriority()
+    {
+        $locations = BusinessLocation::whereNotIn('id',[2,6])->orderby('id')->get();
+        return view('website_products.sale_priority', compact('locations'));
+    }
+    /**
+     * Set Priority of Products
+     *  
+     **/
+    public function savePriority(Request $request)
+    {
+        // |unique:sale_priorities,location_id
+        $request->validate([
+            'location.*' => 'required'
+        ]);
+        try {
+            DB::beginTransaction();
+            $locations = $request->input('location');
+            for ($i = 0; $i < count($locations); $i++) {
+                $sales = SalePriority::where('location_id',$locations[$i])->first();
+                if (!$sales) {
+                    $sale = new SalePriority();
+                    $sale->priority = $i + 1;
+                    $sale->location_id = $locations[$i];
+                    $sale->save();
+                }
+            }
+            $output = [
+                'success' => 1,
+                'msg' => "Priorities added from Website"
+            ];
+            DB::commit();
+        } catch (\Exception $ex) {
+            DB::rollback();
+            $output = [
+                'success' => 0,
+                'msg' => $ex->getMessage()
+                // 'msg' => "Error Occured"
+            ];
+        }
+        return redirect()->back()->with('status', $output);
     }
 }

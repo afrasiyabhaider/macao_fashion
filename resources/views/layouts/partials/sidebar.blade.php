@@ -445,10 +445,16 @@
         </span>
       </a>
       <ul class="treeview-menu">
-        <li class="{{ $request->segment(1) == 'website' && $request->segment(2) == null ? 'active' : '' }}">
+        <li class="{{ $request->segment(2) == 'product' && $request->segment(3) == 'list' ? 'active' : '' }}">
           <a href="{{action('WebsiteController@index')}}">
             <i class="fa fa-list"></i>
             Product List
+          </a>
+        </li>
+        <li class="{{ $request->segment(3) == 'priority' ? 'active' : '' }}">
+          <a href="{{action('WebsiteController@setPriority')}}">
+            <i class="fa fa-sort"></i>
+            Sale Priority
           </a>
         </li>
       </ul>

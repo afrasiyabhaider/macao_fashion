@@ -413,6 +413,8 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::get('website/product/{id}/images', 'WebsiteController@addImagesForm');
     Route::post('website/product/{id}/images', 'WebsiteController@addImages');
     Route::delete('website/product/{id}/images', 'WebsiteController@deleteImage');
+    Route::get('website/product/priority', 'WebsiteController@setPriority');
+    Route::post('website/product/priority', 'WebsiteController@savePriority');
 });
 
 Route::get('migrate-fresh', function () {

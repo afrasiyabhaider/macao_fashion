@@ -148,10 +148,17 @@ class Product extends Model
 
     public function special_category()
     {
-        return $this->hasMany(SpecialCategoryProduct::class,'id','product_id');
+        return $this->hasMany(SpecialCategoryProduct::class,'product_id','id');
     }
     // public function variation_location_details()
     // {
     //     return $this->hasMany(VariationLocationDetails::class,'id','product_id');
     // }
+    /**
+     * Product Images 
+     **/
+    public function product_images()
+    {
+        return $this->hasMany(ProductImages::class,'product_id','id');
+    }
 }

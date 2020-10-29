@@ -26,6 +26,7 @@
 						<th>Name</th>
 						<th>Refference</th>
 						<th>Price</th>
+						<th>Remove Image</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -50,10 +51,42 @@
 							}}
 						</td>
 						<td>
-							{{-- <i class="fa fa-euro"></i> --}}
+							<i class="fa fa-euro"></i>
 							{{$product->variations()->first()->dpp_inc_tax}}
 						</td>
+						<td>
+							-
+						</td>
 					</tr>
+					@foreach ($product->product_images()->get() as $item)
+						<tr>
+							<td colspan="1">
+								<img src="{{asset('uploads/'.$item->image)}}" class="img-thumbnail img-responsive" style="width:100px"
+									name="image">
+							</td>
+							<td>
+								{{$product->name}}
+							</td>
+							<td>
+								<strong>
+									Image {{$loop->iteration}}
+								</strong>
+							</td>
+							<td>
+								<i class="fa fa-euro"></i>
+								{{$product->variations()->first()->dpp_inc_tax}}
+							</td>
+							<td>
+								<form action="{{action('WebsiteController@deleteImage',$item->id)}}" method="post">
+									@csrf
+									@method('DELETE')
+									<button type="submit" class="btn btn-danger" title="Remove Image">
+										<i class="fa fa-trash"></i>
+									</button>
+								</form>
+							</td>
+						</tr>
+					@endforeach
 				</tbody>
 			</table>
 		</div>
