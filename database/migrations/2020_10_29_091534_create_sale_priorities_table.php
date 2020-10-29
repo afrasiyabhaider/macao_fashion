@@ -15,11 +15,16 @@ class CreateSalePrioritiesTable extends Migration
     {
         Schema::create('sale_priorities', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->tinyInteger('priority');
-            $table->unsignedBigInteger('location_id');
+            $table->unsignedBigInteger('priority_1');
+            $table->unsignedBigInteger('priority_2');
+            $table->unsignedBigInteger('priority_3');
+            $table->unsignedBigInteger('priority_4');
             $table->timestamps();
 
-            $table->unique('location_id')->references('id')->on('business_locations')->onDelete('cascde');
+            $table->unique('priority_1')->references('id')->on('business_locations')->onDelete('cascde');
+            $table->unique('priority_2')->references('id')->on('business_locations')->onDelete('cascde');
+            $table->unique('priority_3')->references('id')->on('business_locations')->onDelete('cascde');
+            $table->unique('priority_4')->references('id')->on('business_locations')->onDelete('cascde');
         });
     }
 

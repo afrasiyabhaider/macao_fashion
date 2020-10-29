@@ -526,15 +526,12 @@ class WebsiteController extends Controller
         try {
             DB::beginTransaction();
             $locations = $request->input('location');
-            for ($i = 0; $i < count($locations); $i++) {
-                $sales = SalePriority::where('location_id',$locations[$i])->first();
-                if (!$sales) {
-                    $sale = new SalePriority();
-                    $sale->priority = $i + 1;
-                    $sale->location_id = $locations[$i];
-                    $sale->save();
-                }
-            }
+            $sale = SalePriority::find(1);
+                $sale->priority_1 = $locations[0];
+                $sale->priority_2 = $locations[1];
+                $sale->priority_3 = $locations[2];
+                $sale->priority_4 = $locations[3];
+            $sale->save();
             $output = [
                 'success' => 1,
                 'msg' => "Priorities added from Website"

@@ -1,6 +1,11 @@
 @php
-    $location = App\SalePriority::pluck('location_id');
-//     dd($locations);
+    $location = App\SalePriority::first();
+    $data['priority'][1] = $location->priority_1;
+    $data['priority'][2] = $location->priority_2;
+    $data['priority'][3] = $location->priority_3;
+    $data['priority'][4] = $location->priority_4;
+//     $i=1;
+//     dd($data["priority_$i"],$location);
 @endphp
 @extends('layouts.app')
 @section('title','Sale Priority')
@@ -44,7 +49,8 @@
                                         Select Location for {{$i}} Priority
                                    </option>
                                    @foreach ($locations as $item)
-                                        <option @if (isset($location[$i]) && ($location[$i] == $item->id))
+                                   
+                                        <option @if (isset($data['priority'][$i+1]) && ($data['priority'][$i+1] == $item->id))
                                             selected
                                         @endif value="{{$item->id}}">
                                              {{$item->name}}
