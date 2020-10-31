@@ -4,12 +4,28 @@ All Notable changes to `laravel-modules` will be documented in this file.
 
 ## Next
 
+## 7.2.0 - 2020-07-30
+
+### Added
+
+- Added return statements in artisan commands. Helpful to validate if something was successfully ran. (#1026)
+
+### Changed
+
+- Update JsonResource namespace, using the new `Illuminate\Http\Resources\Json\JsonResource`. (#969)
+- Enable command returns the status code (#978)
+- Removing module service provider from composer.json stub (#996)
+- Fixed custom stub path issue. Replacing a hardcoded stub path. (#1016)
+- Controller return type changed to `Illuminate\Contracts\Support\Renderable`. (#1020)
+- Change bigIncrements method to id (#1029)
+- Adding force option for module:seed (#1030)
+
 ## 7.1.0 - 2020-04-14
 
 ### Changed
 
-- `php artsian module:enable` will enable all modules
-- `php artsian module:disable` will disable
+- `php artsian module:enable` (without any arguments) will enable all modules
+- `php artsian module:disable` (without any arguments) will disable all modules
 - Updating Laravel Mix version as well as cross-env. 
 
 ## 7.0.0 - 2020-03-26

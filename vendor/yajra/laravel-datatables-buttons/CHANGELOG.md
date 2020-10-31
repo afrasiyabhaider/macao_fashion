@@ -1,5 +1,22 @@
 # Laravel DataTables Buttons Plugin CHANGELOG.
 
+## v4.10.1 - 10-31-2020
+
+- Fix model namespace for Laravel 8.x [#117], credits to @luckys383.
+
+## v4.10.0 - 09-09-2020
+
+- Add support for Laravel 8.
+
+## v4.9.3 - 07-07-2020
+
+- Use Blade's helper to check for the first row [#111], credits to @AdrienPoupa.
+
+## v4.9.2 - 06-13-2020
+
+- Use app helper instead of resolve.
+- Fix [#2351].
+
 ## v4.9.1 - 04-23-2020
 
 - Fix BindingResolutionException when using Laravel 7.7.0 or greater [#105], credits to @singhofmarco.
@@ -197,6 +214,8 @@ ajax(), dataTable(), query(), csv(), excel(), pdf(), printPreview()
 [#99]: https://github.com/yajra/laravel-datatables-buttons/pull/99
 [#102]: https://github.com/yajra/laravel-datatables-buttons/pull/102
 [#105]: https://github.com/yajra/laravel-datatables-buttons/pull/105
+[#117]: https://github.com/yajra/laravel-datatables-buttons/pull/117
 
 [#19]: https://github.com/yajra/laravel-datatables-buttons/issues/19
 [#1558]: https://github.com/yajra/laravel-datatables/issues/1558
+[#2351]: https://github.com/yajra/laravel-datatables/issues/2351

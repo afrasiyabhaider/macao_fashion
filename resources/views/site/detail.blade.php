@@ -18,7 +18,7 @@
                               @if ($images->count() > 0)
                                    @foreach ($images as $item)
                                         <div class="product-item ">
-                                             <img class="product-single-image" src="{{asset('uploads/img/'.$item->image)}}" data-zoom-image="{{asset('uploads/img/'.$item->image)}}" style="width:400px;height:400px">
+                                             <img class="product-single-image" src="{{asset('uploads/'.$item->image)}}" data-zoom-image="{{asset('uploads/'.$item->image)}}" style="width:400px;height:400px">
                                         </div>
                                    @endforeach
                               @else
@@ -44,7 +44,7 @@
                               @if ($images->count() > 0)
                                    @foreach ($images as $item)
                                         <div class="col-3 owl-dot">
-                                             <img src="{{asset('uploads/img/'.$item->image)}}" style="width:85px;height:85px">
+                                             <img src="{{asset('uploads/'.$item->image)}}" style="width:85px;height:85px">
                                         </div>
                                    @endforeach
                               @else 
@@ -183,9 +183,10 @@
                                              <input class="horizontal-quantity form-control" type="text">
                                         </div><!-- End .product-single-qty -->
 
-                                        <a href="#" class="paction add-cart" title="Add to Cart">
+                                        --}}
+                                        <a href="#" class="paction add-cart text-dark" title="Add to Cart">
                                              <span>Add to Cart</span>
-                                        </a> --}}
+                                        </a> 
                                    </div><!-- End .product-action -->
                                    {{-- @dd(Share::currentPage()->facebook()) --}}
                                    <div class="product-single-share">
@@ -264,7 +265,7 @@
                                         @if (!is_null($featured) && $featured->count() > 0)
                                              @foreach ($featured as $item)
                                              
-                                             {{-- @dd(asset('uploads/img/'.$item->products()->first()->image)) --}}
+                                             {{-- @dd(asset('uploads/'.$item->products()->first()->image)) --}}
 
                                                  <div class="featured-col">
                                                   <div class="product-default left-details product-widget">
@@ -274,7 +275,7 @@
                                                        $images = App\ProductImages::where('refference',$item->products()->first()->refference)->get();
                                                   @endphp
                                                   @if(!is_null($images) && $images->count() > 0)
-                                                       <img src="{{asset('uploads/img/'.$images[0]->image)}}" style="height:80px;width:80px">
+                                                       <img src="{{asset('uploads/'.$images[0]->image)}}" style="height:80px;width:80px">
                                                   @else
                                                        <img src="{{asset('img/product-placeholder-1.jpg')}}" id="preview1" alt="Image 1 Preview Here" style="height:85px;width:85px">
                                                   @endif

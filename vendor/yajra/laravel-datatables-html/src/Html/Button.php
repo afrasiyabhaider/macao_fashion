@@ -143,6 +143,20 @@ class Button extends Fluent implements Arrayable
     }
 
     /**
+     * Set customize option value.
+     *
+     * @param string $value
+     * @return $this
+     * @see https://datatables.net/reference/button/excelHtml5
+     */
+    public function customize($value)
+    {
+        $this->attributes['customize'] = $value;
+
+        return $this;
+    }
+
+    /**
      * Append a class name to column.
      *
      * @param string $class
@@ -261,6 +275,19 @@ class Button extends Fluent implements Arrayable
     public function actionClose()
     {
         $this->attributes['action'] = 'function() { this.close(); }';
+
+        return $this;
+    }
+
+    /**
+     * Set button alignment.
+     *
+     * @param string $align
+     * @return \Yajra\DataTables\Html\Button
+     */
+    public function align($align = 'button-left')
+    {
+        $this->attributes['align'] = $align;
 
         return $this;
     }

@@ -33,6 +33,15 @@ class Client
     /** @var string */
     protected $accessToken;
 
+    /** @var string */
+    protected $teamMemberId;
+
+    /** @var string */
+    protected $appKey;
+
+    /** @var string */
+    protected $appSecret;
+
     /** @var \GuzzleHttp\Client */
     protected $client;
 
@@ -43,14 +52,24 @@ class Client
     protected $maxUploadChunkRetries;
 
     /**
-     * @param string $accessToken
+     * @param string|array|null $accessTokenOrAppCredentials
      * @param GuzzleClient|null $client
      * @param int $maxChunkSize Set max chunk size per request (determines when to switch from "one shot upload" to upload session and defines chunk size for uploads via session).
      * @param int $maxUploadChunkRetries How many times to retry an upload session start or append after RequestException.
+     * @param string $teamMemberID The team member ID to be specified for Dropbox business accounts
      */
-    public function __construct(string $accessToken, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0)
+    public function __construct($accessTokenOrAppCredentials = null, GuzzleClient $client = null, int $maxChunkSize = self::MAX_CHUNK_SIZE, int $maxUploadChunkRetries = 0, string $teamMemberId = null)
     {
-        $this->accessToken = $accessToken;
+        if (is_array($accessTokenOrAppCredentials)) {
+            [$this->appKey, $this->appSecret] = $accessTokenOrAppCredentials;
+        }
+        if (is_string($accessTokenOrAppCredentials)) {
+            $this->accessToken = $accessTokenOrAppCredentials;
+        }
+
+        if ($teamMemberId !== null) {
+            $this->teamMemberId = $teamMemberId;
+        }
 
         $this->client = $client ?? new GuzzleClient(['handler' => GuzzleFactory::handler()]);
 
@@ -102,7 +121,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#sharing-create_shared_link_with_settings
      */
-    public function createSharedLinkWithSettings(string $path, array $settings = [])
+    public function createSharedLinkWithSettings(string $path, array $settings = []): array
     {
         $parameters = [
             'path' => $this->normalizePath($path),
@@ -120,7 +139,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-search
      */
-    public function search(string $query, bool $includeHighlights = false)
+    public function search(string $query, bool $includeHighlights = false): array
     {
         $parameters = [
             'query' => $query,
@@ -187,6 +206,28 @@ class Client
         ];
 
         $response = $this->contentEndpointRequest('files/download', $arguments);
+
+        return StreamWrapper::getResource($response->getBody());
+    }
+
+    /**
+     * Download a folder from the user's Dropbox, as a zip file.
+     * The folder must be less than 20 GB in size and have fewer than 10,000 total files.
+     * The input cannot be a single file. Any single file must be less than 4GB in size.
+     *
+     * @param string $path
+     *
+     * @return resource
+     *
+     * @link https://www.dropbox.com/developers/documentation/http/documentation#files-download_zip
+     */
+    public function downloadZip(string $path)
+    {
+        $arguments = [
+            'path' => $this->normalizePath($path),
+        ];
+
+        $response = $this->contentEndpointRequest('files/download_zip', $arguments);
 
         return StreamWrapper::getResource($response->getBody());
     }
@@ -377,7 +418,7 @@ class Client
      * @param string $path
      * @param string|resource $contents
      * @param string $mode
-     * @param int $chunkSize
+     * @param int|null $chunkSize
      *
      * @return array
      */
@@ -537,7 +578,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#auth-token-revoke
      */
-    public function revokeToken()
+    public function revokeToken(): void
     {
         $this->rpcEndpointRequest('auth/token/revoke');
     }
@@ -664,8 +705,40 @@ class Client
      */
     protected function getHeaders(array $headers = []): array
     {
-        return array_merge([
+        $auth = [];
+        if ($this->accessToken || ($this->appKey && $this->appSecret)) {
+            $auth = $this->accessToken ? $this->getHeadersForBearerToken() : $this->getHeadersForCredentials();
+        }
+
+        if ($this->teamMemberId) {
+            $auth = array_merge(
+                $auth,
+                [
+                    'Dropbox-API-Select-User' => $this->teamMemberId,
+                ]
+            );
+        }
+
+        return array_merge($auth, $headers);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getHeadersForBearerToken()
+    {
+        return [
             'Authorization' => "Bearer {$this->accessToken}",
-        ], $headers);
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    protected function getHeadersForCredentials()
+    {
+        return [
+            'Authorization' => 'Basic '.base64_encode("{$this->appKey}:{$this->appSecret}"),
+        ];
     }
 }

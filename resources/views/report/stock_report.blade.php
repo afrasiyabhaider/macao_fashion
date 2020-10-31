@@ -118,16 +118,17 @@
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
                 <li class="active">
-                    <a href="#psr_grouped_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cart-plus" aria-hidden="true"></i>
+                    <a href="#psr_grouped_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-cart-plus"
+                            aria-hidden="true"></i>
                         Grouped Products</a>
                 </li>
 
                 <li>
-                <a href="#psr_detailed_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-list"
-                    aria-hidden="true"></i> @lang('lang_v1.detailed')</a>
+                    <a href="#psr_detailed_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-list"
+                            aria-hidden="true"></i> @lang('lang_v1.detailed')</a>
                 </li>
-                
-                
+
+
             </ul>
             <div class="tab-content">
                 <div class="tab-pane active" id="psr_grouped_tab">
@@ -140,19 +141,24 @@
                 <div class="tab-pane" id="psr_detailed_tab">
                     <div class="row" style="margin-bottom: 20px">
                         <div class="col-12">
-                            {!! Form::open(['url' => action('ProductController@massBulkPrint'), 'method' => 'post', 'id' =>
+                            {!! Form::open(['url' => action('ProductController@massBulkPrint'), 'method' => 'post', 'id'
+                            =>
                             'bulkPrint_form' ]) !!}
                             {{-- {!! Form::submit('Print Selected', array('class' => 'btn btn-md btn-warning', 'id' => 'bulkPrint-selected')) !!} --}}
-                            {!! Form::hidden('selected_products_bulkPrint', null, ['id' => 'selected_products_bulkPrint']); !!}
-                            {!! Form::hidden('selected_products_bulkPrint_qty', null, ['id' => 'selected_products_bulkPrint_qty']); !!}
+                            {!! Form::hidden('selected_products_bulkPrint', null, ['id' =>
+                            'selected_products_bulkPrint']); !!}
+                            {!! Form::hidden('selected_products_bulkPrint_qty', null, ['id' =>
+                            'selected_products_bulkPrint_qty']); !!}
                             {!! Form::hidden('printing_location_id', 1, ['id' => 'printing_location_id']); !!}
-                
-                            <button type="submit" class="btn btn-success pull-left" id="bulkPrint-selected" style="margin-left: 20px">
+
+                            <button type="submit" class="btn btn-success pull-left" id="bulkPrint-selected"
+                                style="margin-left: 20px">
                                 <i class="fa fa-print"></i>
                                 Print Selected
                             </button>
                             {!! Form::close() !!}
-                            <form action="{{action('WebsiteController@addToWebsite')}}" method="post" class="ml-5" style="margin-left: 20px" id="add_to_website">
+                            <form action="{{action('WebsiteController@addToWebsite')}}" method="post" class="ml-5"
+                                style="margin-left: 20px" id="add_to_website">
                                 @csrf
                                 <input type="hidden" name="product_id" id="product_id">
                                 <button type="submit" class="btn btn-info pull-left" id="add_to_website_button">
@@ -160,9 +166,11 @@
                                     Add to Website
                                 </button>
                             </form>
-                            {!! Form::open(['url' => action('ProductController@massTransfer'), 'method' => 'post', 'id' =>
+                            {!! Form::open(['url' => action('ProductController@massTransfer'), 'method' => 'post', 'id'
+                            =>
                             'bulkTransfer_form','class' => 'ml-5' ]) !!}
-                            {!! Form::hidden('selected_products_bulkTransfer', null, ['id' => 'selected_products_bulkTransfer']); !!}
+                            {!! Form::hidden('selected_products_bulkTransfer', null, ['id' =>
+                            'selected_products_bulkTransfer']); !!}
                             {!! Form::hidden('selected_products_qty_bulkTransfer', null, ['id' =>
                             'selected_products_qty_bulkTransfer']); !!}
                             {!! Form::hidden('bussiness_bulkTransfer', null, ['id' => 'bussiness_bulkTransfer']); !!}
@@ -173,7 +181,7 @@
                                 Transfer Selected
                             </button>
                             {!! Form::close() !!}
-                            
+
                         </div>
                     </div>
                     <div class="row">
@@ -182,7 +190,7 @@
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </div>
     </div>

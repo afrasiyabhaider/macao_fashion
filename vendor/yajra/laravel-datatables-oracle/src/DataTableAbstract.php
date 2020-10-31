@@ -2,17 +2,17 @@
 
 namespace Yajra\DataTables;
 
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Support\Jsonable;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Psr\Log\LoggerInterface;
-use Illuminate\Http\JsonResponse;
-use Yajra\DataTables\Utilities\Helper;
 use Illuminate\Support\Traits\Macroable;
+use Psr\Log\LoggerInterface;
 use Yajra\DataTables\Contracts\DataTable;
-use Illuminate\Contracts\Support\Jsonable;
 use Yajra\DataTables\Exceptions\Exception;
-use Illuminate\Contracts\Support\Arrayable;
 use Yajra\DataTables\Processors\DataProcessor;
+use Yajra\DataTables\Utilities\Helper;
 
 /**
  * @method DataTableAbstract setTransformer($transformer)
@@ -144,6 +144,11 @@ abstract class DataTableAbstract implements DataTable, Arrayable, Jsonable
      * @var mixed
      */
     protected $serializer;
+
+    /**
+     * @var array
+     */
+    protected $searchPanes = [];
 
     /**
      * Can the DataTable engine be created with these parameters.
@@ -657,7 +662,16 @@ abstract class DataTableAbstract implements DataTable, Arrayable, Jsonable
         }
 
         $this->columnSearch();
+        $this->searchPanesSearch();
         $this->filteredRecords = $this->isFilterApplied ? $this->filteredCount() : $this->totalRecords;
+    }
+
+    /**
+     * Perform search using search pane values.
+     */
+    protected function searchPanesSearch()
+    {
+        // Add support for search pane.
     }
 
     /**
@@ -770,6 +784,10 @@ abstract class DataTableAbstract implements DataTable, Arrayable, Jsonable
 
         if ($this->config->isDebugging()) {
             $output = $this->showDebugger($output);
+        }
+
+        foreach ($this->searchPanes as $column => $searchPane) {
+            $output['searchPanes']['options'][$column] = $searchPane['options'];
         }
 
         return new JsonResponse(
@@ -923,5 +941,27 @@ abstract class DataTableAbstract implements DataTable, Arrayable, Jsonable
     protected function getPrimaryKeyName()
     {
         return 'id';
+    }
+
+    /**
+     * Add a search pane options on response.
+     *
+     * @param string $column
+     * @param mixed $options
+     * @param callable|null $builder
+     * @return $this
+     */
+    public function searchPane($column, $options, callable $builder = null)
+    {
+        $options = value($options);
+
+        if ($options instanceof Arrayable) {
+            $options = $options->toArray();
+        }
+
+        $this->searchPanes[$column]['options'] = $options;
+        $this->searchPanes[$column]['builder'] = $builder;
+
+        return $this;
     }
 }

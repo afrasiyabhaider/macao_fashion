@@ -8,6 +8,62 @@
 
 ## CHANGELOG
 
+### v4.34.0 - 10-31-2020
+
+- Add support for search panes extension. [#137]
+
+### v4.33.0 - 10-30-2020
+
+- Make LaravelDataTables javascript namespace configurable. [#145], credits to @om3rcitak
+
+### v4.32.0 - 10-10-2020
+
+- Add function argument to override the default options from php scripts. [#144]
+
+### v4.31.0 - 10-09-2020
+
+- Add button customize option value. [#142], credits to @gredimano
+- Fix https://github.com/yajra/laravel-datatables/issues/1541
+- Add template and method to wrap scripts with a function. [#143]
+
+### v4.30.3 - 10-06-2020
+
+- Wait for DOM before executing script using jQuery [#138]
+- Fix [#133]
+
+### v4.30.2 - 10-06-2020
+
+- Fix chrome bfcache issue with editor. [#139], credits to @jiwom
+- Allow using callbacks as a data value. [#127], credits to @mgralikowski
+
+### v4.30.1 - 09-29-2020
+
+- Fix [#134] laravel 8 dependencies [#135], credits to @dyanakiev.
+
+### v4.30.0 - 06-18-2020
+
+- Add button align property setter.
+
+### v4.29.0 - 06-17-2020
+
+- Add column responsive priority setter. [#131], credits to @SamDeimos.
+
+### v4.28.0 - 06-10-2020
+
+- Allow eloquent builder instance on BelongsTo model field.
+
+### v4.27.0 - 05-29-2020
+
+- Add renderRaw method to set render value as is.
+
+### v4.26.1 - 05-29-2020
+
+- Fix array listing and allow customer separator.
+
+### v4.26.0 - 05-29-2020
+
+- Add support for comma separated list from an array of objects.
+
 ### v4.25.1 - 04-17-2020
 
 - Fix PR [#125].
@@ -638,7 +694,18 @@ To `created_at` with title `Created At`
 [#124]: https://github.com/yajra/laravel-datatables-html/pull/124
 [#117]: https://github.com/yajra/laravel-datatables-html/pull/117
 [#125]: https://github.com/yajra/laravel-datatables-html/pull/125
+[#131]: https://github.com/yajra/laravel-datatables-html/pull/131
+[#135]: https://github.com/yajra/laravel-datatables-html/pull/135
+[#127]: https://github.com/yajra/laravel-datatables-html/pull/127
+[#139]: https://github.com/yajra/laravel-datatables-html/pull/139
+[#138]: https://github.com/yajra/laravel-datatables-html/pull/138
+[#133]: https://github.com/yajra/laravel-datatables-html/pull/133
+[#142]: https://github.com/yajra/laravel-datatables-html/pull/142
+[#143]: https://github.com/yajra/laravel-datatables-html/pull/143
+[#144]: https://github.com/yajra/laravel-datatables-html/pull/144
+[#137]: https://github.com/yajra/laravel-datatables-html/pull/137
 
+[#134]: https://github.com/yajra/laravel-datatables-html/issues/134
 [#3]: https://github.com/yajra/laravel-datatables-html/issues/3
 [#58]: https://github.com/yajra/laravel-datatables-html/issues/58
 [#102]: https://github.com/yajra/laravel-datatables-html/issues/102

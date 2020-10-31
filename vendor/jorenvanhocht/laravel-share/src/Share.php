@@ -2,6 +2,8 @@
 
 namespace Jorenvh\Share;
 
+use Illuminate\Support\Arr;
+
 class Share
 {
     /**
@@ -10,6 +12,13 @@ class Share
      * @var string
      */
     protected $url;
+
+    /**
+     * The generated urls
+     *
+     * @var string
+     */
+    protected $generatedUrls = [];
 
     /**
      * Optional text for Twitter
@@ -211,6 +220,20 @@ class Share
     }
 
     /**
+     * Get the raw generated links.
+     *
+     * @return string|array
+     */
+    public function getRawLinks()
+    {
+        if(count($this->generatedUrls) === 1) {
+            return Arr::first($this->generatedUrls);
+        }
+
+        return $this->generatedUrls;
+    }
+
+    /**
      * Build a single link
      *
      * @param $provider
@@ -219,6 +242,8 @@ class Share
     protected function buildLink($provider, $url)
     {
         $fontAwesomeVersion = config('laravel-share.fontAwesomeVersion', 4);
+
+        $this->rememberRawLink($provider, $url);
 
         $this->html .= trans("laravel-share::laravel-share-fa$fontAwesomeVersion.$provider", [
             'url' => $url,
@@ -244,5 +269,14 @@ class Share
         if (!is_null($suffix)) {
             $this->suffix = $suffix;
         }
+    }
+
+    /**
+     * @param $provider
+     * @param $socialNetworkUrl
+     */
+    protected function rememberRawLink($provider, $socialNetworkUrl)
+    {
+        $this->generatedUrls[$provider] = $socialNetworkUrl;
     }
 }

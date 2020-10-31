@@ -3,10 +3,10 @@
 namespace Yajra\DataTables\Services;
 
 use Illuminate\Http\JsonResponse;
-use Yajra\DataTables\Html\Column;
 use Illuminate\Support\Collection;
-use Yajra\DataTables\Contracts\DataTableScope;
 use Yajra\DataTables\Contracts\DataTableButtons;
+use Yajra\DataTables\Contracts\DataTableScope;
+use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Transformers\DataArrayTransformer;
 
 abstract class DataTable implements DataTableButtons
@@ -176,7 +176,7 @@ abstract class DataTable implements DataTableButtons
      */
     public function request()
     {
-        return $this->request ?: $this->request = resolve('datatables.request');
+        return $this->request ?: $this->request = app('datatables.request');
     }
 
     /**
@@ -520,7 +520,7 @@ abstract class DataTable implements DataTableButtons
     public function snappyPdf()
     {
         /** @var \Barryvdh\Snappy\PdfWrapper $snappy */
-        $snappy      = resolve('snappy.pdf.wrapper');
+        $snappy      = app('snappy.pdf.wrapper');
         $options     = config('datatables-buttons.snappy.options');
         $orientation = config('datatables-buttons.snappy.orientation');
 

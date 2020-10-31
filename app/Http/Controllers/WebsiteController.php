@@ -254,7 +254,7 @@ class WebsiteController extends Controller
                     return $description;
                 })
                 ->editColumn('image', function ($row) {
-                    return '<div style="display: flex;"><img src="' . $row->image_url . '" alt="Product image" class="product-thumbnail-small"></div>';
+                    return '<div style="display: flex;"><img src="' . $row->products()->first()->image_url . '" alt="Product image" class="product-thumbnail-small"></div>';
                 })
                 ->editColumn('bulk_add', function ($row) {
                     return $row->bulk_add;
