@@ -170,7 +170,6 @@ return [
          * Package Service Providers...
          */
         Laravel\Tinker\TinkerServiceProvider::class,
-        Jorenvh\Share\Providers\ShareServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -242,8 +241,7 @@ return [
         'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
         'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
         'Charts' => ConsoleTVs\Charts\Facades\Charts::class,
-        'Datatables' => Yajra\DataTables\Facades\DataTables::class,
-        'Share' => Jorenvh\Share\ShareFacade::class,
+        'Datatables' => Yajra\DataTables\Facades\DataTables::class
 
     ]
 ];

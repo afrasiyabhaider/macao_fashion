@@ -19,7 +19,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '3c64382e22a3a7cff4bfaad925ef74bf26635744',
+    'reference' => '0d1370c83728fc734306f165f5026f711e8848ae',
     'name' => 'laravel/laravel',
   ),
   'versions' => 
@@ -50,6 +50,15 @@ private static $installed = array (
       array (
       ),
       'reference' => '91ee8b3acf0d72a4937f4855bd245acbda9910ac',
+    ),
+    'bumbummen99/shoppingcart' => 
+    array (
+      'pretty_version' => '3.0.0',
+      'version' => '3.0.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => 'b05497d17d468035869ed6d1e5af3849c9dcbea6',
     ),
     'composer/semver' => 
     array (
@@ -491,7 +500,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '3c64382e22a3a7cff4bfaad925ef74bf26635744',
+      'reference' => '0d1370c83728fc734306f165f5026f711e8848ae',
     ),
     'laravel/tinker' => 
     array (
@@ -882,8 +891,8 @@ private static $installed = array (
     array (
       'provided' => 
       array (
-        0 => '1.0',
-        1 => '1.0.0',
+        0 => '1.0.0',
+        1 => '1.0',
       ),
     ),
     'psr/simple-cache' => 

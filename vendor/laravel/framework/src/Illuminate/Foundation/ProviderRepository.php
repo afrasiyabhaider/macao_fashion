@@ -3,8 +3,8 @@
 namespace Illuminate\Foundation;
 
 use Exception;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Filesystem\Filesystem;
 
 class ProviderRepository
 {
@@ -186,12 +186,13 @@ class ProviderRepository
      */
     public function writeManifest($manifest)
     {
-        if (! is_writable(dirname($this->manifestPath))) {
-            throw new Exception('The bootstrap/cache directory must be present and writable.');
+        if (!is_writable($dirname = dirname($this->manifestPath))) {
+            throw new Exception("The {$dirname} directory must be present and writable.");
         }
 
-        $this->files->put(
-            $this->manifestPath, '<?php return '.var_export($manifest, true).';'
+        $this->files->replace(
+            $this->manifestPath,
+            '<?php return ' . var_export($manifest, true) . ';'
         );
 
         return array_merge(['when' => []], $manifest);
