@@ -1158,6 +1158,8 @@ class SellPosController extends Controller
                                     ->where('type', 'sell_return')
                                     ->where('return_parent_id', $sell->id)
                                     ->first();
+                                    
+                                $sell_return->update(['payment_status' => 'paid']);
 
                                 //update quantity sold in corresponding purchase lines
                                 $this->transactionUtil->updateQuantitySoldFromSellLine($sell_line, $quantity_formated, $quantity_before);
