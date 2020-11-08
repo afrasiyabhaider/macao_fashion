@@ -1,0 +1,37 @@
+// Page Header
+.page-header {
+  padding: 4.4rem 0 4.5rem;
+
+  .breadcrumb-nav + & {
+    margin-top: -2rem;
+  }
+}
+
+.page-header h1,
+.page-title {
+  margin-bottom: 0;
+  font-family: $second-font-family;
+  text-transform: uppercase;
+}
+
+@include mq('md') {
+  .page-header {
+    padding-top: 7rem;
+    padding-bottom: 7rem;
+
+    .breadcrumb-nav + & {
+      margin-top: -3rem;
+    }
+  }
+}
+
+@include mq('lg') {
+  .page-header {
+    padding-top: 9.2rem;
+    padding-bottom: 9rem;
+
+    .breadcrumb-nav + & {
+      margin-top: -4rem;
+    }
+  }
+}

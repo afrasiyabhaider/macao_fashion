@@ -1,0 +1,224 @@
+// Footer
+.footer {
+  background-color: #161616;
+
+  .container-fluid {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    max-width: none;
+    padding: 0 3.125%
+  }
+
+  img {
+    width: auto;
+    height: auto;
+  }
+}
+
+.footer-top {
+  margin-top: -1rem;
+  padding: 7rem 0 2rem;
+}
+
+.footer-middle { 
+  padding: 4rem 0 2rem;
+  border-top: 1px solid #212121;
+
+  .container>div {
+    >[class*='col-']:last-child {
+       display: flex;
+       align-items: center; 
+       justify-content: flex-end;
+    }
+  }
+}
+
+.footer-bottom {
+  padding: 3.5rem 0;
+  border-top: 1px solid #212121;
+
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  p {
+    font: 400 1.4rem/1 $third-font-family;
+    color: #a8a8a8;
+    margin-bottom: 0;
+    letter-spacing: -0.04em;
+  }
+}
+
+.footer .widget {
+  margin-bottom: 2rem;
+
+  ul {
+    margin-bottom: 0;
+  }
+
+  ul>li {
+    margin-bottom: 6px;
+  }
+
+  .widget-title {
+    font: 400 1.7rem/1 $second-font-family;
+    letter-spacing: 0.03em;
+    margin-bottom: 1.5rem;
+    margin-top: 0;
+    text-transform: uppercase;
+    color: white;
+  }
+
+  .widget-content {
+    p,
+    a {
+      font: 400 1.3rem/1 $third-font-family;
+      letter-spacing: 0.005em;
+      color: #a8a8a8;
+    }
+
+    a:hover {
+      color: white;
+    }
+
+    p {
+      margin-bottom: 0;
+      line-height: 2.4rem;
+    }
+  }
+
+  .subwidget {
+    .subwidget-title {
+      font: 400 1.4rem $third-font-family;
+      letter-spacing: 0.005em;
+      color: white;
+      text-transform: uppercase;
+      line-height: 2.4rem; 
+    }
+
+    p {
+      line-height:  1.6rem;
+    }
+  }
+
+  .ul-separate {
+    display: flex;
+    justify-content: space-between;
+
+    ul:last-child {
+      margin-top: -3.5rem;
+      margin-right: 2rem;
+    }
+  }
+}
+
+.footer {
+  .social-icons {
+    display: flex;
+    margin-bottom: 5px;
+  }
+
+  .social-icon {
+    margin-right: 1.2rem;
+    background-color: #212121;
+    width: 4.8rem;
+    height: 4.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      font-size: 1.7rem;
+      color: white;
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &:hover {
+      background-color: $primary-color;
+        
+      i {
+        color: white;
+      }
+    }
+  }
+}
+
+// Scroll Top Button
+#scroll-top {
+  height: 40px;
+  position: fixed;
+  right: 15px;
+  width: 40px;
+  z-index: 9999;
+  bottom: 0;
+  background-color: #43494e;
+  font-size: 16px;
+  color: #fff;
+  text-align: center;
+  line-height: 1;
+  padding: 11px 0;
+  visibility: hidden;
+  opacity: 0;
+  border-radius: $border-radius $border-radius 0 0;
+  transition: all .3s, margin-right 0s;
+  -webkit-transform: translateY(40px);
+  transform: translateY(40px);
+}
+
+#scroll-top:hover,
+#scroll-top:focus {
+  background-color: #3a4045;
+}
+
+#scroll-top.fixed {
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (max-width: 1199px) {
+  .footer .widget .ul-separate ul:last-child {
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 991px) {
+  .footer .widget .ul-separate {
+    flex-direction: column;
+  }
+
+  .footer .widget .ul-separate ul:last-child {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .footer-middle { 
+    .container>div {
+      >[class*='col-']:last-child {
+         display: flex;
+         align-items: center; 
+         justify-content: flex-start;
+      }
+    }
+  }
+
+  .footer-bottom .container {
+    flex-direction: column; 
+    align-items: baseline; 
+
+    p {
+      margin-bottom: 2rem;
+    }
+  }
+}

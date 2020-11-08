@@ -1,0 +1,161 @@
+// Home
+.product-default {
+  figure>a {
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      transition: all .3s;
+    }
+  }
+
+  &:hover figure a::after {
+    opacity: 1;
+  }
+
+  &.hidden-description {
+    .product-details {
+      bottom: 45px;
+    }
+  }
+}
+
+.home-slider,
+.boxed-slider {
+  @include lazy-anim();
+
+  margin-bottom: 2.7rem;
+}
+
+.owl-carousel-lazy.owl-carousel {
+  display: block;
+
+  .home-slide:first-child,
+  .category-slide:first-child,
+  .owl-item:first-child .home-slide,
+  .owl-item:first-child .category-slide {
+    display: -ms-flexbox;
+    display: flex;
+  }
+
+  &:not(.owl-loaded) > *:not(:first-child) {
+    display: none;
+  }
+}
+
+.home-slide,
+.category-slide {
+  align-items: center;
+  background-color: #eff3f5;
+  display: flex;
+  width: 100%;
+
+  .slide-bg {
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 2;
+  }
+}
+
+.home-slide {
+  @include aspect-ratio(871, 394);
+
+  a {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 2;
+  }
+}
+
+.home-slider.owl-carousel {
+  .owl-dots {
+    bottom: 3.4rem;
+    left: 3.4rem;
+    line-height: 0;
+    margin: 0;
+    position: absolute;
+  }
+
+  .owl-nav {
+    bottom: 2rem;
+    color: #2f2727;
+    display: none;
+    left: 2rem;
+    margin: 0;
+    position: absolute;
+    width: 3rem;
+  }
+}
+
+.owl-carousel .product:not(.product-sm) {
+  margin-bottom: 0;
+}
+
+.owl-nav-top.owl-carousel {
+  .owl-nav {
+    margin: 0;
+    position: absolute;
+    right: 0;
+    top: -35px;
+    width: 3rem;
+  }
+}
+
+.column-product-container {
+  .title {
+    margin-bottom: 1.6rem;
+  }
+
+  .product-image-container {
+    margin-bottom: 1.9rem;
+  }
+}
+
+.column-slider {
+  margin-bottom: 5.8rem;
+
+  &.owl-carousel {
+    .owl-dots {
+      border-bottom: 1px solid #eee;
+      margin: 0 !important;
+      padding-bottom: 1.9rem;
+      padding-top: 1.9rem;
+    }
+  }
+}
+
+@include mq('sm') {
+  .home-slider.owl-carousel .owl-nav {
+    display: block;
+  }
+}
+
+@media screen and (max-width: 1280px) and (min-width: 1200px) {
+  .home-slider {
+    height: 394px;
+  }
+}
+
+@include mq('lg') {
+  .sidebar-home {
+    margin-top: 0;
+  }
+
+  .is-stuck .menu-toggler {
+    pointer-events: none;
+  }
+}

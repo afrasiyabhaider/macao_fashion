@@ -1,0 +1,97 @@
+// Sticky Header
+@keyframes fixedHeader {
+  0% {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fixedHeader {
+  0% {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.sticky-header {
+  &.fixed {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    padding: 0;
+    background-color: white;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, .08);
+    z-index: 1040;
+    -webkit-animation-duration: .4s;
+    animation-duration: .4s;
+    -webkit-animation-name: fixedHeader;
+    animation-name: fixedHeader;
+
+    .menu {
+      > li {
+        > a {
+          padding-top: 1.95rem;
+          padding-bottom: 1.95rem;
+        }
+      }
+    }
+
+    .logo {
+      img {
+        width: auto;
+        max-height: 32px;
+      }
+    }
+
+    .cart-dropdown {
+      margin-top: 0;
+      margin-bottom: 0;
+
+      .dropdown-toggle {
+        height: 60px;
+      }
+
+      .dropdown-menu {
+        height: calc(100vh - 60px);
+      }
+    }
+  }
+
+  &.fixed-nav {
+    position: fixed;
+    top: 59px;
+    right: 0;
+    left: 0;
+    height: 38px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+    overflow: hidden;
+    z-index: 1039;
+    -webkit-animation-duration: .4s;
+    animation-duration: .4s;
+    -webkit-animation-name: fixedHeader;
+    animation-name: fixedHeader;
+
+    .container {
+      margin: 0 auto;
+      padding-left: 1.5rem;
+    }
+  }
+}
+
+@include mq('sm', 'max') {
+  .sticky-header.fixed-nav {
+    display: none;
+  }
+}

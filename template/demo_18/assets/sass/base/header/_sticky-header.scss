@@ -1,0 +1,126 @@
+// Sticky Header
+@-webkit-keyframes fixedHeader {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(-60px);
+  }
+
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+  }
+}
+
+@keyframes fixedHeader {
+  0% {
+    opacity: 0;
+    transform: translateY(-60px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sticky-header {
+  &.fixed {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    padding-top: .7rem;
+    padding-bottom: .7rem;
+    background-color: #f9f9fa;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+    z-index: 1040;
+    -webkit-animation-duration: .4s;
+    animation-duration: .4s;
+    -webkit-animation-name: fixedHeader;
+    animation-name: fixedHeader;
+
+    .menu {
+      > li {
+        > a {
+          padding-top: .35rem;
+          padding-bottom: .35rem;
+        }
+      }
+    }
+
+    .logo {
+      margin-right: 2.5rem;
+
+      img {
+        width: auto;
+        max-height: 32px;
+      }
+    }
+
+    .header-search {
+      .search-toggle {
+        padding-top: .4rem;
+        padding-bottom: .4rem;
+      }
+    }
+
+    .cart-dropdown {
+      .dropdown-toggle {
+        padding-right: 1.6rem;
+        line-height: 1;
+        &::before {
+            font-size: 2.4rem;
+        }
+
+        .cart-count {
+          right: 1rem;
+        }
+      }
+
+      .dropdown-menu {
+        padding-top: 1rem;
+      }
+
+      .dropdownmenu-wrapper::before {
+        right: 17px;
+      }
+
+      .dropdownmenu-wrapper::after {
+        right: 18px;
+      }
+    }
+  }
+
+  &.fixed-nav {
+    position: fixed;
+    top: 46px;
+    right: 0;
+    left: 0;
+    height: 38px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+    overflow: hidden;
+    z-index: 1039;
+    -webkit-animation-duration: .4s;
+    animation-duration: .4s;
+    -webkit-animation-name: fixedHeader;
+    animation-name: fixedHeader;
+
+    .container {
+      margin: 0 auto;
+      padding-left: 1.5rem;
+    }
+  }
+}
+
+@include mq('lg', 'max') {
+  .sticky-header.fixed-nav {
+    top: 0;
+  }
+}
+
+@include mq('sm', 'max') {
+  .sticky-header.fixed-nav {
+    display: none;
+  }
+}

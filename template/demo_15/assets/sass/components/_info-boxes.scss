@@ -1,0 +1,47 @@
+// Info Boxes
+.info-box {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  color: #646a70;
+  margin-bottom: 4rem;
+
+  i {
+    display: inline-block;
+    margin-top: 1.2rem;
+    color: #53514e;
+    font-size: 4.4rem;
+    margin-right: 2rem;
+    line-height: 1;
+    min-width: 4.4rem;
+    text-align: center;
+
+    &::before {
+      width: auto;
+      margin: 0;
+    }
+  }
+
+  h3 {
+    color: #141a1f;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    font: 500 1.8rem/1.1 $font-family;
+    letter-spacing: .05rem;
+    text-transform: uppercase;
+  }
+
+  p {
+    margin-bottom: 0;
+    font-size: 1.4rem;
+    font-weight: 400;
+    line-height: 1.8;
+    letter-spacing: .01rem;
+  }
+}
+
+@include mq('md') {
+}
+
+@media screen and (max-width: 767px) {
+}

@@ -1,0 +1,94 @@
+// About
+.owl-carousel .member {
+  margin-bottom: 0;
+}
+
+.about-section {
+  text-align: center;
+  padding-top: 2rem;
+  padding-bottom: 5rem;
+  border-bottom: 1px solid #e2e2e2;
+
+  p {
+    max-width: 960px;
+    margin-right: auto;
+    margin-left: auto;
+    font-size: 1.4rem;
+    line-height: 2;
+  }
+}
+
+.team-section {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+
+  .subtitle {
+    margin-bottom: 3.5rem;
+  }
+}
+
+.team-carousel {
+  .member {
+    margin-bottom: 0;
+  }
+
+  .member-title {
+    padding-bottom: 2rem;
+  }
+}
+
+.testimonials-section {
+  padding: 3rem 2rem;
+  background-color: #ededed;
+  margin-bottom: 3rem;
+
+  .subtitle {
+    margin-bottom: 3.5rem;
+  }
+}
+
+.partners-container {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.partners-carousel {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.partner {
+  display: block;
+  padding-top: .8rem;
+  padding-bottom: .8rem;
+  opacity: .6;
+
+  img {
+    display: block;
+    max-width: 100% !important;
+    width: auto !important;
+    height: auto;
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+
+@include mq('md') {
+  .testimonials-section {
+    padding: 5rem 7rem;
+  }
+}
+
+@include mq('lg') {
+  .partners-carousel {
+    padding-left: 70px;
+    padding-right: 70px;
+  }
+}
+
+@include mq('xl') {
+  .testimonials-section {
+    padding: 7rem 10rem;
+  }
+}

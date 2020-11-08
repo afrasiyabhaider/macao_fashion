@@ -1,0 +1,165 @@
+// Menu
+.menu,
+.menu * {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu {
+  @include clearfix;
+
+  margin-right : 3px;
+
+  li {
+    a {
+      display: block;
+      padding: .8rem 1.8rem;
+      transition : all .2s ease-out;
+      white-space: nowrap;
+      font : 400 1.28rem $font-family;
+      letter-spacing : -0.5px;
+      line-height : 18px;
+      color : #777;
+    }
+
+    &:hover,
+    &.show,
+    &.active {
+      > a {
+        background-color: #f4f4f4;
+      }
+
+      > ul,
+      > .megamenu {
+        display: block;
+      }
+    }
+  }
+
+  > li {
+    float: left;
+
+    padding-right: 0;
+    padding-left: 0;
+    margin : 0 1px 0 0;
+
+    &:last-of-type {
+      margin-right : 0;
+    }
+
+    > a {
+      font : 700 12px $font-family;
+      line-height: 20px;
+      letter-spacing: -0.5px;
+      color: $primary-color;
+      padding: 10px 16px 10px 16px;
+      text-transform : uppercase;
+    }
+
+    &:hover,
+    &.show,
+    &.active {
+      > a {
+        color: white;
+        background-color: $primary-color;
+      }
+    }
+  }
+
+  .megamenu {
+    display: none;
+    position: absolute;
+    z-index: 999;
+    background-color: #fff;
+    box-shadow: 0 29px 29px rgba(0, 0, 0, .1);
+    border-top : 3px solid $primary-color;
+    left: 10px;
+    width: calc(100% - 20px);
+    padding: 1rem;
+
+    .row.row-sm {
+      margin : 0;
+
+      [class*='col-'] {
+        padding: 15px 15px 10px;
+      }
+    }
+
+    .nolink {
+      color : #333;
+      font-weight : 600;
+      padding : 0 0 5px;
+    }
+
+    .submenu {
+      margin : 0;
+      padding-bottom : 5px;
+      border-top : none;
+      display: block;
+      position: static;
+      padding: 0;
+      box-shadow: none;
+
+      li {
+        padding : 0;
+
+        a {
+          margin-left : -8px;
+          padding : 7px 8px;
+          text-transform : none;
+        }
+
+        a:hover {
+          background-color : #f4f4f4;
+        }
+      }
+    }
+  }
+
+  &.sf-arrows {
+    .sf-with-ul,
+    .sf-with-ul li {
+      position: relative;
+    }
+
+    ul {
+      display: none;
+      position: absolute;
+      min-width: 200px;
+      padding : 5px 0;
+      border-top : 3px solid $primary-color;
+      top: 100%;
+      left: 0;
+      z-index: 99;
+      background-color: #fff;
+      box-shadow: 0 29px 29px rgba(0, 0, 0, .1);
+
+      ul {
+        top: -8px;
+        left: 100%;
+      }
+
+      .sf-with-ul {
+        &::after {
+          position : absolute;
+          right: 1rem;
+          content: '\e81a';
+          font-family : 'Porto';
+        }
+      }
+    }
+
+    > li.show {
+      > a.sf-with-ul::before {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+
+  .show > ul,
+  .show > .megamenu {
+    opacity: 1 !important;
+  }
+}

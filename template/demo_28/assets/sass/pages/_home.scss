@@ -1,0 +1,729 @@
+// Home
+
+.product-default {
+  img {
+    height: auto;
+    width: 100%;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+
+  .product-label {
+    padding: 5px;
+  }
+
+  .product-title { 
+    font-family: $second-font-family;
+  }
+
+  &.product-list {
+    margin-bottom: 4rem;
+  }
+
+  .category-wrap .btn-icon-wish {
+    margin: 0;
+  }
+}
+
+.mfp-arrow-right::after {
+  border-left-color: $primary-color;
+}
+
+.mfp-arrow-left::after {
+  border-right-color: $primary-color;
+}
+
+.owl-carousel-lazy.owl-carousel {
+  display: block;
+  margin-bottom: 2rem;
+}
+
+.home .owl-theme .owl-dots .owl-dot.active span {
+  background-color: $primary-color;
+  border-color: $primary-color;
+  width: 1.5rem;
+  border-radius: 15px;
+}
+
+.home .banner-cat.banner-left {
+  background-size: 56%;
+  background-position: 94% 47%;
+  height: 41.5rem;
+  padding: 0 8rem;
+
+  .banner-title {
+    margin-bottom: 1rem;
+  }
+
+  .banner-foot {
+    margin-left: 2px;
+  }
+
+  .banner-title {
+    margin-left: 2px;
+  }
+}
+
+.home .banner-cat.banner-right {
+  background-size: cover;
+  background-position: 100%;
+  height: 41.5rem;
+  padding: 0 4.3rem;
+
+  h2 {
+    font: 700 2.1rem $font-family;
+    color: $primary-color;
+    letter-spacing: -0.02em;
+    margin-bottom: 0;
+    margin-right: 2px;
+  }
+
+  .banner-foot {
+    font-size: 2rem;
+    color: #a2a2a2;
+    line-height: 24px;
+    margin: .6rem .2rem .8rem 0;
+  }
+
+  .banner-title {   
+    font: 700 3rem $font-family;
+    line-height: 3rem;
+    color: white;
+    margin-bottom: 1.8rem;
+    letter-spacing: -0.05em;
+  }
+
+  button {
+    background-color: white;
+    color: $secondary-color-dark;
+    padding: 1.5rem 3.3rem;
+  }
+
+  button:hover {
+    background-color: #d8d8d8;
+  }
+}
+
+.home .home-product-list {
+  display: flex;
+  align-items: center;
+  margin: 0;
+
+  figure {
+    width: 45%;
+    height: auto;
+    background-color: white;
+    margin: 4rem 2rem 4rem 0;
+    padding: 0;
+  }
+
+  &:hover figure {
+    box-shadow: none;
+  }
+}
+
+.home-banner-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 2.3rem auto;
+
+  .product-default {
+    border: 1px solid #f4f4f4;
+    background-color: white;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    padding: 2rem;
+
+    figure {
+      flex: 1;
+      margin-right: 1rem;
+      margin-bottom: 0;
+    }
+    .product-details {
+      flex: 1;
+    }
+
+    &:hover figure {
+      box-shadow: none;
+    }
+  }
+}
+
+.home .home-banner {
+  padding: .8rem 4rem;
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+
+  .ads {
+    border: none;
+    padding: 0;
+    flex-wrap: wrap;
+  }
+
+  .price-off {
+    padding: 0.5rem 1.5rem;
+    margin-left: -.3rem;
+    margin-right: 1.5rem;
+
+    span {
+      font: 600 2rem $font-family; 
+    }
+  }
+
+  h2 {
+    text-transform: uppercase;
+    text-align: center;
+    color: white;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-right: 2rem;
+    margin-bottom: 0;
+  }
+
+  h3 {
+    margin-bottom: 0;
+    font: 500 1.3rem $font-family;
+    letter-spacing: -0.02em;
+    color: white;
+    opacity: 0.7;
+  }
+
+  button {
+    margin: 1rem 0;
+    padding: 1.3rem 3.2rem;
+    font: 700 1.4rem $font-family;
+    color: $secondary-color-dark;
+    letter-spacing: 0.005em;
+    background-color: white;
+
+    &:hover {
+      background-color: #d8d8d8;
+    }
+  }
+}
+
+#carbrandlist {
+  padding: 2rem;
+  margin-top: 1.8rem;
+  margin-bottom: 4rem;
+
+  .owl-stage button {
+    background-color: white;
+    font: 700 1.3rem $font-family;
+    letter-spacing: -0.015em;
+    color: $secondary-color-dark;
+    padding: 1.1rem 2.7rem;
+    border: 1px solid #e7e7e7;
+    transition: all 0.5s ease-out;
+    min-width: 11.5rem;
+
+    &:hover {
+      background-color: $primary-color;
+    }
+  }
+}
+
+.home .ads {
+  display: flex;
+  border: 1px solid white;
+  align-items: center;
+  justify-content: center;
+  padding: 1.8rem 0;
+
+  .ads-icon {
+    font-size: 3.4rem;
+    color: $primary-color;
+  }
+
+  .ads-info {
+    margin-left: .5rem;
+  }
+
+  .ads-info h3{
+    font-size: 1.5rem;
+  }
+
+  .ads-info span {
+    font-size: 1.3rem;
+  }
+}
+
+#trustbrands {
+  padding-top: .5rem;
+}
+
+.category-books {
+  padding: 5.5rem 0;
+
+  .home-banner {
+    padding: 0;
+    display: flex;
+    align-items: center;
+
+    img {
+      margin: 0;
+    }
+  }
+
+  .banner-content {
+    position: absolute;
+    right: 10%;
+
+    h2 {
+      font: 600 1.9rem "Poppins";
+      letter-spacing: -0.03em;
+      color: white;
+      padding: 0;
+    }
+    span {
+      display: block;
+      font: 500 1.4rem "Poppins";
+      letter-spacing: .01em;
+      margin-bottom: 1.5rem;
+    }
+    button {
+      font: 600 1.2rem "Poppins";
+      letter-spacing: .01em;
+      padding: 1rem 1.5rem;
+    }
+    .btn-primary {
+      border: none;
+    }
+  }
+}
+
+.home-banner-middle {
+  height: 200px;
+  background-color: $primary-color;
+  background-image: url('../images/banner/home-banner-book.png');
+  background-repeat: no-repeat;
+  background-position: 110% 55%;
+  padding: 0;
+  display: flex;
+
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  span {
+    color: white;
+  }
+
+  h2 {
+    padding: 0;
+    color: white;
+    font-size: 3.2rem;
+    text-align: center;
+  }
+
+  p {
+    font: 500 1.2rem "Poppins";
+    letter-spacing: -.01em;
+    color: white;
+    text-align: right;
+  }
+
+  button {
+    background-color: #343437;
+    padding: 2rem 5.5rem;
+    border: none;
+
+    &:hover {
+      background-color: $primary-color-dark;
+    }
+  }
+}
+
+#topseller {
+  margin-top: 3.3rem;
+}
+
+.has-bod-tb {
+  border-top: 1px solid #e7e7e7;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.section-title {
+  color: $primary-color-dark;
+  border-bottom: 1px solid #e7e7e7;
+  display: flex;
+  padding-bottom: .8rem;
+  justify-content: space-between;
+  align-items: center;
+
+  h2 {
+    font: 700 1.6rem "Poppins";
+    margin-bottom: 0;
+  }
+
+  a {
+    font: 600 1.2rem "Poppins";
+    letter-spacing: 0.01em;
+  }
+
+  a:hover {
+    color: $primary-color;
+  }
+}
+
+.bg-white {
+  background-color: white;
+}
+
+.brand-slider {
+  padding: 4rem 0;
+}
+
+.brand-slider .owl-item img {
+  width: auto !important;
+  margin: 0 auto;
+}
+
+.product-default.post {
+  background-color: transparent;
+
+  &:hover figure{
+    box-shadow: none;
+    
+    &::after {
+      opacity: .2;
+    }
+  }
+
+  .product-label {
+    font: 400 1.2rem $font-family;
+    letter-spacing: 0.05em;
+    line-height: 5px;
+    padding: 0.8rem 1.2rem 1.8rem;
+    background-color: $secondary-color-dark;
+
+    .date-day {
+      font: 600 1.8rem $font-family;
+      display: block;
+    }
+  }
+
+  figure {
+    position: relative;
+    padding: 0;
+    margin-bottom: 1.5rem;
+
+    &::after {
+      position: absolute;
+      background-color: white;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      transition: all .3s ease-out;
+      content: '';
+    }
+  }
+
+  .product-title {
+    font: 600 1.8rem $font-family;
+    letter-spacing: -0.01em;
+    color: #2b2b2d;
+    margin-bottom: 1rem;
+  }
+
+  .product-description {
+    font: 400 1.3rem $font-family;
+    line-height: 2rem;
+
+    a {
+      color: $primary-color;
+      border-bottom: 1px solid $primary-color;
+      margin-left: 2px;
+    }
+  }
+
+  a:hover {
+    color: #ffa500;
+    cursor: pointer;
+    border-bottom-color: #ffa500;
+  }
+}
+
+.home .widget-newsletter {
+  border: 1px solid $primary-color;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+  align-items: center;
+
+  .row {
+    align-items: center;
+  }
+
+  .ads {
+    padding: 1.3rem 0 1.3rem 4.3rem;
+    justify-content:  normal;
+    border: none;
+  }
+
+  .ads-icon {
+    font-size: 4.5rem;
+    margin-top: 0;
+  }
+
+  .ads-info {
+    margin-left: 2.5rem;
+  }
+
+  .ads-info h2 {
+    letter-spacing: -0.01em;
+  }
+
+  .ads-info span {
+    letter-spacing: .005em;
+  }
+
+  form {
+    display: flex;
+    width: 100%;
+    height: 48px;
+    max-width: 100%;
+    margin: 0 1.5rem 0 0;
+  }
+
+  input {
+    margin-bottom: 0;
+    font: italic 1.2rem "Poppins";
+    color: #999;
+    background-color: white;
+    border-radius: 30px 0 0 30px;
+    height: 48px;
+    padding: 2rem;
+    max-width: 100%;
+  }
+
+  button {
+    font: 600 1.4rem "Poppins";
+    letter-spacing: 0.005em;
+    color: white;
+    background-color: $secondary-color-dark;
+    border-radius: 0 30px 30px 0;
+    min-width: 13.1rem;
+
+    &:hover {
+      background-color: $primary-color-dark;
+    }
+  }
+}
+
+.modal#addCartModal {
+  width: 340px;
+  top: calc((100% - 320px) / 2);
+  left: calc((100% - 320px) / 2);
+  padding: 10px !important;
+  overflow: hidden;
+
+  .modal-dialog {
+    margin: 0;
+  }
+
+  .modal-content {
+    margin: 0;
+    border: none;
+    box-shadow: none;
+  }
+}
+
+.add-cart-box {
+  padding: 19px 10px 20px !important;
+  border-top: 4px solid $primary-color;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+
+  h4 {
+    font-weight: 500;
+    color: $primary-color;
+    margin-bottom: 1.8rem;
+  }
+
+  img {
+    margin: 0 auto 10px;
+    width: 120px;
+  }
+
+  .btn-actions {
+    display: flex;
+    justify-content: space-around;
+
+    .btn-primary {
+      width: 140px;
+      padding: 8px 0;
+      font: 500 16px $font-family;
+      border: none;
+      cursor: pointer;
+
+      &:focus,
+      &:active,
+      &:active:focus {
+        outline: none;
+        border: none;
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+.modal-backdrop.show {
+  opacity: 0.7;
+}
+
+.modal-backdrop.fade {
+  transition: opacity .3s linear;
+}
+
+@include mq('sm') {
+}
+
+@include mq('md') {
+}
+
+@include mq('lg') {
+  .home-top-container {
+    .row {
+      margin-left: -5px;
+      margin-right: -5px;
+    }
+    
+    .col-lg-4,
+    .col-lg-8 {
+      padding-right: 5px;
+      padding-left: 5px;
+    }
+
+    .col-lg-8 {
+      -ms-flex: 0 0 66.1%;
+      flex: 0 0 66.1%;
+      max-width: 66.1%;
+    }
+
+    .col-lg-4 {
+      -ms-flex: 0 0 33.9%;
+      flex: 0 0 33.9%;
+      max-width: 33.9%;
+    }
+  }
+
+  .sidebar-home {
+    .widget-block {
+      p {
+        max-width: 230px;
+      }
+    }
+    .entry-content {
+
+      p {
+        max-width: 220px;
+      }
+    }
+  }
+
+  .categories-container {
+    padding-top: 7.2rem;
+    padding-bottom: 7.2rem;
+  }
+
+  .categories-carousel {
+    padding-left: 100px;
+    padding-right: 100px;
+  }
+}
+
+@media (max-width: 575px) {
+  .home {
+    margin-top: -2rem;
+  }
+
+  .category-books .home-banner{
+    margin-bottom: 2rem;
+
+    img {
+      width: 100%;
+    }
+  }
+
+  .home-banner-middle button{
+    padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 510px) {
+  .home .banner-cat.banner-left {
+    padding: 0 2rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .col-md-0 {
+    display: none;
+  }
+
+  .widget-newsletter .col-xl-5.ads {
+    padding-right: 4.3rem;
+  }
+
+  .widget-newsletter .col-xl-7 {
+    padding: 0 2rem !important;
+
+    form {
+      max-width: calc(100% - 2rem);
+      margin: 0 1rem .5rem;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .home .home-banner {
+    justify-content: center;
+    padding: 2rem 4rem 1rem;
+  }
+}
+
+@media (max-width: 563px) {
+  .home .home-banner .price-off {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 428px) {
+  .home .ads {
+    flex-wrap: wrap;
+
+    .ads-icon {
+      margin-bottom: .3rem;
+    }
+
+    .ads-info {
+      text-align: center;
+
+      h2 {
+        margin-bottom: .2rem;
+      }
+    }
+  }
+
+  .home .widget-newsletter .ads {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 1199px) {
+  #carbrandlist {
+    padding-bottom: .5rem;
+  }
+}

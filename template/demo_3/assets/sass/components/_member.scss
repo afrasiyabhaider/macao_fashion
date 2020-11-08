@@ -1,0 +1,25 @@
+// Member
+.member {
+  margin-bottom: 2.8rem;
+  transition: all .3s ease;
+  background-color: #fff;
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  &:hover {
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, .3);
+  }
+}
+
+.member-title {
+  margin: 0;
+  padding: 3rem 0;
+  color: #111;
+  font: 400 1.6rem / 1 $second-font-family;
+  text-align: center;
+  text-transform: uppercase;
+}

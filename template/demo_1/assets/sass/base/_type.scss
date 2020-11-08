@@ -1,0 +1,105 @@
+// Type
+h1, .h1,
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+  margin-bottom: 1.8rem;
+  color: $headings-text;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+h1, .h1 {
+  font-size: 3.6rem;
+}
+
+h2, .h2 {
+  font-size: 2.2rem;
+  font-weight: 400;
+}
+
+h3, .h3 {
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+h4, .h4 {
+  font-size: 1.4rem;
+}
+
+h5, .h5 {
+  font-size: 1.2rem;
+}
+
+h6, .h6 {
+  font-size: 1rem;
+}
+
+a {
+  transition: all .3s;
+  color: $primary-color;
+  text-decoration: none;
+}
+
+a:hover,
+a:focus {
+  color: $primary-color;
+  text-decoration: none;
+}
+
+.heading {
+  margin-bottom: 3rem;
+  color: #000;
+
+  .title {
+    margin-bottom: 1.6rem;
+  }
+
+  p {
+    letter-spacing: -.015em;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.light-title {
+  margin-bottom: 2rem;
+  font-weight: 300;
+}
+
+.text-primary {
+  color: $primary-color !important;
+}
+
+@include mq('md') {
+  h1, .h1 {
+    font-size: 4.5rem;
+  }
+
+  h2, .h2 {
+    font-size: 2.5rem;
+  }
+
+  .heading {
+    margin-bottom: 4rem;
+  }
+}
+
+@include mq('lg') {
+  h1, .h1 {
+    font-size: 5rem;
+  }
+
+  h2, .h2 {
+    font-size: 3rem;
+  }
+
+  .heading {
+    margin-bottom: 5rem;
+  }
+}

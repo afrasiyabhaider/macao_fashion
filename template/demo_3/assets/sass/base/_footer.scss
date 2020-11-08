@@ -1,0 +1,278 @@
+// Footer
+.footer {
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+  padding-top: 3rem;
+  background-color: #1d1d1d;
+  color: #90969a;
+  font-size: $footer-font-size;
+  line-height: 1.4;
+
+  .social-icon {
+    width: 4.8rem;
+    height: 4.8rem;
+    margin-bottom: 0;
+    background-color: #2c2c2c;
+    color: #fff;
+    font-size: 1.8rem;
+
+    + .social-icon {
+      margin-left: .5rem;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: $primary-color;
+      color: #fff;
+    }
+  }
+}
+
+.footer-middle {
+  padding: 4rem 0 2.5rem;
+}
+
+.footer .widget-title {
+  margin-bottom: 1.9rem;
+  color: #fff;
+  font: 400 1.6rem / 1.1 $second-font-family;
+  letter-spacing: .075em;
+  text-transform: uppercase;
+}
+
+.footer-top {
+  padding-top: 1.8rem;
+  border-bottom: 1px solid #2c2c2c;
+
+  .widget-title {
+    margin-bottom: 1.3rem;
+  }
+}
+
+.footer .widget {
+  margin-bottom: 3.5rem;
+}
+
+.footer .links {
+  margin-bottom: 0;
+}
+
+.footer .links li {
+  position: relative;
+  margin-bottom: .8rem;
+}
+
+.footer a {
+  color: inherit;
+}
+
+.footer a:hover,
+.footer a:focus {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.footer .widget-social {
+  @include clearfix;
+  margin-bottom: 3rem;
+}
+
+.contact-info {
+  margin-bottom: 0;
+}
+
+.contact-info li {
+  position: relative;
+  margin-bottom: 1.3rem;
+  line-height: 1.35;
+}
+
+.contact-info-label {
+  display: block;
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.widget-newsletter p {
+  max-width: 360px;
+  margin-top: -.5rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.widget-newsletter form {
+  position: relative;
+  max-width: 370px;
+  margin-bottom: 0;
+}
+
+.widget-newsletter .form-control {
+  height: 5rem;
+  margin-bottom: 1rem;
+  padding: 1.45rem 13.7rem 1.45rem 2rem;
+  border: 1px solid #2c2c2c;
+  border-radius: 0;
+  background-color: #2c2c2c;
+  color: #6b7074;
+  font-size: 1.4rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.widget-newsletter .form-control:focus {
+  border-color: #2c2c2c;
+  background-color: #1d1d1d;
+  color: #6b7074;
+}
+
+.widget-newsletter .form-control::-webkit-input-placeholder {
+  color: #6b7074;
+}
+
+.widget-newsletter .form-control:-ms-input-placeholder {
+  color: #6b7074;
+}
+
+.widget-newsletter .form-control::-ms-input-placeholder {
+  color: #6b7074;
+}
+
+.widget-newsletter .form-control::placeholder {
+  color: #6b7074;
+}
+
+.widget-newsletter .btn {
+  display: inline-block;
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  padding: 1.6rem 1.9rem;
+  border-radius: 0;
+  border-left-color: #3b3b3b;
+  background-color: #2c2c2c;
+  color: #fff;
+  font-family: $font-family;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.widget-newsletter .btn:hover,
+.widget-newsletter .btn:focus {
+  background-color: #1e1e1e;
+  color: #fff;
+}
+
+.footer-bottom {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -ms-flex-align: center;
+  align-items: center;
+  padding-top: 2.1rem;
+  padding-bottom: 2.1rem;
+  border-top: 1px solid #3d3d38;
+}
+
+.footer-copyright {
+  margin-bottom: 1.2rem;
+}
+
+.footer-payments {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+// Scroll Top Button
+#scroll-top {
+  position: fixed;
+  right: 15px;
+  bottom: 0;
+  width: 40px;
+  height: 40px;
+  padding: 11px 0;
+  -webkit-transform: translateY(40px);
+  transform: translateY(40px);
+  transition: all .3s;
+  border-radius: $border-radius;
+  background-color: #404040;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 9999;
+}
+
+#scroll-top:hover,
+#scroll-top:focus {
+  background-color: #555;
+}
+
+#scroll-top.fixed {
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+@media screen and (min-width: 768px) {
+  .footer {
+    padding-top: 4rem;
+  }
+
+  .footer .widget-social {
+    .social-icons {
+      margin-bottom: 0;
+      float: right;
+    }
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .footer .widget {
+    margin-bottom: 4rem;
+  }
+
+  .footer-top {
+    padding-top: 2.8rem;
+  }
+
+  .footer-top .widget {
+    margin-bottom: 1.3rem;
+  }
+
+  .footer-middle {
+    padding-top: 5rem;
+    padding-bottom: 1.9rem;
+  }
+
+  .footer-bottom {
+    flex-direction: row;
+  }
+
+  .footer-copyright {
+    margin-bottom: 0;
+  }
+
+  .footer-payments {
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: auto;
+  }
+
+  .footer .social-icons {
+    margin-left: auto;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .footer .footer-top .widget {
+    margin-bottom: 2rem;
+  }
+}

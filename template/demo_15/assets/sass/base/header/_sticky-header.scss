@@ -1,0 +1,125 @@
+// Sticky Header
+@-webkit-keyframes fixedHeader {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(-60px);
+  }
+
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+  }
+}
+
+@keyframes fixedHeader {
+  0% {
+    opacity: 0;
+    transform: translateY(-60px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sticky-header {
+  &.fixed {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    padding-top: .7rem;
+    padding-bottom: .7rem;
+    background-color: #dfdedb;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, .08);
+    z-index: 1040;
+    -webkit-animation-duration: .4s;
+    animation-duration: .4s;
+    -webkit-animation-name: fixedHeader;
+    animation-name: fixedHeader;
+
+    .main-nav {
+      width: auto;
+      background-color: transparent;
+      margin-right: 3rem;
+    }
+
+    .header-contact {
+      margin-right: 3.3rem;
+    }
+
+    .header-dropdowns {
+      margin-right: 3rem;
+    }
+
+    .menu {
+      > li {
+        > a {
+          padding-top: .55rem;
+          padding-bottom: .55rem;
+        }
+      }
+    }
+
+    .logo {
+      margin-right: 2.5rem;
+
+      img {
+        width: auto;
+        max-height: 32px;
+      }
+    }
+
+    .cart-dropdown {
+      .dropdown-toggle {
+        padding-right: 1.6rem;
+        &::before {
+            font-size: 2.4rem;
+        }
+
+        .cart-count {
+          right: .8rem;
+          min-width: 1.6rem;
+          height: 1.6rem;
+          padding-bottom: 0;
+        }
+      }
+
+      .dropdownmenu-wrapper::before {
+        right: 17px;
+      }
+
+      .dropdownmenu-wrapper::after {
+        right: 18px;
+      }
+    }
+  }
+
+  &.fixed-nav {
+    position: fixed;
+    top: 50px;
+    right: 0;
+    left: 0;
+    height: 38px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+    overflow: hidden;
+    z-index: 1039;
+    -webkit-animation-duration: .4s;
+    animation-duration: .4s;
+    -webkit-animation-name: fixedHeader;
+    animation-name: fixedHeader;
+
+    .container {
+      margin: 0 auto;
+      padding-left: 1.5rem;
+    }
+  }
+}
+
+@include mq('sm', 'max') {
+  .sticky-header.fixed-nav {
+    display: none;
+  }
+}

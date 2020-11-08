@@ -1,0 +1,126 @@
+// About
+.about-section {
+  padding-bottom: 6rem;
+
+  p {
+    line-height: 2;
+  }
+}
+
+.team-section {
+  padding: 5rem 0;
+  background-color: #efefef;
+}
+
+.history-section {
+  padding: 5rem 0;
+
+  .title {
+    margin-bottom: 2.5rem;
+  }
+}
+
+.history-item {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  margin:  0 0 2rem;
+}
+
+.history-image {
+  position: relative;
+  -ms-flex: 0 0 197px;
+  flex: 0 0 197px;
+  -ms-flex-item-align: center;
+  align-self: center;
+  max-width: 197px;
+  margin: 0;
+  padding-bottom: 1rem;
+
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  span {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    color: #fff;
+    font-family: $second-font-family;
+    font-size: 5.4rem;
+    font-weight: 300;
+    line-height: 1;
+    text-align: center;
+  }
+}
+
+.history-content {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  -ms-flex-align: center;
+  align-items: center;
+  margin: 0;
+  padding: 3rem 2rem;
+  border: 1px solid #dedede;
+  color: #676a6d;
+  line-height: 2;
+
+  p {
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+@include mq('sm') {
+  .history-item {
+    flex-direction: row;
+  }
+
+  .history-image {
+    align-self: strech;
+    padding-bottom: 0;
+  }
+
+  .history-content {
+    padding-right: 2.5rem;
+    padding-left: 2.5rem;
+    border-left: none;
+  }
+}
+
+@include mq('lg') {
+  .about-section {
+    padding-bottom: 5rem;
+  }
+
+  .team-section {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+
+  .history-section {
+    padding-top: 5.7rem;
+    padding-bottom: 7.5rem;
+  }
+
+  .history-content {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+}
+
+@include mq('xl') {
+  .history-content {
+    padding-top: 4.5rem;
+    padding-bottom: 4.5rem;
+  }
+}

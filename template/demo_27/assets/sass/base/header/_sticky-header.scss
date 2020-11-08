@@ -1,0 +1,138 @@
+// Sticky Header
+@-webkit-keyframes fixedHeader {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(-60px);
+  }
+
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+  }
+}
+
+@keyframes fixedHeader {
+  0% {
+    opacity: 0;
+    transform: translateY(-60px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sticky-header {
+  &:not(.fixed) {
+    margin-right: 0 !important;
+  }
+  
+  &.fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 0 3rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+    z-index: 1040;
+    -webkit-animation-duration: .4s;
+    animation-duration: .4s;
+    -webkit-animation-name: fixedHeader;
+    animation-name: fixedHeader;
+
+    .porto-icon {
+      color: black;
+    }
+
+    .cart-dropdown a::before{
+      color: black;
+    }
+
+    .main-nav {
+      width: auto;
+      background-color: transparent;
+    }
+
+    .menu {
+      > li.float-right {
+        > a {
+          background-color: transparent;
+        }
+      }
+
+      > li:hover,
+      > li.show,
+      > li.active {
+        > a {
+          color: $secondary-color;
+        }
+      }
+    }
+
+    .logo,
+    .cart-dropdown {
+      display: block;
+    }
+  }
+
+  &.fixed-nav {
+    position: fixed;
+    top: 100px;
+    right: 0;
+    left: 0;
+    margin: 0 3rem;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+    overflow: hidden;
+    z-index: 1039;
+    -webkit-animation-duration: .4s;
+    animation-duration: .4s;
+    -webkit-animation-name: fixedHeader;
+    animation-name: fixedHeader;
+
+    .container {
+      margin: 0 auto;
+      padding-left: 1.5rem;
+    }
+  }
+}
+
+.scroll {
+  margin-right: 17px;
+}
+
+@media screen and (max-width: 1100px) {
+  .sticky-header.fixed-nav {
+    top: 83px;
+  }  
+}
+
+@include mq('lg', 'max') {
+  .sticky-header.fixed-nav {
+    top: 68px;
+  }
+
+  .sticky-header.fixed,
+  .sticky-header.fixed-nav {
+    margin: 0 18px;
+  }
+}
+
+@include mq('sm', 'max') {
+  .sticky-header.fixed-nav {
+    top: 0;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .sticky-header.fixed-nav {
+    display: none;
+  }
+}
+
+@include mq('sm', 'max') {
+  .sticky-header.fixed {
+    display: none;
+  }
+}

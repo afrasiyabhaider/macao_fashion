@@ -1,0 +1,105 @@
+// Sticky Header
+@-webkit-keyframes fixedHeader {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(-60px);
+  }
+
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+  }
+}
+
+@keyframes fixedHeader {
+  0% {
+    opacity: 0;
+    transform: translateY(-60px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sticky-header {
+  &.fixed {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+    z-index: 1040;
+    -webkit-animation-duration: .4s;
+    animation-duration: .4s;
+    -webkit-animation-name: fixedHeader;
+    animation-name: fixedHeader;
+
+    .header-top {
+      display : none;
+    }
+
+    .header-bottom {
+      margin : 0;
+    }
+
+    .header-left,
+    .header-right {
+      padding-top : 9px;
+      padding-bottom : 9px;
+    }
+
+    .logo {
+      transform : scale(0.8);
+      margin-left : -10px;
+    }
+  }
+
+  &.fixed-nav {
+    position: fixed;
+    top: 46px;
+    right: 0;
+    left: 0;
+    height: 38px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+    overflow: hidden;
+    z-index: 1039;
+    -webkit-animation-duration: .4s;
+    animation-duration: .4s;
+    -webkit-animation-name: fixedHeader;
+    animation-name: fixedHeader;
+
+    .container {
+      margin: 0 auto;
+      padding-left: 1.5rem;
+    }
+  }
+
+  .buy-effect a {
+    padding-left : .5rem;
+  }
+}
+
+.sticky-header.scroll {
+  margin-right : 17px;
+}
+
+@include mq('lg', 'max') {
+  .sticky-header.fixed-nav {
+    top: 0;
+  }
+}
+
+@include mq('sm', 'max') {
+  .sticky-header.fixed-nav {
+    display: none;
+  }
+}
+
+@include mq('xl', 'max') {
+  .sticky-header.fixed .header-left ul {
+    display : none;
+  }
+}

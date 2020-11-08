@@ -1,0 +1,51 @@
+// Breadcrumb
+.breadcrumb-nav {
+  margin-bottom: 0;
+
+  .container {
+    padding: 0;
+  }
+}
+
+.breadcrumb {
+  background-color: #fff;
+  border-radius: 0;
+  margin-bottom: 0;
+  margin-top: 0;
+  padding: 1.35rem 1.5rem 1.15rem;
+}
+
+.breadcrumb-item {
+  font: 400 1.2rem / 1.4 $font-family;
+  letter-spacing: .025rem;
+  text-transform: capitalize;
+
+  i {
+    font-size: 1.3rem;
+    margin-top: -.2rem;
+    vertical-align: top;
+
+    &::before {
+      margin: 0;
+    }
+  }
+}
+
+.breadcrumb-item+.breadcrumb-item {
+  padding-left: 1rem;
+}
+
+.breadcrumb-item+.breadcrumb-item::before {
+  color: $headings-text;
+  content: '\e81a';
+  font-family: 'porto';
+  font-size: 1.3rem;
+  margin-top: -.3rem;
+  padding-right: 1rem;
+  vertical-align: middle;
+}
+
+.breadcrumb-item a,
+.breadcrumb-item.active {
+  color: $headings-text;
+}

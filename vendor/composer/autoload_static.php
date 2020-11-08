@@ -80,12 +80,12 @@ class ComposerStaticInitd25fe27e03ec6c501754f7b68aafaf3d
         'aa53dcba601214d17ad405b7c291b7e8' => __DIR__ . '/..' . '/markbaker/matrix/classes/src/operations/multiply.php',
         '75c79eb1b25749b05a47976f32b0d8a2' => __DIR__ . '/..' . '/markbaker/matrix/classes/src/operations/divideby.php',
         '6ab8ad87a734f276a6bcd5a0fe1289be' => __DIR__ . '/..' . '/markbaker/matrix/classes/src/operations/divideinto.php',
-        '0b47d6d4a00ca9112ba3953b49e7c9a4' => __DIR__ . '/..' . '/yajra/laravel-datatables-oracle/src/helper.php',
-        'f18cc91337d49233e5754e93f3ed9ec3' => __DIR__ . '/..' . '/laravelcollective/html/src/helpers.php',
         '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
         'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
+        '0b47d6d4a00ca9112ba3953b49e7c9a4' => __DIR__ . '/..' . '/yajra/laravel-datatables-oracle/src/helper.php',
         'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
+        'f18cc91337d49233e5754e93f3ed9ec3' => __DIR__ . '/..' . '/laravelcollective/html/src/helpers.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
         'e91d0dc994644828154ae2387ede1ca8' => __DIR__ . '/..' . '/spatie/string/src/string_functions.php',
@@ -94,6 +94,7 @@ class ComposerStaticInitd25fe27e03ec6c501754f7b68aafaf3d
         '72b1e3f4a2af9b30b3f137b3ec2057fc' => __DIR__ . '/..' . '/spatie/laravel-activitylog/src/helpers.php',
         '0c3c22e27afa83be19b4c938f4c6e9ea' => __DIR__ . '/..' . '/spatie/laravel-backup/src/Helpers/functions.php',
         '377b22b161c09ed6e5152de788ca020a' => __DIR__ . '/..' . '/spatie/laravel-permission/src/helpers.php',
+        '6b34c85f7b1ad6faa15aa12109e030f2' => __DIR__ . '/..' . '/realrashid/sweet-alert/src/functions.php',
         '6d394c3a532652dafb4dd296ba6a3f0b' => __DIR__ . '/../..' . '/app/Http/helpers.php',
     );
 
@@ -172,6 +173,7 @@ class ComposerStaticInitd25fe27e03ec6c501754f7b68aafaf3d
         ),
         'R' => 
         array (
+            'RealRashid\\SweetAlert\\' => 22,
             'Razorpay\\Tests\\' => 15,
             'Razorpay\\Api\\' => 13,
             'Ramsey\\Uuid\\' => 12,
@@ -459,6 +461,10 @@ class ComposerStaticInitd25fe27e03ec6c501754f7b68aafaf3d
         'Spatie\\Activitylog\\' => 
         array (
             0 => __DIR__ . '/..' . '/spatie/laravel-activitylog/src',
+        ),
+        'RealRashid\\SweetAlert\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/realrashid/sweet-alert/src',
         ),
         'Razorpay\\Tests\\' => 
         array (
@@ -904,7 +910,6 @@ class ComposerStaticInitd25fe27e03ec6c501754f7b68aafaf3d
         'App\\Http\\Controllers\\SellPosController' => __DIR__ . '/../..' . '/app/Http/Controllers/SellPosController.php',
         'App\\Http\\Controllers\\SellReturnController' => __DIR__ . '/../..' . '/app/Http/Controllers/SellReturnController.php',
         'App\\Http\\Controllers\\SellingPriceGroupController' => __DIR__ . '/../..' . '/app/Http/Controllers/SellingPriceGroupController.php',
-        'App\\Http\\Controllers\\SiteController' => __DIR__ . '/../..' . '/app/Http/Controllers/SiteController.php',
         'App\\Http\\Controllers\\SizeController' => __DIR__ . '/../..' . '/app/Http/Controllers/SizeController.php',
         'App\\Http\\Controllers\\StockAdjustmentController' => __DIR__ . '/../..' . '/app/Http/Controllers/StockAdjustmentController.php',
         'App\\Http\\Controllers\\StockTransferController' => __DIR__ . '/../..' . '/app/Http/Controllers/StockTransferController.php',
@@ -916,6 +921,8 @@ class ComposerStaticInitd25fe27e03ec6c501754f7b68aafaf3d
         'App\\Http\\Controllers\\VariationTemplateController' => __DIR__ . '/../..' . '/app/Http/Controllers/VariationTemplateController.php',
         'App\\Http\\Controllers\\WebsiteController' => __DIR__ . '/../..' . '/app/Http/Controllers/WebsiteController.php',
         'App\\Http\\Controllers\\WebsiteProductsController' => __DIR__ . '/../..' . '/app/Http/Controllers/WebsiteProductsController.php',
+        'App\\Http\\Controllers\\website\\CartController' => __DIR__ . '/../..' . '/app/Http/Controllers/website/CartController.php',
+        'App\\Http\\Controllers\\website\\SiteController' => __DIR__ . '/../..' . '/app/Http/Controllers/website/SiteController.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Middleware\\EncryptCookies' => __DIR__ . '/../..' . '/app/Http/Middleware/EncryptCookies.php',
         'App\\Http\\Middleware\\IsInstalled' => __DIR__ . '/../..' . '/app/Http/Middleware/IsInstalled.php',
@@ -4764,6 +4771,13 @@ class ComposerStaticInitd25fe27e03ec6c501754f7b68aafaf3d
         'Razorpay\\Api\\Utility' => __DIR__ . '/..' . '/razorpay/razorpay/src/Utility.php',
         'Razorpay\\Api\\VirtualAccount' => __DIR__ . '/..' . '/razorpay/razorpay/src/VirtualAccount.php',
         'Razorpay\\Tests\\RazorpayTest' => __DIR__ . '/..' . '/razorpay/razorpay/tests/RazorpayTest.php',
+        'RealRashid\\SweetAlert\\Console\\PublishCommand' => __DIR__ . '/..' . '/realrashid/sweet-alert/src/Console/PublishCommand.php',
+        'RealRashid\\SweetAlert\\Facades\\Alert' => __DIR__ . '/..' . '/realrashid/sweet-alert/src/Facades/Alert.php',
+        'RealRashid\\SweetAlert\\Storage\\AlertSessionStore' => __DIR__ . '/..' . '/realrashid/sweet-alert/src/Storage/AlertSessionStore.php',
+        'RealRashid\\SweetAlert\\Storage\\SessionStore' => __DIR__ . '/..' . '/realrashid/sweet-alert/src/Storage/SessionStore.php',
+        'RealRashid\\SweetAlert\\SweetAlertServiceProvider' => __DIR__ . '/..' . '/realrashid/sweet-alert/src/SweetAlertServiceProvider.php',
+        'RealRashid\\SweetAlert\\ToSweetAlert' => __DIR__ . '/..' . '/realrashid/sweet-alert/src/ToSweetAlert.php',
+        'RealRashid\\SweetAlert\\Toaster' => __DIR__ . '/..' . '/realrashid/sweet-alert/src/Toaster.php',
         'RenamePurchaseLineIdInStockAdjustmentLinesTable' => __DIR__ . '/../..' . '/database/migrations/2018_06_05_103530_rename_purchase_line_id_in_stock_adjustment_lines_table.php',
         'Requests' => __DIR__ . '/..' . '/rmccue/requests/library/Requests.php',
         'Requests_Auth' => __DIR__ . '/..' . '/rmccue/requests/library/Requests/Auth.php',

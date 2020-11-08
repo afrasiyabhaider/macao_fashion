@@ -1,0 +1,123 @@
+// About
+.about-section {
+  padding: 3rem 0 2.5rem;
+  font-size: 1.4rem;
+  line-height: 2;
+
+  p {
+    margin-bottom: 2rem;
+  }
+
+  .lead {
+    color: #282d3b;
+    line-height: 1.8;
+  }
+}
+
+.about-img {
+  margin: 1rem 0 2rem;
+}
+
+.accordion-about {
+  h3 {
+    position: relative;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 500;
+    color: #282d3b;
+    padding: 1.5rem 0 1rem;
+    margin-bottom: 0;
+  }
+
+  .accordion-body {
+    padding-top: 2rem;
+    padding-bottom: 1.5rem;
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.accordion-btn {
+  display: inline-block;
+  cursor: pointer;
+  position: absolute;
+  top:  50%;
+  right: 0;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-top: -.8rem;
+  float: right;
+  border: 0;
+  box-shadow: none;
+  margin: 0;
+  background: none;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background-color: #333;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    display: inline-block;
+    right: 50%;
+    margin-right: -4px;
+    top: 50%;
+    width: 8px;
+    height: 2px;
+    background-color: #fff;
+    margin-top: -1px;
+    transition: all .35s;
+  }
+}
+
+.collapsed {
+  > .accordion-btn  {
+    background-color: #929292;
+    &::after {
+      transform: rotate(-90deg);
+    }
+  }
+}
+
+.team-section {
+  padding: 5rem 0;
+  background-color: #efefef;
+}
+
+.testimonials-section {
+  padding: 5rem 0;
+
+  .subtitle {
+    margin-bottom: 3.5rem;
+  }
+}
+
+.testimonials-slider {
+  .testimonial {
+    max-width: 620px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+@include mq('md') {
+  .about-section {
+    padding-bottom: 4rem;
+  }
+}
+
+@include mq('lg') {
+  .about-section {
+    padding-bottom: 6rem;
+  }
+
+  .about-img {
+    margin: 0;
+  }
+}
+
+@include mq('xl') {
+}

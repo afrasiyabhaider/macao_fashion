@@ -1,0 +1,135 @@
+// Feature Box
+.feature-box {
+  background-color: #fff;
+  color: #7b858a;
+  font-size: 1.5rem;
+  line-height: 2;
+  margin-bottom: 3rem;
+  padding: 4.1rem 4.5rem 4rem;
+  width: 100%;
+
+  i {
+    color: $primary-color;
+    display: inline-block;
+    font-size: 5rem;
+    line-height: 1;
+    margin-bottom: 2.2rem;
+
+    &::before {
+      margin: 0;
+    }
+  }
+
+  h3 {
+    color: #21293c;
+    font: 600 1.8rem / 1.1 $font-family;
+    letter-spacing: 0;
+    margin-bottom: 2rem;
+  }
+
+  p {
+    margin-bottom: 0;
+  }
+}
+
+.feature-box-content {
+  color: #7b858a;
+  font-size: 1.5rem;
+  line-height: 1.8;
+}
+
+.feature-box-simple {
+  background-color: transparent;
+  color: #687176;
+  font-size: 1.3rem;
+  line-height: 1.9;
+  margin-bottom: 2.5rem;
+  padding: 0;
+
+  .feature-box-content {
+    color: inherit;
+    font-size: 1.3rem;
+    line-height: 1.8;
+  }
+
+  i {
+    align-items: center;
+    color: $primary-color;
+    display: inline-flex;
+    font-size: 4rem;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+
+    &.icon-paper-plane::before {
+      margin-left: -.5rem;
+    }
+  }
+
+  h3 {
+    color: $headings-text;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    margin-bottom: 2.6rem;
+    text-transform: uppercase;
+
+    span {
+      color: #465157;
+      display: block;
+      font-size: 1.4rem;
+      font-weight: 400;
+      margin-top: .5rem;
+      text-transform: capitalize;
+    }
+  }
+
+  p {
+    margin-bottom: 0;
+    min-height: 0 !important;
+    max-width: 340px;
+  }
+
+  &.text-center p {
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .btn {
+    min-width: 125px;
+    padding: 1rem;
+    font-size: 1.3rem;
+  }
+}
+
+.feature-box-home {
+  border: 1px solid #dfdfdf;
+  margin-bottom: 0;
+  padding: 2.2vw 1.5rem;
+
+  h3 {
+    font-family: $second-font-family;
+    font-size: 1.2vw;
+    font-weight: 400;
+    margin-bottom: .7vw;
+    padding-top: .7vw;
+  }
+
+  i {
+    color: #21293c;
+    font-size: 2.8vw;
+    margin-bottom: 1vw;
+  }
+
+  .feature-box-content p {
+    font-size: .9vw;
+    min-height: unset;
+  }
+}
+
+@include mq('lg') {
+  .feature-box {
+    p {
+      min-height: 120px;
+    }
+  }
+}

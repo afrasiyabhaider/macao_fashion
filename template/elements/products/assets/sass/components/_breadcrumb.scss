@@ -1,0 +1,62 @@
+// Breadcrumb
+.breadcrumb-nav {
+  padding : 12px 0;
+
+  background-size : cover;
+  background-position: center;
+
+  .container {
+    padding-top: 35px;
+    padding-bottom: 36px;
+    display : flex;
+    flex-direction : column;
+    align-items : center;
+    justify-content : center;
+  }
+
+  h2.page-title {
+    font : 400 28px $font-family;
+    color : white;
+    text-transform : none;
+    letter-spacing : -.05em;
+    line-height : 1.2;
+  }
+}
+
+.breadcrumb {
+  margin-bottom: 0;
+  padding : .4rem 1rem .5rem;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.breadcrumb-item {
+  text-transform: uppercase;
+  font: 400 11.2px $font-family;
+}
+
+.breadcrumb-item+.breadcrumb-item {
+  padding-left: 13px;
+}
+
+.breadcrumb-item+.breadcrumb-item::before {
+  content: '\e81a';
+  font-family: 'porto';
+  padding-right: 11px;
+  font-size: 12px;
+  vertical-align: middle;
+  margin-top: -.4rem;
+  color: rgba(255, 255, 255, .7);
+}
+
+.breadcrumb-item.active {
+  color: rgba(255, 255, 255, .7);
+}
+
+.breadcrumb-item a{
+  color : white;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

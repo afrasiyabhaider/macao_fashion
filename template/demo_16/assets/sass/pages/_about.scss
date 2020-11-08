@@ -1,0 +1,95 @@
+// About
+.owl-carousel .member {
+  margin-bottom: 0;
+}
+
+.about-section {
+  padding-top: 2rem;
+  padding-bottom: 4rem;
+  border-bottom: 1px solid #ebebeb;
+
+  p {
+    font-size: 1.4rem;
+    line-height: 2;
+  }
+}
+
+.history-section {
+  padding-top: 5rem;
+  padding-bottom: 4.5rem;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.history-item  {
+  background-color: #eee;
+  padding: 37px 37px 40px;
+
+  h3 {
+    font: 400 5rem/1 $second-font-family;
+    color: #141a1f;
+    margin-bottom: 25px;
+  }
+
+  p {
+    font-size: 1.5rem;
+    line-height: 2;
+    color: #646a70;
+    margin: 0;
+  }
+}
+
+.team-section {
+  padding-top: 5.5rem;
+  padding-bottom: 4.5rem;
+  border-bottom: 1px solid #ebebeb;
+}
+
+.team-carousel {
+  .member {
+    margin-bottom: 0;
+  }
+
+  .owl-dots {
+    margin-top: 0 !important;
+  }
+}
+
+.partners-container {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+  margin-bottom: 4rem;
+}
+
+.partners-carousel {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.partner {
+  display: block;
+  padding-top: .8rem;
+  padding-bottom: .8rem;
+  opacity: .6;
+
+  img {
+    display: block;
+    max-width: 100% !important;
+    width: auto !important;
+    height: auto;
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+@include mq('md') {
+}
+
+@include mq('lg') {
+  .partners-carousel {
+    padding-left: 70px;
+    padding-right: 70px;
+  }
+}
+
+@include mq('xl') {
+}

@@ -1,0 +1,43 @@
+// Breadcrumb
+.breadcrumb-nav {
+  margin-bottom: 3rem;
+  background-color: #171717;
+}
+
+.breadcrumb {
+  margin-bottom: 0;
+  padding: 1.4rem 0;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.breadcrumb-item {
+  font: 400 1.3rem / 1.4 $font-family;
+  letter-spacing: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item {
+  padding-left: 1.1rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  margin-top: -.2rem;
+  padding-right: 1rem;
+  background-color: #171717;
+  color: #fff;
+  font-family: 'porto';
+  font-size: 1.4rem;
+  content: '\e81a';
+  vertical-align: middle;
+}
+
+.breadcrumb-item a,
+.breadcrumb-item.active {
+  color: #fff;
+}
+
+@include mq('lg') {
+  .breadcrumb-nav {
+    margin-bottom: 4rem;
+  }
+}

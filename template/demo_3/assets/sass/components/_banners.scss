@@ -1,0 +1,110 @@
+// Banners
+.banner {
+  display: block;
+  position: relative;
+  margin-bottom: 0;
+  background-color: #ccc;
+
+  &.banner-cat {
+    height: 300px;
+    margin-bottom: 3rem;
+    background-color: #ccc;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+  }
+
+  &.full-banner .banner-content {
+    left: 8.5rem;
+  }
+
+  > a {
+    display: block;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    max-width: none;
+    height: auto;
+  }
+
+  .banner-content {
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    left: 2rem;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+  }
+
+  .banner-content-box {
+    display: -ms-flexbox;
+    display: flex;
+    top: 5rem;
+    bottom: 5rem;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: 2rem;
+    transform: translateY(0);
+    background-color: #161616;
+    color: rgba(255, 255, 255, .3);
+    text-transform: uppercase;
+  }
+
+  .banner-title {
+    margin-bottom: .8rem;
+    color: #fff;
+    font: 300 4.8rem / 1 $second-font-family;
+    letter-spacing: 0;
+
+    span {
+      display: block;
+      margin-bottom: .6rem;
+      font-family: $font-family;
+      font-size: 1.7rem;
+      font-weight: 400;
+      letter-spacing: .1rem;
+    }
+  }
+
+  .banner-subtitle {
+    color: #fff;
+    font: 400 2.4rem / 1 $font-family;
+    letter-spacing: .1rem;
+  }
+
+  p {
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+@include mq('md') {
+  .banner {
+    .banner-content {
+      left: 3rem;
+    }
+
+    .banner-content-box {
+      top: 3rem;
+      bottom: 3rem;
+      padding: 3rem;
+    }
+  }
+}
+
+@include mq('lg') {
+  .banner {
+    .banner-content {
+      left: 4rem;
+    }
+
+    .banner-content-box {
+      top: 4rem;
+      bottom: 4rem;
+      padding: 3rem 4rem;
+    }
+  }
+}

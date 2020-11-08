@@ -1,0 +1,632 @@
+// Home
+.home-slider,
+.boxed-slider {
+  @include lazy-anim();
+}
+
+.product-default {
+  &:hover figure {
+    box-shadow: 0 20px 43px rgba(0, 0, 0, 0.15);
+  }
+
+  &.product-list {
+    margin-bottom: 4rem;
+
+    &:hover figure {
+      box-shadow: none;
+    }
+
+    .product-description {
+      text-overflow: ellipsis;
+    }
+  }
+
+  &.product-widget:hover figure {
+    box-shadow: none;
+  }
+}
+
+.owl-carousel-lazy.owl-carousel {
+  display: block;
+  margin-bottom: 2rem;
+}
+
+.home .owl-theme .owl-dots .owl-dot.active span {
+  background-color: $primary-color;
+  border-color: $primary-color;
+  width: 1.5rem;
+  border-radius: 15px;
+}
+
+.v-middle {
+  align-items: center;
+}
+
+v-stretch {
+  justify-contents: stretch;
+}
+
+.home-slide {
+  width: 100%;
+  height: 575px;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  background-color: #e2e2e0;
+  align-items: center;
+}
+
+.owl-carousel-lazy.owl-carousel {
+  display: block;
+  margin-bottom: 2rem;
+
+  .home-slide:first-child,
+  .category-slide:first-child,
+  .owl-item:first-child .home-slide,
+  .owl-item:first-child .category-slide {
+    display: -ms-flexbox;
+    display: flex;
+  }
+
+  &.owl-loaded {
+    .home-slide {
+      display: flex;
+    }
+  }
+}
+
+.home-top-container {
+  position: relative;
+}
+
+.home-slide, .category-slide {
+  .owl-lazy {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  .slide-bg {
+    position: absolute;
+    max-height: none !important;
+    z-index: 2;
+    background-size: cover;
+    background-position: center right;
+    background-repeat: no-repeat;
+  }
+}
+
+.owl-item.active .home-slide-content {
+  visibility: visible;
+}
+
+.home-slide-content {
+  position: relative;
+  visibility: hidden;
+
+  transition: all .5s ease-out;
+
+  i {
+    font-size: 2.2rem;
+    font-family: Poppins;
+    font-style: italic;
+    letter-spacing: .01em;
+    color: #666;
+    text-decoration: underline;
+  }
+  a::after {
+    font-family: "porto";
+    content: '\e828';
+    font-size: 1.6rem;
+    margin-left: 1.6rem;
+  }
+}
+
+.home-slide-title {
+  color: #c59b9c;
+  font: 400 6.82rem "Nanum Brush Script" ;
+  letter-spacing: .01em;
+}
+
+.home-slider.owl-carousel .owl-nav .owl-prev,
+.home-slider.owl-carousel .owl-nav .owl-next {
+  display: -ms-flexbox;
+  display: flex;
+  position: absolute;
+  top: 50%;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  min-width: 3rem;
+  margin: 0;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  transition: all .3s;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  color: #fff;
+  font-size: 3rem;
+  font-weight: 100;
+  line-height: 1;
+
+  i {
+    margin-top: -.3rem;
+  }
+
+  i::before {
+    margin: 0;
+    border-radius: 0;
+  }
+}
+
+.home-slider.owl-carousel .owl-nav .owl-prev {
+  left: 3%;
+  color: black;
+}
+
+.home-slider.owl-carousel .owl-nav .owl-next {
+  right: 3%;
+  color: black;
+}
+
+.home-slider.owl-carousel .owl-nav .owl-prev:hover,
+.home-slider.owl-carousel .owl-nav .owl-next:hover,
+.home-slider.owl-carousel .owl-nav .owl-prev:focus,
+.home-slider.owl-carousel .owl-nav .owl-next:focus {
+  border-color: transparent;
+  background-color: transparent;
+  color: $primary-color;
+}
+
+.home-slider.owl-carousel .owl-dots {
+  position: absolute;
+  right: 3.7rem;
+  bottom: 4.3rem;
+  margin: 0;
+  line-height: 0;
+
+  .owl-dot {
+    display: inline-block;
+    width: 1.1rem;
+    height: .3rem;
+    background-color: #fff;
+    line-height: 1;
+    transition: all 0.15s;
+
+    & + .owl-dot {
+      margin-left: 1rem;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: $primary-color;
+    }
+
+    &.active {
+      background-color: $secondary-color;
+    }
+  }
+}
+
+.owl-carousel .product:not(.product-sm) {
+  margin-bottom: 0;
+}
+
+.partners-carousel {
+    padding: 0;
+}
+
+.category-banner {
+  h1 {
+    font-size: 3rem;
+    letter-spacing: -.018em;
+    font-family: "Poppins";
+    font-weight: 700;
+    text-transform: uppercase;
+    color: $primary-color-dark;
+  }
+  p {
+    font-family: "Nanum Brush Script";
+    font-size: 2.8rem;
+    letter-spacing: .01em;
+    color: #666;
+    line-height: 3.5rem;
+  }
+  &>.row {
+    margin-top: 2.5rem;
+  }
+}
+
+.home .banner-content {
+  position: absolute;
+  width: 100%;
+
+  i {
+    font-size: 1.707rem;
+    font-family: Poppins;
+    font-style: italic;
+    letter-spacing: .01em;
+    color: #666;
+    text-decoration: underline;
+  }
+  a::after {
+    font-family: "porto";
+    content: '\e828';
+    font-size: 1.1rem;
+    margin-left: 1.1rem;
+  }
+
+  i.font-small {
+    font-size: 1.4rem;
+  }
+
+  i.font-large {
+    font-size: 2rem;
+  }
+
+  span {
+    font: 400 4.1rem/0.5 "Nanum Brush Script";
+    color: $primary-color-dark;
+    display: block;
+    letter-spacing: -.025em;
+  }
+
+  h2 {
+    font: 700 2rem "Open Sans";
+    display: block; 
+    letter-spacing: -.025em;
+  }
+
+  h2.font-large {
+    font-size: 3rem;
+    font-weight: 800;
+  }
+
+  h2.font-small {
+    font-size: 1.8rem;
+    font-weight: 800;
+  }
+
+  &.v-middle {
+    top: 0;
+    height: 100%;
+  }
+
+  &.v-bottom {
+    bottom: 0;
+    left: 0;
+  }
+
+  &.v-stretch {
+    height: 100%;
+    top: 0;
+    left: 0;
+
+    h2 {
+      position: absolute;
+      width: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    a {
+      position: absolute;
+      width: 100%;
+      bottom: 0;
+      left: 0;
+    }
+  }
+
+  &.v-top {
+    top: 0;
+    left: 0;
+  }
+}
+
+.home .service-widget {
+  margin: 0.5rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home .service-icon {
+  font-size: 3.6rem;
+  color: $primary-color-dark;
+  margin-right: 1rem;
+}
+
+.home .service-content {
+  h2 {
+    text-transform: uppercase;
+    font: 600 1.6rem "Poppins";
+    color: $primary-color-dark;
+  }
+  p {
+    font: 1.3rem "Poppins";
+    color: #999;
+    letter-spacing: 0.01em;
+    margin-bottom: 0;
+  }
+}
+
+.home-banners {
+  margin: 3.3rem 0 4.5rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.home-banner {
+  width: 25%;
+  display: flex;
+  align-items: center;
+  position: relative;
+  justify-content: center;
+
+  .banner-content:not(:first-child) {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    width: 54%;
+    height: 22%;
+
+    &.v-bottom { 
+      left: auto;
+    }
+
+    h2 {
+      font: 700 1.6rem "Poppins";
+      letter-spacing: 0.35em;
+      color: $primary-color-dark;
+    }
+  }
+
+  .banner-content:first-child {
+    position: relative;
+  }
+
+  h2 {
+    width: 100%;
+    font: 5.441rem "Nanum Brush Script";
+    letter-spacing: .01em;
+    color: $primary-color;
+  }
+
+  p {
+    font: 1.6rem "Poppins";
+    letter-spacing: .01em;
+    color: #666;
+    margin-bottom: 0;
+  }
+
+
+  &:not(:first-child){
+    img {
+      position: relative;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background-color: black;
+      opacity: 0;
+      transition: all .3s ease-out;
+    }
+
+    &:hover::after {
+      opacity: .2;
+    }
+  }
+}
+
+.partners-panel {
+  padding: 4rem 0;
+  
+  .owl-item img {
+    width: auto !important;
+    max-width: auto;
+  }
+}
+
+.has-bod-tb {
+  border-top: 1px solid #e7e7e7;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.section-title {
+  color: $primary-color-dark1;
+  border-bottom: 1px solid #e7e7e7;
+
+  #specialOffer & {
+    margin-top: 2rem;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+    font-family: $font-family;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+  }
+}
+
+#topProducts row{
+  align-items: center;
+}
+
+.modal#addCartModal {
+  width: 340px;
+  top: calc((100% - 320px) / 2);
+  left: calc((100% - 320px) / 2);
+  padding: 10px !important;
+  overflow: hidden;
+
+  .modal-dialog {
+    margin: 0;
+  }
+
+  .modal-content {
+    margin: 0;
+    border: none;
+    box-shadow: none;
+  }
+}
+
+.add-cart-box {
+  padding: 19px 10px 20px !important;
+  border-top: 4px solid $primary-color;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+
+  h4 {
+    font-weight: 500;
+    color: $primary-color;
+    margin-bottom: 1.8rem;
+  }
+
+  img {
+    margin: 0 auto 10px;
+    width: 120px;
+  }
+
+  .btn-actions {
+    display: flex;
+    justify-content: space-around;
+
+    .btn-primary {
+      width: 140px;
+      padding: 8px 0;
+      font: 500 16px $font-family;
+      border: none;
+      cursor: pointer;
+
+      &:focus,
+      &:active,
+      &:active:focus {
+        outline: none;
+        border: none;
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+.modal-backdrop.show {
+  opacity: 0.7;
+}
+
+.modal-backdrop.fade {
+  transition: opacity .3s linear;
+}
+
+@include mq('sm') {
+}
+
+@include mq('md') {
+  #service .col-md-4:not(:first-of-type) {
+    border-left: 1px solid #e7e7e7;
+  }
+}
+
+@include mq('lg') {
+  .home-top-container {
+    .row {
+      margin-left: -5px;
+      margin-right: -5px;
+    }
+    
+    .col-lg-4,
+    .col-lg-8 {
+      padding-right: 5px;
+      padding-left: 5px;
+    }
+
+    .col-lg-8 {
+      -ms-flex: 0 0 66.1%;
+      flex: 0 0 66.1%;
+      max-width: 66.1%;
+    }
+
+    .col-lg-4 {
+      -ms-flex: 0 0 33.9%;
+      flex: 0 0 33.9%;
+      max-width: 33.9%;
+    }
+  }
+
+  .home .sidebar-home {
+    .widget-block {
+      p {
+        max-width: 230px;
+      }
+    }
+    .entry-content {
+
+      p {
+        max-width: 220px;
+      }
+    }
+  }
+
+  .categories-container {
+    padding-top: 7.2rem;
+    padding-bottom: 7.2rem;
+  }
+
+  .categories-carousel {
+    padding-left: 100px;
+    padding-right: 100px;
+  }
+}
+
+@media (max-width: 767px) {
+  .visible-md {
+    display: none;
+  }
+
+  .home .service-widget {
+    justify-content: flex-start;
+  }
+
+  .home-banner {
+    width: 50%;
+  }
+}
+
+@media (max-width: 500px) {
+  .home-banner {
+    width: 100%;
+  }
+  .home-banner:first-child {
+    padding: 3rem 0;
+  }
+}
+
+@media (min-width: 1200px) {
+  .visible-md {
+    display: none;
+  }
+}
+
+@media (max-width: 1199px) {
+  .partners-carousel.owl-carousel .owl-item img {
+    width: auto;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 991px) {
+  .home-slide {
+    height: 400px;
+
+    .home-slide-content:first-child {
+      text-align: right;
+    }
+  }
+}

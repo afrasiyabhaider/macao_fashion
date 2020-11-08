@@ -1,0 +1,42 @@
+// Breadcrumb
+.breadcrumb-nav {
+  margin-bottom: 0;
+}
+
+.breadcrumb {
+  margin-bottom: 0;
+  padding: 1.4rem 0 1.2rem;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.breadcrumb-item {
+  font: 400 1.2rem / 1.4 $font-family;
+  letter-spacing: .025rem;
+  text-transform: capitalize;
+
+  i {
+    margin-top: -.2rem;
+    font-size: 1.3rem;
+    vertical-align: top;
+  }
+}
+
+.breadcrumb-item + .breadcrumb-item {
+  padding-left: 1rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  margin-top: -.3rem;
+  padding-right: 1rem;
+  color: #8e8e8e;
+  font-family: 'porto';
+  font-size: 1.3rem;
+  content: '\e81a';
+  vertical-align: middle;
+}
+
+.breadcrumb-item a,
+.breadcrumb-item.active {
+  color: #8e8e8e;
+}

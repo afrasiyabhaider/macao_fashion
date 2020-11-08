@@ -1,0 +1,25 @@
+// Variables
+$font-size: 1.4rem !default;
+$sidebar-font-size: 1.3rem !default;
+$footer-font-size: 1.3rem !default;
+$input-font-size: 1.4rem !default;
+$button-font-size: 1.4rem !default;
+
+$primary-color: #000 !default;
+$primary-color-dark: #000 !default;
+$secondary-color: #333 !default;
+$secondary-color-dark: #121212 !default;
+$link-color: $primary-color !default;
+
+$border-radius: 0 !default;
+
+$body-text: #555 !default;
+$light-text: #888 !default;
+$headings-text: #141a1f !default;
+
+$font-family: 'Poppins', sans-serif !default;
+$second-font-family: 'Oswald', sans-serif !default;
+
+$breakpoints: (xs: 480px, sm: 576px, md: 768px, lg: 992px, xl: 1200px, xxl: 1600px, xlst: 1920px);
+
+$max-breakpoints: (xs: 479px, sm: 575px, md: 767px, lg: 991px, xl: 1199px, xxl: 1599px);

@@ -1,0 +1,93 @@
+// About
+.owl-carousel .member {
+  margin-bottom: 0;
+}
+
+.about-section {
+  padding-top: 5.5rem;
+  padding-bottom: 4rem;
+  text-align: center;
+
+  p {
+    max-width: 720px;
+    margin-right: auto;
+    margin-left: auto;
+    font-size: 1.4rem;
+    line-height: 2;
+  }
+}
+
+.company-section {
+  padding-top: 5.6rem;
+  padding-bottom: 1rem;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  
+  .subtitle {
+    margin-bottom: 2rem;
+  }
+}
+
+.team-section {
+  padding-top: 4rem;
+  padding-bottom: 5rem;
+
+  .subtitle {
+    margin-top: 1.5rem;
+  }
+
+  .title-desc {
+    max-width: 235px;
+  }
+}
+
+@include mq('md') {
+  .about-section {
+    padding-top: 7.5rem;
+    padding-bottom: 7rem;
+  }
+
+  .company-section {
+    padding-top: 7.6rem;
+    padding-bottom: 3rem;
+    
+    .subtitle {
+      margin-bottom: 3rem;
+    }
+  }
+
+  .team-section {
+    padding-top: 5rem;
+    padding-bottom: 7rem;
+
+    .subtitle {
+      margin-top: 2.5rem;
+    }
+  }
+}
+
+@include mq('lg') {
+  .about-section {
+    padding-top: 9.5rem;
+    padding-bottom: 9rem;
+  }
+
+  .company-section {
+    padding-top: 9.6rem;
+    padding-bottom: 5rem;
+    
+    .subtitle {
+      margin-bottom: 4rem;
+    }
+  }
+
+  .team-section {
+    padding-top: 9rem;
+    padding-bottom: 9rem;
+
+    .subtitle {
+      margin-top: 3.5rem;
+    }
+  }
+}

@@ -1,0 +1,99 @@
+
+.owl-theme {
+	// Styling Next and Prev buttons
+	.owl-nav {
+		margin-top: 0;
+		text-align: center;
+		-webkit-tap-highlight-color: transparent;
+
+		[class*='owl-'] {
+			color: $nav-color;
+			font-size: $nav-font-size;
+			margin: $nav-margin;
+			padding: $nav-padding;
+			background: $nav-background;
+			display: inline-block;
+			cursor: pointer;
+			border-radius: 0;
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+
+			&:hover {
+				background: $nav-background-hover;
+				color:$nav-color-hover;
+				text-decoration: none;
+			}
+		}
+
+		.owl-prev {
+			left: 0;
+		}
+
+		.owl-next {
+			right: 0;
+		}
+
+		.disabled {
+			opacity: $nav-disabled-opacity;
+			cursor: default;
+		}
+	}
+
+	// Styling dots
+	.owl-nav.disabled + .owl-dots {
+		margin-top: 30px;
+	}
+
+	.owl-dots {
+		text-align: center;
+		line-height: 0;
+		-webkit-tap-highlight-color: transparent;
+
+		.owl-dot {
+			display: inline-block;
+			zoom: 1;
+			*display: inline;
+
+			span {
+				width: $dot-width;
+				height: $dot-height;
+				margin: $dot-margin;
+				background: $dot-background;
+				border: 2px solid $dot-border;
+				display: block;
+				-webkit-backface-visibility: visible;
+				transition: all .3s ease;
+				border-radius: $dot-rounded;
+			}
+
+			&.active,
+			&:hover {
+				span {
+					background: $dot-background-active;
+					border-color: $dot-border-active;
+				}
+			}
+		}
+	}
+}
+
+.owl-theme-light {
+	.owl-dots {
+
+		.owl-dot {
+			span {
+				background: $dot-background-light;
+				border-color: $dot-border-light;
+			}
+
+			&.active,
+			&:hover {
+				span {
+					background: $dot-background-light-active;
+					border-color: $dot-border-light-active;
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,107 @@
+// Banners
+.banner {
+  display: block;
+  position: relative;
+  margin-bottom: 0;
+  background-color: #ccc;
+
+  &.banner-cat {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    background-position: 59% 65%;
+    background-repeat: no-repeat;
+    background-color: #f8f8f8;
+  }
+
+  > a {
+    display: block;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    max-width: none;
+    height: auto;
+  }
+
+  .banner-title {
+    color: $primary-color-dark;
+    font:  700 3.2rem $font-family;
+    letter-spacing: -0.01em;
+    margin-bottom: 0;
+    line-height: 32px;
+  }
+
+  .banner-subtitle {
+    color: $primary-color-dark;
+    font: 300 italic 1.8rem $font-family;
+    text-transform: uppercase;
+    margin-bottom: 0;
+    opacity: 0.3;
+  }
+
+  .banner-foot {
+    color: #777;
+    font: 400 2.4rem $font-family;
+    letter-spacing: -0.01em;
+    margin-bottom: 0;
+  }
+
+  button {
+    background-color: #343437;
+    color: white;
+    font: 500 1.6rem $font-family;
+    letter-spacing: .01em;
+    padding: 1.5rem 3.5rem;
+
+    &:hover {
+      background-color: $primary-color-dark;
+    }
+  }
+}
+
+.banner-image {
+  > a {
+    position: relative;
+
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, .3);
+      transition: all 0.3s ease;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    &:hover,
+    &:focus {
+      &::after {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+}
+
+@include mq('md') {
+  .banner {
+    &.banner-cat {
+      height: 260px;
+    }
+  }
+}
+
+@include mq('lg') {
+  .banner {
+    &.banner-cat {
+      height: 28.2rem;
+    }
+  }
+}

@@ -1,0 +1,983 @@
+// Home
+.home-slider,
+.boxed-slider {
+  @include lazy-anim();
+  background-color: white;
+}
+
+a>i:hover,
+a>i:active {
+  color: $secondary-color;
+}
+
+.home.page-wrapper {
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 30px;
+}
+
+.home .owl-theme .owl-dots .owl-dot.active span {
+  background-color: $primary-color;
+  border-color: $primary-color;
+  width: 1.5rem;
+  border-radius: 15px;
+}
+
+.home-slide {
+  width: 100%;
+  align-items: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  position: relative;
+
+  .home-product {
+    margin-top: 4rem;
+    width: 46%;
+    margin-left: auto;
+    margin-right: auto;
+
+    &:hover {
+      box-shadow: none;
+    }
+
+    figure {
+      margin-bottom: 2rem;
+    }
+
+    .ratings-container {
+      margin-bottom: .8rem;
+    }
+
+    .product-title {
+      margin-bottom: 0.8rem;
+    }
+  }
+}
+
+.owl-carousel-lazy.owl-carousel {
+  display: block;
+  margin-bottom: 3rem;
+}
+
+.home-top {
+  background-color: white;
+  padding: 3rem 0 0.5rem;
+}
+
+.home-slide {
+  .slide-bg {
+    position: absolute;
+    max-height: none !important;
+    z-index: 2;
+    background-size: cover;
+    background-position: center right;
+    background-repeat: no-repeat;
+  }
+}
+
+.home-slide-content {
+  padding-top: 4.8rem;
+
+  h2 {
+    font: 700 2.2rem "Poppins";
+    letter-spacing: -0.01em;
+    color: white;
+    margin-bottom: -0.1rem;
+  }
+
+  span {
+    font: 500 1.4rem "Poppins";
+    opacity: 0.6;
+    color: white;
+    letter-spacing: 0.01em;
+    margin-bottom: 3.2rem;
+    text-transform: uppercase;
+    display: block;
+  }
+
+  a {
+    font: 500 1.2rem "Poppins";
+    color: white;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    cursor: pointer;
+
+    &:hover,
+    &:active,
+    &:focus {
+      border-bottom: 1px solid white;
+      text-decoration: none;
+    }
+  }
+}
+
+.home-slider.owl-carousel .owl-nav .owl-prev,
+.home-slider.owl-carousel .owl-nav .owl-next {
+  display: -ms-flexbox;
+  display: flex;
+  position: absolute;
+  top: 29.8%;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  min-width: 3rem;
+  margin: 0;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  transition: all .3s;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: 100;
+  line-height: 1;
+
+  i {
+    margin-top: -.2rem;
+  }
+
+  i::before {
+    margin: 0;
+    border-radius: 0;
+  }
+}
+
+.home-slider.owl-carousel .owl-nav .owl-prev {
+  left: 1rem;
+}
+
+.home-slider.owl-carousel .owl-nav .owl-next {
+  right: 1rem;
+}
+
+.home-slider.owl-carousel .owl-nav .owl-prev:hover,
+.home-slider.owl-carousel .owl-nav .owl-next:hover,
+.home-slider.owl-carousel .owl-nav .owl-prev:focus,
+.home-slider.owl-carousel .owl-nav .owl-next:focus {
+  border-color: transparent;
+  background-color: transparent;
+  color: $primary-color;
+}
+
+.home-slider.owl-carousel .owl-dots {
+  position: absolute;
+  right: 3.7rem;
+  bottom: 4.3rem;
+  margin: 0;
+  line-height: 0;
+
+  .owl-dot {
+    display: inline-block;
+    width: 1.1rem;
+    height: .3rem;
+    background-color: #fff;
+    line-height: 1;
+    transition: all 0.15s;
+
+    & + .owl-dot {
+      margin-left: 1rem;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: $primary-color;
+    }
+
+    &.active {
+      background-color: $secondary-color;
+    }
+  }
+}
+
+.owl-carousel .product:not(.product-sm) {
+  margin-bottom: 0;
+}
+
+.home-product {
+  background-color: white;
+  margin: 2rem 0;
+  transition: all 0.5s ease-out;
+
+  .home-products-intro & {
+    margin-top: 1.9rem;
+    padding: 1.5rem;
+    border: 1px solid #e7e7e7;
+    box-shadow: 0 2px 1px rgba(0, 0, 0, 0.05);
+
+    .price-box  {
+      margin-bottom: 0;
+    }
+  }
+
+  a:hover {
+    color: $primary-color;
+    text-decoration: none;
+  }
+
+  &:hover {
+    box-shadow: 0 20px 43px rgba(0, 0, 0, 0.15);
+    
+    img:first-of-type {
+      display: none;
+    }
+    img:last-of-type {
+      display: block;
+    }
+
+    .btn-quickview,
+    .btn-icons,
+    .btn-add {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  figure {
+    margin-bottom: 1.4rem;
+    background-color: #f4f4f4;
+    text-align: center;
+    position: relative;
+    justify-content: center;
+    transition: box-shadow .3s ease-out;
+
+    a {
+      cursor: pointer;
+    }
+
+    img {
+      width: 100%;
+      top: 0;
+    }
+
+    img:last-of-type {
+      display: none;
+    }
+
+    img:first-child {
+      display: block;
+    }
+
+    i {
+      font-size: 1.8rem;
+    }
+
+    .btn {
+      background-color: white;
+      color: $primary-color-dark;
+    }
+
+    .btn-icon {
+      cursor: pointer;
+      background-color: white;
+      color: $primary-color-dark;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-bottom: 1rem;
+      display: block;
+
+      &:focus,
+      &.focus {
+        outline: none;
+      }
+    }
+
+    .btn-icons {
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .btn-add {
+      background-color: white;
+      color: $primary-color-dark;
+      position: absolute;
+      top: 45%;
+      padding: .5rem 3rem;
+      border-radius: 30px;
+      font: 600 1.2rem "Poppins";
+      letter-spacing: 0;
+      opacity: 0;
+      visibility: hidden;
+    
+      i {
+        margin-right: .6rem;
+      }
+    }
+
+    .btn-add:hover {
+      text-decoration: underline;
+    }
+
+    .btn-quickview {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 0.025em;
+      font-family: $font-family;
+      visibility: hidden;
+      opacity: 0;
+      transition: none;
+      padding: 1.5rem 2rem;
+      background-color: $primary-color;
+      color: white;
+      min-width: auto;
+    }
+
+    .btn-quickview:hover,
+    .btn-icon:hover {
+      background-color: $secondary-color;
+    }
+
+    .btn-icon:hover {
+      color: white;
+    }
+
+    img, .btn-quickview, .btn-icons, .btn-icon, .btn-add {
+      transition: all .3s ease-out;
+    }
+  }
+
+  .category-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    a {
+      color: inherit;
+      font-size: 1.5rem;
+    }
+
+    a:hover i {
+      color: $primary-color;
+    }
+  }
+
+  .product-details {
+    text-align: left;
+  }
+
+  .product-category {
+    color: #999;
+    font: 400 1rem "Open Sans";
+    letter-spacing: 0.005em;
+    margin: 0;
+    padding: 0;
+  }
+
+  .product-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;    
+  }
+
+  .product-title a {
+    color: #222329;
+    font: 400 1.5rem "Open Sans";
+    letter-spacing: 0.005em;
+    margin-bottom: 0.6rem;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+
+  .old-price {
+    font-size: 1.4rem;
+    letter-spacing: 0.005em;
+    font-weight: 600;
+    color: #999;
+    font-family: "Open Sans";
+  }
+
+  .product-price {
+    color: #444;
+    font-size: 1.8rem;
+    letter-spacing: 0.005em;
+    font-weight: 600;
+    font-family: "Open Sans";
+  }
+
+  .porto-icon {
+    font-size: 1.6rem;
+    color: #999;
+    right: auto;
+    position: relative;
+  }
+
+  .price-box {
+    margin-bottom: 1rem;
+  }
+
+  .ratings-container {
+    margin-bottom: .8rem;
+  }
+
+  .product-ratings, .ratings {
+    font-size: 1.4rem;
+  }
+
+  .ratings::before {
+    color: #62615e;
+  }
+}
+
+.home-banner {
+  padding: 6rem 5rem;
+  background-color: white;
+  height: 100%;
+
+  span {
+    font: 200 italic 1.8rem  "Poppins";
+  }
+
+  h2 {
+    padding: 0 2.5rem;
+    font: 600 2.8rem "Poppins";
+    letter-spacing: -0.01em;
+    color: $primary-color-dark;
+    margin-bottom: 0;
+  }
+
+  img {
+    margin: 4rem 0;
+    width: fit-content;
+    height: fit-content;
+  }
+
+  button {
+    padding: 1.5rem 3.5rem;
+    font: 400 1.6rem "Poppins";
+    letter-spacing: 0.01em;
+  }
+}
+
+#bestsellers {
+  padding-top: 0.7rem;
+  .home-products-intro {
+    margin-left: -15px;
+  }
+  .home-product {
+    margin: 0;
+    padding: 2.5rem 4.2rem 1rem;
+    border-width: 0 0 3px 3px;
+    border-color: #f4f4f4;
+    box-shadow: none;
+
+    figure {
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-quickview {
+      padding: 1rem 2rem;
+    }
+
+    .product-title {
+      margin-bottom: 0.4rem;
+    }
+
+    .price-box {
+      margin-bottom: 1rem;
+    }
+
+    .product-details {
+      text-align: center;
+    }
+
+    &:hover {
+      box-shadow: 0 0 0 0;
+    }
+  }
+  .home-banner {
+    border-bottom: 3px solid #f4f4f4;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    h2 {
+      padding: 0 7.5rem;
+      text-indent: 5px;
+      line-height: 3.3rem;
+      font-weight: 700;
+    }
+
+    button {
+      width: 218px;
+      max-width: 100%;
+      padding: 1.4rem 3.4rem;
+      line-height: 24px;
+    }
+  }
+}
+
+.category-books {
+  padding: 5.5rem 0 4.7rem;
+
+  .home-banner {
+    padding: 0;
+    display: flex;
+    align-items: center;
+
+    img {
+      margin: 0;
+    }
+  }
+
+  .banner-content {
+    position: absolute;
+    margin-top: .5rem;
+    right: 7%;
+
+    h2 {
+      font: 600 1.9rem "Poppins";
+      letter-spacing: -0.03em;
+      color: white;
+      padding: 0;
+    }
+    span {
+      display: block;
+      font: 500 1.4rem "Poppins";
+      letter-spacing: .01em;
+      margin-bottom: 1.7rem;
+      color: white;
+      opacity: 0.5;
+    }
+    button {
+      position: relative;
+      width: 158px;
+      max-width: 100%;
+      font: 600 1.2rem "Poppins";
+      letter-spacing: .01em;
+      padding: 1rem 1.6rem;
+
+      &::after {
+        background-color: white;
+        opacity: 0;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+        content: ''; 
+        transition: all .3s ease-out;
+      }
+
+      &:hover::after {
+        opacity: .3;
+      }
+    }
+    .btn-primary {
+      border: none;
+    }
+  }
+}
+
+.home-banner-middle {
+  height: 200px;
+  background-color: $primary-color;
+  background-image: url('../images/banners/home-banner-book.png');
+  background-repeat: no-repeat;
+  background-position: 110% 58%;
+  padding: 0;
+  display: flex;
+
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .banner-content {
+    margin-left: 5px;
+  }
+
+  span {
+    color: white;
+    opacity: 0.6;
+  }
+
+  h2 {
+    padding: 0;
+    color: white;
+    font-size: 3.2rem;
+    text-align: center;
+    line-height: 3rem;
+  }
+
+  p {
+    font: 500 1.2rem "Poppins";
+    letter-spacing: -.01em;
+    color: white;
+    text-align: right;
+    margin-bottom: 0;
+  }
+
+  button {
+    background-color: #343437;
+    color: white;
+    padding: 1.5rem 0;
+    border: none;
+    width: 235px;
+    max-width: 100%;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: $primary-color-dark;
+    }
+  }
+}
+
+.has-bod-tb {
+  border-top: 1px solid #e7e7e7;
+  border-bottom: 1px solid #e7e7es7;
+}
+
+.section-title {
+  border-bottom: 1px solid #e7e7e7;
+  display: flex;
+  padding-bottom: 0.8rem;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+
+  h2 {
+    color: $primary-color-dark;
+    font: 500 1.6rem "Poppins";
+    margin-bottom: 0;
+  }
+
+  a {
+    font: 600 1.2rem "Poppins";
+    letter-spacing: 0.01em;
+  }
+
+  i {
+    transition: none;
+  }
+
+  a:hover {
+    color: $secondary-color;
+    text-decoration: none;
+    border-bottom: 1px solid $secondary-color;
+
+    i {
+      color: inherit;
+    }
+  }
+}
+
+.section-content {
+  margin-top: 2.2rem;
+}
+
+.bg-white {
+  background-color: white;
+}
+
+.widget-newsletter {
+  padding: 6rem 0 5.8rem;
+  text-align: center;
+
+  i {
+    font-size: 3rem;
+    color: $primary-color-dark;
+  }
+
+  h2 {
+    font: 700 2.4rem "Poppins";
+    letter-spacing: -0.02em;
+    margin-bottom: 1px;
+    margin-top: 2px;
+  }
+
+  span {
+    font: 400 1.3rem "Poppins";
+    letter-spacing: .005em;
+    color: #777;
+  }
+
+  form {
+    display: flex;
+    width: 570px;
+    max-width: 100%;
+    margin: 1.7rem auto 0;
+  }
+
+  input {
+    margin-bottom: 0;
+    font: italic 1.2rem "Poppins";
+    color: #999;
+    background-color: #f4f4f4;
+    border-radius: 30px 0 0 30px;
+    height: 48px;
+    padding: 2rem 2.5rem;
+    border: none;
+
+    &:focus {
+      background-color: #f4f4f4;
+    }
+  }
+
+  button {
+    height: 48px;
+    font: 600 1.2rem "Poppins";
+    letter-spacing: 0.005em;
+    color: white;
+    background-color: #333;
+    border-radius: 0 30px 30px 0;
+    border: none;
+
+    &:hover {
+      background-color: $primary-color-dark;
+    }
+  }
+}
+
+.modal#addCartModal {
+  width: 340px;
+  top: calc((100% - 320px) / 2);
+  left: calc((100% - 320px) / 2);
+  padding: 10px !important;
+  overflow: hidden;
+
+  .modal-dialog {
+    margin: 0;
+  }
+
+  .modal-content {
+    margin: 0;
+    border: none;
+    box-shadow: none;
+  }
+}
+
+.add-cart-box {
+  padding: 19px 10px 20px !important;
+  border-top: 4px solid $primary-color;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+
+  h4 {
+    font-weight: 500;
+    color: $primary-color;
+    margin-bottom: 1.8rem;
+  }
+
+  img {
+    margin: 0 auto 10px;
+    width: 120px;
+  }
+
+  .btn-actions {
+    display: flex;
+    justify-content: space-around;
+
+    .btn-primary {
+      width: 140px;
+      padding: 8px 0;
+      font: 500 16px $font-family;
+      border: none;
+      cursor: pointer;
+
+      &:focus,
+      &:active,
+      &:active:focus {
+        outline: none;
+        border: none;
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+.modal-backdrop.show {
+  opacity: 0.7;
+}
+
+.modal-backdrop.fade {
+  transition: opacity .3s linear;
+}
+
+@include mq('sm') {
+}
+
+@include mq('md') {
+}
+
+@include mq('lg') {
+  .home-top-container {
+    .row {
+      margin-left: -5px;
+      margin-right: -5px;
+    }
+    
+    .col-lg-4,
+    .col-lg-8 {
+      padding-right: 5px;
+      padding-left: 5px;
+    }
+
+    .col-lg-8 {
+      -ms-flex: 0 0 66.1%;
+      flex: 0 0 66.1%;
+      max-width: 66.1%;
+    }
+
+    .col-lg-4 {
+      -ms-flex: 0 0 33.9%;
+      flex: 0 0 33.9%;
+      max-width: 33.9%;
+    }
+  }
+
+  .sidebar-home {
+    .widget-block {
+      p {
+        max-width: 230px;
+      }
+    }
+    .entry-content {
+
+      p {
+        max-width: 220px;
+      }
+    }
+  }
+
+  .categories-container {
+    padding-top: 7.2rem;
+    padding-bottom: 7.2rem;
+  }
+
+  .categories-carousel {
+    padding-left: 100px;
+    padding-right: 100px;
+  }
+}
+
+@media (max-width: 280px) {
+  .category-books {
+    display: none;
+  }
+
+  .home-banner-middle {
+    display: none;
+  }
+}
+
+@media (max-width: 310px) {
+  #bestsellers .col-md-6.col-xl-4 {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  #bestsellers .home-products-intro {
+    margin-top: 3rem;
+    margin-left: 0;
+
+    .row {
+      margin: 0 0;
+    }
+  }
+
+  #bestsellers .home-banner {
+    padding: 3rem;
+  }
+
+  .home-slide .home-product {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 450px) {
+  .home-slide-content {
+    span {
+      margin-bottom: 0;
+    }
+    a {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 390px) {
+  .home-slide-content {
+    padding-top: 0;
+    opacity: 0;
+    max-height: 2rem;
+  }
+
+  .home-slide .home-product {
+    margin-top: 1rem;
+    width: 80%;
+  }
+}
+
+
+@media (max-width: 575px) {
+  .category-books .home-banner{
+    margin-bottom: 2rem;
+
+    img {
+      width: 100%;
+    }
+  }
+
+  .home-banner-middle button{
+    padding: 2rem 1rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .visible-md {
+    display: none;
+  }
+}
+
+@media (max-width: 1400px) {
+  .home-banner-middle .banner-content:last-of-type {
+    display: none;
+  }
+
+  #bestsellers .home-product {
+    padding: 2.5rem 2rem 1rem;
+  }
+}
+
+@include mq('sm', 'max') {
+  .home.page-wrapper {
+    margin: 0;
+    padding: 18px;
+  }
+}
+
+@include mq('md', 'max') {
+  .home.page-wrapper {
+    margin: 0;
+    padding: 24px;
+  }
+}
+
+@include mq('lg', 'max') {
+  .home.page-wrapper {
+    margin: 0;
+    padding: 18px;
+  }
+}

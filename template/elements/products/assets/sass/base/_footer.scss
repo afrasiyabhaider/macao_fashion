@@ -1,0 +1,292 @@
+// Footer
+.footer {
+  background-color : white;
+
+  .container-fluid {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    position: relative;
+    width : 100%;
+    max-width : none;
+    padding : 0 3.125%
+  }
+
+  img {
+    width : auto;
+    height : auto;
+  }
+}
+
+.footer-bottom {
+  background-color : #1c2023;
+  padding : 2.5rem 0;
+
+  .container {
+    display : flex;
+    align-items : center;
+  }
+
+  img {
+    width : 80px;
+    margin-right :2rem;
+  }
+
+  p {
+    font : 400 11.34px $font-family;
+    color : #555;
+    margin-bottom : 0;
+    line-height : 2.4rem;
+    margin-bottom : 2px;
+    margin-left : 3px;
+  }
+}
+
+.footer-middle { 
+  background-color : #212529;
+  padding : 6.4rem 0 2.4rem;
+  position : relative;
+}
+
+.footer-ribbon {
+  font : 400 2.016rem "Shadows Into Light";
+  letter-spacing : normal;
+  line-height : 2.4rem;
+  color : white;
+  background-color : $primary-color;
+  position: absolute;
+  top : 0;
+  margin: -16px 0 0 0;
+  padding: 10px 20px 6px 20px;
+
+  &::before {
+    right: 100%;
+    border-right: 10px solid #005580;
+    border-top: 16px solid transparent;
+    content: "";
+    display: block;
+    height: 0;
+    position: absolute;
+    top: 0;
+    width: 7px;
+  }
+}
+
+.footer .widget {
+  margin-bottom : 3rem;
+  max-width : 550px;
+
+  .widget-title {
+    font : 600 1.26rem $font-family;
+    line-height : 1.4;
+    letter-spacing : -0.05em;
+    margin-bottom : 1.5rem;
+    text-transform : uppercase;
+    color : white;
+  }
+
+  .widget-content {
+    p,
+    span,
+    strong,
+    a {
+      color : #777;
+      font : 400 1.26rem $font-family;
+      letter-spacing : 0;
+      line-height : 24px;
+    }
+
+    span,
+    strong,
+    p {
+      margin-top : -3px;
+    }
+
+    a:hover {
+      color : white;
+    }
+
+    p {
+      margin-bottom : 13px;
+      margin-right : 2rem;
+    }
+  }
+
+  form {
+    margin-bottom : 0;
+    background-color : white;
+    border-radius : 30px;
+  }
+
+  .submit-wrapper {
+    display : flex;
+
+    .form-control {
+      border : none;
+      border-right : 1px solid rgba(0, 0, 0, 0.09);
+      border-radius : 30px 0 0 30px;
+      height : 44px;
+      margin-bottom : 0;
+      padding : .8rem 1.2rem .8rem 1.6rem;
+      color : #777;
+      font : 400 1.2rem $font-family;
+    }
+
+    .btn {
+      border-radius : 0 30px 30px 0;
+      border : none;
+      background-color :  white;
+      height : 44px;
+      padding : 0 14.928px;
+      min-width : unset;
+      font : 700 1.2rem $font-family;
+      color : #333;
+      letter-spacing : normal;
+    }
+  }
+
+  .content-list {
+    display : flex;
+  }
+
+  .content-left {
+    max-width : 30px;
+    width : 30px;
+    text-align : center;
+
+    i {
+      margin-top : 2px;
+      margin-right : 1.1rem;
+      color : white;
+      font-size : 1.9rem;
+    }
+  }
+
+  .content-right {
+    max-width : calc(100% - 30px);
+
+    p {
+      margin : 0 0 3px;
+    }
+
+    .twitter-link {
+      padding-top : 3px;
+      color : #777777;
+      opacity : .5;
+      font : 400 1.134rem $font-family;
+      line-height : 2.4rem;
+      transition : all .1s ease-in-out;
+
+      &:hover {
+        color : #999;
+        opacity : 1;
+      }
+    }
+  }
+
+  ul {
+    margin-bottom : 0;
+  }
+
+  ul>li {
+    margin-bottom : 1rem;
+
+    .content-left {
+      width : 25px;
+      max-width : 25px;
+
+      i {
+        font-size : 1.6rem;
+        margin : 4px 9px 0 0;
+        color : $primary-color;
+      }
+    }
+
+    .content-right {
+      max-width : calc(100% - 25px);
+
+      strong, span {
+
+      }
+    }
+  }
+}
+
+.footer {
+  .social-icons {
+    display : flex;
+  }
+
+  .social-icon {
+    margin : 2px;
+    border-radius : 50%;
+    background-color : white;
+    width : 30px;
+    height : 30px;
+    display : flex;
+    align-items : center;
+    justify-content : center;
+
+    i {
+      font-size : 1.4rem;
+      color : #333;
+    }
+
+    &:hover {
+      background-color : $primary-color;
+        
+      i {
+        color : white;
+      }
+    }
+  }
+}
+
+// Scroll Top Button
+#scroll-top {
+  height: 40px;
+  position: fixed;
+  right: 15px;
+  width: 40px;
+  z-index: 9999;
+  bottom: 0;
+  background-color: #43494e;
+  font-size: 16px;
+  color: #fff;
+  text-align: center;
+  line-height: 1;
+  padding: 11px 0;
+  visibility: hidden;
+  opacity: 0;
+  border-radius: $border-radius $border-radius 0 0;
+  transition: all .3s, margin-right 0s;
+  -webkit-transform: translateY(40px);
+  transform: translateY(40px);
+}
+
+#scroll-top:hover,
+#scroll-top:focus {
+  background-color: #3a4045;
+}
+
+#scroll-top.fixed {
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (max-width : 991px) {
+  .footer-bottom .container {
+    flex-direction : column;
+    align-items : unset;
+  }
+}
+
+@media (max-width : 550px) {
+  .widget-content,
+  .widget-content p {
+    margin-right : 0 !important;
+  }
+}

@@ -1,0 +1,102 @@
+// Banners
+.banner {
+  display: block;
+  position: relative;
+  margin-bottom: 0;
+  background-color: #ccc;
+
+  > a {
+    display: block;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    max-width: none;
+    height: auto;
+  }
+
+  .banner-content {
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    left: 1.5rem;
+    transform: translateY(-50%);
+  }
+
+  .banner-title {
+    margin-top: .7rem;
+    margin-bottom: 1.7rem;
+    font: 600 1.8rem/1.1 $font-family;
+  }
+
+  .btn {
+    min-width: 119px;
+    padding: 1.05rem 2rem;
+    border: .1rem solid $primary-color;
+    background-color: transparent;
+    color: $secondary-color;
+    font: 400 1.4rem/1.4 $second-font-family;
+    letter-spacing: .1rem;
+    text-align: center;
+
+    &:hover,
+    &:focus {
+      border-color: $primary-color;
+      background-color: $primary-color;
+      color: $secondary-color;
+    }
+  }
+}
+
+.banner-image {
+  > a {
+    position: relative;
+
+    &::after {
+      display: block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      transition: all .3s ease;
+      background-color: rgba(0, 0, 0, .15);
+      content: '';
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    &:hover,
+    &:focus {
+      &::after {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+}
+
+@include mq('md') {
+  .banner {
+    .banner-content {
+      left: 3rem;
+    }
+
+    .banner-title {
+      font-size: 2.1rem;
+    }
+  }
+}
+
+@include mq('lg') {
+  .banner {
+    .banner-content {
+      left: 4rem;
+    }
+
+    .banner-title {
+      font-size: 2.4rem;
+    }
+  }
+}

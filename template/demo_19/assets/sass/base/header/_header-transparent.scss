@@ -1,0 +1,49 @@
+/* Header Transparent/Overlay */
+.header.header-transparent {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  background-color: transparent;
+  z-index: 1040;
+
+  .logo {
+    .logo-dark {
+      display: block;
+    }
+
+    .logo-light {
+      display: none;
+    }
+  }
+
+  .menu {
+    > li {
+      > a {
+        color: #161616;
+      }
+    }
+
+    > li:hover,
+    > li.show,
+    > li.active {
+      > a {
+        color: #161616;      }
+    }
+  }
+
+  .header-contact {
+    color: #161616;
+
+    a {
+      color: inherit;
+    }
+  }
+  
+  .mobile-menu-toggler,
+  .header-dropdown > a,
+  .cart-dropdown .dropdown-toggle::before,
+  .cart-dropdown .dropdown-toggle::after {
+    color: #161616;
+  }
+}

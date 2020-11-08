@@ -1,0 +1,15 @@
+// Page Header
+.page-header {
+  padding: 9.2rem 0 9rem;
+
+  .breadcrumb-nav + & {
+    margin-top: -5rem;
+  }
+}
+
+.page-header h1,
+.page-title {
+  margin-bottom: 0;
+  font-family: $second-font-family;
+  text-transform: uppercase;
+}

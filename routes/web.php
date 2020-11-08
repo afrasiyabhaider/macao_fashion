@@ -455,17 +455,28 @@ Route::get('force-logout', function () {
 });
 
 /**
- *  Site Routes Starts from here
+ *  WebSite Routes Starts from here
  * 
  */
 
 // Route::get('/', 'HomeController@index')->name('site.home');
-Route::get('/', 'SiteController@home')->name('site.home');
-Route::get('product/{id}/detail', 'SiteController@detail')->name('product.detail');
+Route::get('/', 'website\SiteController@home')->name('site.home');
+Route::get('product/{id}/detail', 'website\SiteController@detail')->name('product.detail');
 
-Route::get('product/{ref}/color/{id}', 'SiteController@get_color_sizes');
-Route::get('product/{ref}/color/{color}/size/{size}', 'SiteController@get_color_size_qty');
-Route::get('product/{ref}/size/{size}', 'SiteController@get_size_qty');
-Route::get('product/list', 'SiteController@all_products');
-Route::get('products/category/{id}', 'SiteController@products_by_category');
-Route::get('products/nulldate/{date}', 'SiteController@update_null_product_date');
+Route::get('product/{ref}/color/{id}', 'website\SiteController@get_color_sizes');
+Route::get('product/{ref}/color/{color}/size/{size}', 'website\SiteController@get_color_size_qty');
+Route::get('product/{ref}/size/{size}', 'website\SiteController@get_size_qty');
+Route::get('product/list', 'website\SiteController@all_products');
+Route::get('products/category/{id}', 'website\SiteController@products_by_category');
+Route::get('products/nulldate/{date}', 'website\SiteController@update_null_product_date');
+
+/**
+ *  Cart
+ *
+ * */
+Route::group(['prefix' => 'cart'], function () {
+    Route::post('/', 'website\CartController@addToCart');
+    Route::get('/view', 'website\CartController@viewCart');
+    Route::get('/remove/{id}', 'website\CartController@removeItem');
+    Route::get('/empty', 'website\CartController@emptyCart');
+});

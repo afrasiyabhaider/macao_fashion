@@ -1,0 +1,128 @@
+// Sticky Header
+@-webkit-keyframes fixedHeader {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(-60px);
+  }
+
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+  }
+}
+
+@keyframes fixedHeader {
+  0% {
+    opacity: 0;
+    transform: translateY(-60px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sticky-header {
+  &.fixed {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    background-color: #000;
+    z-index: 1040;
+    -webkit-animation-duration: .4s;
+    animation-duration: .4s;
+    -webkit-animation-name: fixedHeader;
+    animation-name: fixedHeader;
+
+    .logo {
+      .logo-dark {
+        display: none;
+      }
+
+      .logo-light {
+        display: block;
+      }
+    }
+
+    .menu {
+      > li {
+        > a {
+          color: #fff;
+        }
+      }
+
+      > li:hover,
+      > li.show,
+      > li.active {
+        > a {
+          color: #fff;
+        }
+      }
+    }
+
+    .header-contact {
+      color: #fff;
+
+      a {
+        color: inherit;
+      }
+    }
+    
+    .mobile-menu-toggler,
+    .header-dropdown > a,
+    .cart-dropdown .dropdown-toggle::before,
+    .cart-dropdown .dropdown-toggle::after {
+      color: #fff;
+    }
+  }
+
+  &.fixed-nav {
+    position: fixed;
+    top: 79px;
+    right: 0;
+    left: 0;
+    height: 38px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+    overflow: hidden;
+    z-index: 1039;
+    -webkit-animation-duration: .4s;
+    animation-duration: .4s;
+    -webkit-animation-name: fixedHeader;
+    animation-name: fixedHeader;
+
+    .container-fluid {
+      margin: 0 auto;
+    }
+  }
+}
+
+@include mq('lg', 'max') {
+  .sticky-header.fixed-nav {
+    top: 94px;
+  }
+}
+
+@include mq('sm', 'max') {
+  .sticky-header.fixed-nav {
+    display: none;
+  }
+}
+
+@include mq('xl') {
+  .sticky-header.fixed-nav {
+    top: 10rem;
+  }
+}
+
+@include mq('md') {
+  .sticky-header.fixed {
+    padding-left: 78px;
+  }
+
+  .sticky-header.fixed-nav {
+    margin-left: 78px;
+  }
+}

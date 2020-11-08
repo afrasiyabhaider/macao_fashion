@@ -1,0 +1,126 @@
+// Sticky Header
+@-webkit-keyframes fixedHeader {
+  0% {
+    -webkit-transform: translateY(-60px);
+    opacity: 0;
+  }
+
+  100% {
+    -webkit-transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fixedHeader {
+  0% {
+    transform: translateY(-60px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.sticky-header {
+  &.fixed {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    padding-top: .7rem;
+    padding-bottom: .7rem;
+    background-color: #000;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, .08);
+    z-index: 1040;
+    -webkit-animation-duration: .4s;
+    animation-duration: .4s;
+    -webkit-animation-name: fixedHeader;
+    animation-name: fixedHeader;
+
+    .main-nav {
+      width: auto;
+      background-color: transparent;
+    }
+
+    .menu {
+      > li {
+        > a {
+          padding-top: .55rem;
+          padding-bottom: .55rem;
+        }
+      }
+    }
+
+    .logo {
+      margin-right: 2.5rem;
+
+      img {
+        width: auto;
+        max-height: 32px;
+      }
+    }
+
+    .cart-dropdown {
+      .dropdown-toggle {
+        padding-right: 1.6rem;
+
+        &::before {
+          font-size: 2.4rem;
+        }
+
+        .cart-count {
+          right: .8rem;
+          min-width: 1.6rem;
+          height: 1.6rem;
+          padding-bottom: 0;
+        }
+      }
+
+      .dropdown-menu {
+        padding-top: 10px;
+      }
+
+      .dropdownmenu-wrapper::before {
+        right: 17px;
+      }
+
+      .dropdownmenu-wrapper::after {
+        right: 18px;
+      }
+    }
+  }
+
+  &.fixed-nav {
+    position: fixed;
+    top: 46px;
+    right: 0;
+    left: 0;
+    height: 38px;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+    overflow: hidden;
+    z-index: 1039;
+    -webkit-animation-duration: .4s;
+    animation-duration: .4s;
+    -webkit-animation-name: fixedHeader;
+    animation-name: fixedHeader;
+
+    .container-fluid {
+      margin: 0 auto;
+    }
+  }
+}
+
+@include mq('lg', 'max') {
+  .sticky-header.fixed-nav {
+    top: 56px;
+  }
+}
+
+@include mq('sm', 'max') {
+  .sticky-header.fixed-nav {
+    display: none;
+  }
+}

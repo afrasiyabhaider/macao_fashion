@@ -1,0 +1,77 @@
+// Banners
+.banner {
+  position: relative;
+  margin-bottom: 3rem;
+  background-color: #ccc;
+
+  > a {
+    display: block;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    max-width: none;
+    height: auto;
+  }
+
+  .banner-content {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    transform: translateY(-50%);
+    text-align: center;
+  }
+
+  h1 {
+    margin-bottom: 0;
+    font-family: $second-font-family;
+    font-size: 2.4rem;
+    letter-spacing: 0;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+}
+
+@include mq('sm') {
+  .banner h1 {
+    font-size: 3.6rem;
+  }
+}
+
+@include mq('md') {
+  .banner {
+    &.banner-cat {
+      margin-bottom: 4rem;
+    }
+
+    h1 {
+      font-size: 5.4rem;
+    }
+  }
+}
+
+@include mq('lg') {
+  .banner {
+    &.banner-cat {
+      margin-bottom: 5rem;
+    }
+
+    h1 {
+      font-size: 6.4rem;
+    }
+  }
+}
+
+@include mq('xl') {
+  .banner h1 {
+    font-size: 7.2rem;
+  }
+}
+
+@include mq('xxl') {
+  .banner h1 {
+    font-size: 10rem;
+  }
+}

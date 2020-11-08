@@ -105,6 +105,7 @@
 
     <!-- Plugins JS File -->
     <script src="{{asset('site_assets/js/jquery.min.js')}}"></script>
+    @include('sweetalert::alert')
     <script src="{{asset('site_assets/js/bootstrap.bundle.min.js')}}"></script>
     <script src="{{asset('site_assets/js/plugins.min.js')}}"></script>
     <script src="{{asset('site_assets/fontawesome/js/all.min.js')}}"></script>

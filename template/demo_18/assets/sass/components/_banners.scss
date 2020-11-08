@@ -1,0 +1,136 @@
+// Banners
+.banner {
+  display: block;
+  position: relative;
+  margin-bottom: 3.4rem;
+  background-color: #ccc;
+
+  &.banner-cat {
+    display: flex;
+    align-items: center;
+    height: 260px;
+    background-color: #ccc;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    margin-bottom: 0;
+  }
+
+  > a {
+    display: block;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    max-width: none;
+    height: auto;
+  }
+
+  .banner-content {
+    display: inline-block;
+  }
+
+  .banner-title {
+    color: #333333;
+    font: 700 3rem/1.1 $second-font-family;
+    margin-bottom: .7rem;
+    letter-spacing: .04rem;
+    text-transform: uppercase;
+  }
+
+  p {
+    color: #606060;
+    font-weight: 400;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .btn {
+    min-width: 100px;
+    padding: 1.1rem 1rem;
+    border-radius: 0;
+    border-width: .2rem;
+  }
+
+  .banner-action {
+    font-size: 0;
+
+    .btn {
+      min-width: 110px;
+    }
+
+    .btn + .btn {
+      min-width: 127px;
+      margin-left: 1rem;
+    }
+  }
+}
+
+.banner-image {
+  > a {
+    position: relative;
+
+    &::after {
+      display: block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      transition: all .3s ease;
+      background-color: rgba(0, 0, 0, .2);
+      content: '';
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    &:hover,
+    &:focus {
+      &::after {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+}
+
+@include mq('md') {
+  .banner {
+    &.banner-cat {
+      height: 313px;
+    }
+
+    .banner-title {
+      font-size: 3.2rem;
+    }
+
+    p {
+      font-size: 1.6rem;
+      margin-bottom: 1.9rem;
+    }
+
+    .banner-action {
+      .btn {
+        min-width: 138px;
+      }
+
+      .btn + .btn {
+        min-width: 167px;
+        margin-left: 2.4rem;
+      }
+    }
+  }
+}
+
+@include mq('lg') {
+  .banner {
+    .banner-title {
+      font-size: 3.6rem;
+    }
+
+    p {
+      font-size: 1.8rem;
+    }
+  }
+}

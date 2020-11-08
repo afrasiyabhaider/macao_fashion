@@ -1,0 +1,380 @@
+// Footer
+.footer {
+  background-color: #181b1f;
+  font-family: $font-family;
+
+  .container-fluid {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    max-width: none;
+    padding: 0 3.125%
+  }
+
+  img {
+    width: auto;
+    height: auto;
+  }
+
+  .social-icons {
+    display: flex;
+    align-items: center;
+  }
+
+  .social-icon {
+    margin: 0;
+    background-color: transparent;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+
+    i {
+      transition: all .25s;
+      font-size: 1.8rem;
+      color: #999;
+    }
+
+    &:hover {
+      background-color: white;
+
+      i {
+        color: $primary-color-dark;
+      }
+    }
+
+    &+.social-icon {
+      margin-left: 2rem;
+    }
+  }
+  .social-link {
+    margin-bottom: 2rem;
+
+    .link-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: white;
+    }
+    a {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: $primary-color;
+    }
+  }
+}
+
+.instagram-box {
+  position: relative;
+  background-color: $primary-color-dark;
+}
+
+.instagram-carousel.owl-carousel {
+  position: absolute;
+  width: calc(50vw - 50%);
+  right: 1rem;
+  height: 100%;
+
+  .owl-stage-outer,
+  .owl-stage,
+  .owl-item { 
+    height: 100%;
+  }
+
+  img {
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.instagram-follow {
+  display: flex;
+  align-items: center;
+  padding: 3.5rem 0;
+}
+
+.footer-middle {
+  padding: 5rem 0 4rem;
+}
+
+.footer-bottom {
+  font-family: $font-family;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2.5rem 0 6rem;
+  border-top: 1px solid $primary-color-dark;
+
+  p {
+    font-size: 1.2rem;
+    color: #999;
+    letter-spacing: 0.005em;
+    margin-bottom: 0;
+  }
+
+  ul {
+    margin-bottom: 0;
+    display: flex;
+
+    li {
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    li+li {
+      margin-left: 4rem;
+    }
+  }
+}
+
+.footer .service-widget {
+  justify-content: left;
+  height: auto;
+  padding: 0;
+  margin-bottom: 2rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .service-icon,
+  .service-title {
+    color: white;
+  }
+
+  p {
+    color: #999;
+    font-weight: 600;
+  }
+}
+
+.footer .widget {
+  margin-bottom: 2rem;
+
+  ul {
+    margin-bottom: 0;
+  }
+
+  ul>li {
+    margin-bottom: 6px;
+  }
+
+  .widget-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+    margin-top: 0;
+    color: white;
+    text-transform: uppercase;
+  }
+
+  .widget-content {
+    p,
+    a {
+      font-size: 1.3rem;
+      letter-spacing: 0.005em;
+      color: #999;
+    }
+
+    a:hover {
+      color: white;
+    }
+
+    p {
+      margin-bottom: 0;
+      line-height: 2.4rem;
+    }
+  }
+}
+
+.newsletter-widget {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  font-family: $font-family;
+  width: 100%;
+
+  .newsletter-info {
+    margin-right: 4rem;
+  }
+
+  h3 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+  }
+
+  p {
+    font-size: 1.3rem;
+    letter-spacing: 0.005em;
+    color: #999;
+    font-weight: 500;
+    margin-bottom: 0;
+  }
+
+  form {
+    margin: 1rem 0;
+    flex: 1;
+  }
+
+  .submit-wrapper {
+    height: 50px;
+    display: flex;
+    border: 2px solid white;
+
+    .form-control {
+      background-color: transparent;
+      color: #999;
+      padding-left: 1.5rem;
+      font: italic 1.4rem $font-family;
+      letter-spacing: 0.01em;
+      border: none;
+      margin-bottom: 0;
+      max-width: unset;
+      height: 46px;
+
+      &::placeholder {
+        color: #999;
+      }
+    }
+
+    .btn {
+      text-transform: uppercase;
+      font: 700 1.3rem $font-family;
+      letter-spacing: 0.01em;
+      color: white;
+      background-color: transparent;
+      border: none;
+      min-width: unset;
+      padding: 0 0.5rem 0 0;
+
+      i {
+        font-size: 1.6rem;
+      }
+    }
+  }
+}
+
+// Scroll Top Button
+#scroll-top {
+  height: 40px;
+  position: fixed;
+  right: 15px;
+  width: 40px;
+  z-index: 9999;
+  bottom: 0;
+  background-color: #43494e;
+  font-size: 16px;
+  color: #fff;
+  text-align: center;
+  line-height: 1;
+  padding: 11px 0;
+  visibility: hidden;
+  opacity: 0;
+  border-radius: $border-radius $border-radius 0 0;
+  transition: all .3s, margin-right 0s;
+  -webkit-transform: translateY(40px);
+  transform: translateY(40px);
+}
+
+#scroll-top:hover,
+#scroll-top:focus {
+  background-color: #3a4045;
+}
+
+#scroll-top.fixed {
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.porto-content-box {
+  font-family: $font-family;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: white;
+  position: absolute;
+  right: 6%;
+  bottom: 0;
+  transform: translateY(50%);
+  width: 150px;
+  height: 150px;
+
+  h3 {
+    font-size: 2.2rem;
+    color: $primary-color-dark;
+    letter-spacing: -0.015em;
+    font-weight: 700;
+    margin-bottom: 0;
+  }
+
+  span {
+    font-size: 1.5rem;
+    letter-spacing: 0.002em;
+    font-weight: 400;
+    color: #777;
+  }
+
+  h4 {
+    font-size: 1.8rem;
+    letter-spacing: 0.005em;
+    color: #777;
+    font-weight: 700;
+    margin-bottom: 0;
+  }
+
+  a {
+    width: 28px;
+    height: 28px;
+    background-color: $primary-color;
+    border-radius: 50%;
+    color: $primary-color-dark;
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 10px;
+    right: 10px;  
+  }
+}
+
+@media (max-width: 991px) {
+  .footer .service-widget:last-child {
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+
+    p {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .instagram-carousel.owl-carousel.owl-loaded {
+    display: none; 
+  }
+}
+
+@media (max-width: 575px) {
+  .newsletter-widget {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
