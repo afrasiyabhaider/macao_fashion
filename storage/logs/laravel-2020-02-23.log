@@ -1,0 +1,8 @@
+[2020-02-23 09:04:42] live.EMERGENCY: File:/home/jtvxoa2jr8nu/macaobe.com/vendor/laravel/framework/src/Illuminate/Database/Connection.phpLine:664Message:SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'GIORGIA' for key 'name' (SQL: insert into `suppliers` (`name`, `description`, `business_id`, `created_by`, `updated_at`, `created_at`) values (GIORGIA, GG, 1, 1, 2020-02-23 09:04:41, 2020-02-23 09:04:41))  
+[2020-02-23 09:09:31] live.EMERGENCY: File:/home/jtvxoa2jr8nu/macaobe.com/app/Http/Controllers/SellPosController.phpLine:2116Message:Trying to get property 'qty_available' of non-object  
+[2020-02-23 09:09:36] live.EMERGENCY: File:/home/jtvxoa2jr8nu/macaobe.com/app/Http/Controllers/SellPosController.phpLine:2116Message:Trying to get property 'qty_available' of non-object  
+[2020-02-23 09:09:39] live.EMERGENCY: File:/home/jtvxoa2jr8nu/macaobe.com/app/Http/Controllers/SellPosController.phpLine:2116Message:Trying to get property 'qty_available' of non-object  
+[2020-02-23 09:09:59] live.EMERGENCY: File:/home/jtvxoa2jr8nu/macaobe.com/app/Http/Controllers/SellPosController.phpLine:2116Message:Trying to get property 'qty_available' of non-object  
+[2020-02-23 18:36:34] live.EMERGENCY: File:/home/jtvxoa2jr8nu/macaobe.com/app/Http/Controllers/SellPosController.phpLine:2116Message:Trying to get property 'qty_available' of non-object  
+[2020-02-23 18:51:17] live.EMERGENCY: File:/home/jtvxoa2jr8nu/macaobe.com/app/Http/Controllers/SellPosController.phpLine:2116Message:Trying to get property 'qty_available' of non-object  
+[2020-02-23 18:52:13] live.EMERGENCY: File:/home/jtvxoa2jr8nu/macaobe.com/app/Http/Controllers/SellPosController.phpLine:2116Message:Trying to get property 'qty_available' of non-object  

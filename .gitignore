@@ -1,5 +1,2 @@
 .env
 
-storage/framework/cache
-storage/logs/laravel.log
-*.log
