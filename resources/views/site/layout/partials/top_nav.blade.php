@@ -27,7 +27,19 @@ $ut = new \App\Utils\ProductUtil();
                                         {{-- <li><a href="my-account.html">MY ACCOUNT </a></li>
                               <li><a href="#">DAILY DEAL</a></li>
                               <li><a href="#">MY WISHLIST </a></li> --}}
-                                        <li><a href="{{url('/login')}}">SIGN IN</a></li>
+                                        <li>
+                                             <a href="{{url('/login')}}" class="text-light">
+                                                  SIGN IN
+                                             </a>
+                                        </li>
+                                        <li>
+                                             <a href="{{url('/cart/view')}}" class="text-light">
+                                                  CART
+                                                  @if (Cart::count())
+                                                      ({{Cart::count()}})
+                                                  @endif
+                                             </a>
+                                        </li>
                                    </ul>
                               </div><!-- End .header-menu -->
                          </div><!-- End .header-dropown -->
