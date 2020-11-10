@@ -144,7 +144,9 @@
           
                $('#uploadImage').on("click", function() {
                     myDropzone.processQueue(); // Tell Dropzone to process all queued files.
-                    window.location = window.location.href;
+                    setTimeout(function(){
+                         window.location = window.location.href;
+                    },2000);
                });
                
                // Event to send your custom data to your server
