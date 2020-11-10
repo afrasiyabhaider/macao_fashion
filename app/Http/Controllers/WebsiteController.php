@@ -426,7 +426,7 @@ class WebsiteController extends Controller
     {
         $product = Product::find($id);
         try{
-            // dd($request->file('file'));
+            dd($request->file('file'));
             $image_index[0] = null;
             $i=0;
             foreach ($request->file('file') as $key => $value) {
@@ -444,7 +444,7 @@ class WebsiteController extends Controller
                 ];
         }
         catch(\Exception $ex){
-                dd($ex->getMessage());
+            dd($ex->getMessage());
             $output = [
                 'success' => 0,
                 'msg' => "Image Could not be Saved"
