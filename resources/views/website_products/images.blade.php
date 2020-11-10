@@ -138,25 +138,29 @@
           maxFilesize: 2,
           acceptedFiles: 'image/*',
           addRemoveLinks: true,
+          success:function(file, response)
+          {
+               window.location = window.location.href;
+          },
           init: function (e) {
           
           var myDropzone = this;
           
                $('#uploadImage').on("click", function() {
-                    myDropzone.processQueue(); // Tell Dropzone to process all queued files.
-                    setTimeout(function(){
-                         window.location = window.location.href;
-                    },5000);
+                    var res = myDropzone.processQueue(); // Tell Dropzone to process all queued files.
+                    // setTimeout(function(){
+                    //      window.location = window.location.href;
+                    // },5000);
                });
                
                // Event to send your custom data to your server
-               myDropzone.on("sending", function(file, xhr, data) {
+               // myDropzone.on("sending", function(file, xhr, data) {
                
-               // First param is the variable name used server side
-               // Second param is the value, you can add what you what
-               // Here I added an input value
-               data.append("your_variable", $('#your_input').val());
-               });
+               //      // First param is the variable name used server side
+               //      // Second param is the value, you can add what you what
+               //      // Here I added an input value
+               //      // data.append("your_variable", $('#your_input').val());
+               // });
                
                }
           };
