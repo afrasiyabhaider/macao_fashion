@@ -130,6 +130,9 @@
 @section('javascript')
 <script src="{{asset('plugins/dropzone/min/dropzone.min.js')}}"></script>
 <script>
+     $(function () {
+          window.location = window.location.href;
+     });
      Dropzone.options.imageForm = {
           autoProcessQueue: false,
           uploadMultiple: true,
