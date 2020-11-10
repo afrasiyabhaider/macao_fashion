@@ -146,7 +146,7 @@
                     myDropzone.processQueue(); // Tell Dropzone to process all queued files.
                     setTimeout(function(){
                          window.location = window.location.href;
-                    },2000);
+                    },5000);
                });
                
                // Event to send your custom data to your server
