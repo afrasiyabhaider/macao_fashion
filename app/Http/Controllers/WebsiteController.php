@@ -444,10 +444,10 @@ class WebsiteController extends Controller
                 ];
         }
         catch(\Exception $ex){
-            dd($ex->getMessage());
+            // dd($ex->getMessage());
             $output = [
                 'success' => 0,
-                'msg' => "Image Could not be Saved"
+                'msg' => "Image Could not be Saved. ". $ex->getMessage()
             ];
         }
         return redirect()->back()->with('status',$output);
