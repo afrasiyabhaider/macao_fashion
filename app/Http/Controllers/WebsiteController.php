@@ -425,7 +425,7 @@ class WebsiteController extends Controller
     public function addImages(Request $request,$id)
     {
         $product = Product::find($id);
-        try{
+        // try{
             // dd($request->file('file'));
             $image_index[0] = null;
             $i=0;
@@ -442,14 +442,14 @@ class WebsiteController extends Controller
                     'success' => 1,
                     'msg' => "Images Saved"
                 ];
-        }
-        catch(\Exception $ex){
-            // dd($ex->getMessage());
-            $output = [
-                'success' => 0,
-                'msg' => "Image Could not be Saved. ". $ex->getMessage()
-            ];
-        }
+        // }
+        // catch(\Exception $ex){
+        //     // dd($ex->getMessage());
+        //     $output = [
+        //         'success' => 0,
+        //         'msg' => "Image Could not be Saved. ". $ex->getMessage()
+        //     ];
+        // }
         return redirect()->back()->with('status',$output);
 
     }

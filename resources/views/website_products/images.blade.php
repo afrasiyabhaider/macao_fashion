@@ -142,6 +142,11 @@
           {
                window.location = window.location.href;
           },
+          error:function(file, errorMessage)
+          {
+               window.alert('File can not be uploaded. Please try again');
+               window.location = window.location.href;
+          },
           init: function (e) {
           
           var myDropzone = this;
