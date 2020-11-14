@@ -425,7 +425,7 @@ class WebsiteController extends Controller
                 ->where('products.type', '!=', 'modifier');
             if(request()->ajax()){
                 $category_id = request()->get('category_id',null);
-                if(!empty($category_id)){
+                if(!empty($category_id) && $category_id != 'all'){
                     $products->where('c1.id',$category_id);
                     Session::put('category_id',$category_id);
                 }
