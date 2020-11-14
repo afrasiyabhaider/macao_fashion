@@ -457,6 +457,15 @@
             Sale Priority
           </a>
         </li>
+        @php
+            $product_id = App\WebsiteProducts::first()->product_id;
+        @endphp
+        <li class="{{ $request->segment(5) == 'images' ? 'active' : '' }}">
+          <a href="{{action('WebsiteController@addImagesForm',$product_id)}}">
+            <i class="fa fa-image"></i>
+            Add Image
+          </a>
+        </li>
       </ul>
     </li>
     @if(Module::has('Repair'))

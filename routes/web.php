@@ -406,12 +406,13 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
 
     // Website Routes
     Route::post('website/product/', 'WebsiteController@addToWebsite');
+    Route::get('website/product/ajax', 'WebsiteController@websiteAjaxProducts');
     Route::get('website/product/{id}/delete', 'WebsiteController@destroy');
     Route::get('website/product/list', 'WebsiteController@index');
     Route::get('website/product/{id}/special_category', 'WebsiteController@specialCategoriesForm');
     Route::post('website/product/special_category', 'WebsiteController@addspecialCategories');
     Route::get('website/product/{id}/images', 'WebsiteController@addImagesForm');
-    Route::post('website/product/{id}/images', 'WebsiteController@addImages');
+    Route::post('website/product/images', 'WebsiteController@addImages');
     Route::delete('website/product/{id}/images', 'WebsiteController@deleteImage');
     Route::get('website/product/priority', 'WebsiteController@setPriority');
     Route::post('website/product/priority', 'WebsiteController@savePriority');

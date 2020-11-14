@@ -21,6 +21,7 @@ use App\WebsiteProducts;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -400,6 +401,70 @@ class WebsiteController extends Controller
     }
 
     /**
+     * Right Div of Website Products
+     *  
+     **/
+    public function websiteAjaxProducts()
+    {
+        $business_id = request()->session()->get('user.business_id');
+        // if (request()->ajax()) {
+            $products = WebsiteProducts::leftJoin('products', 'website_products.product_id', '=', 'products.id')
+            // $products = Product::leftJoin('website_products as wp', 'wp.refference', '=', 'products.refference')
+            // ->whereIn('products.refference',[$websiteProducts])
+            ->join('units', 'products.unit_id', '=', 'units.id')
+                ->leftJoin('categories as c1', 'products.category_id', '=', 'c1.id')
+                ->leftJoin('categories as c2', 'products.sub_category_id', '=', 'c2.id')
+                ->leftJoin('tax_rates', 'products.tax', '=', 'tax_rates.id')
+                ->leftJoin('sizes', 'products.sub_size_id', '=', 'sizes.id')
+                ->leftJoin('colors', 'products.color_id', '=', 'colors.id')
+                ->leftJoin('variation_location_details as vld', 'vld.product_id', '=', 'products.id')
+                // ->join('website_products as wp', 'wp.refference', '=', 'products.refference')
+                ->join('variations as v', 'v.product_id', '=', 'products.id')->join('suppliers', 'suppliers.id', '=', 'products.supplier_id')
+                ->where('products.business_id', $business_id)
+                // ->where('vld.location_id', $business_location_id)
+                ->where('products.type', '!=', 'modifier');
+            if(request()->ajax()){
+                $category_id = request()->get('category_id',null);
+                if(!empty($category_id)){
+                    $products->where('c1.id',$category_id);
+                    Session::put('category_id',$category_id);
+                }
+            }
+            $products = $products->select(
+                    'products.id',
+                    'products.name as name',
+                    'products.type',
+                    'products.supplier_id',
+                    'products.description',
+                    'suppliers.name as supplier_name',
+                    'c1.name as category',
+                    'c2.name as sub_category',
+                    'units.actual_name as unit',
+                    'tax_rates.name as tax',
+                    'products.sku',
+                    'products.created_at',
+                    'products.bulk_add',
+                    'products.image',
+                    'products.refference',
+                    'products.enable_stock',
+                    'products.is_inactive',
+                    'sizes.name as size',
+                    'colors.name as color',
+                    'v.dpp_inc_tax as purchase_price',
+                    'v.sell_price_inc_tax as selling_price',
+                    DB::raw('SUM(vld.qty_available) as current_stock'),
+                    DB::raw('MAX(v.sell_price_inc_tax) as max_price'),
+                    DB::raw('MIN(v.sell_price_inc_tax) as min_price')
+                )
+                ->orderBy('created_at', 'asc')
+                ->groupBy('products.id')
+                ->get();
+            // return $products;
+            return view('website_products.partials.products',compact('products'));
+        // }
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -407,13 +472,17 @@ class WebsiteController extends Controller
      */
     public function addImagesForm($id)
     {
+        $business_id = request()->session()->get('user.business_id');
+        // $id = WebsiteProducts::first()->product_id;
         $product = Product::find($id);
         $product_images = ProductImages::where('refference',$product->refference)->get();
-
         $all = Product::where('refference',$product->refference)->get();
-
+        // $categories = Category::forDropdown($business_id);
+        $categories = Category::where('parent_id', 0)->pluck('name', 'id');
         // dd($all);
-        return view('website_products.images',compact('product','product_images'));
+        // dd($categories);
+        // dd(Session::get('category_id'));
+        return view('website_products.images',compact('product','product_images','categories'));
     }
 
     /**
@@ -422,9 +491,9 @@ class WebsiteController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function addImages(Request $request,$id)
+    public function addImages(Request $request)
     {
-        $product = Product::find($id);
+        $product = Product::find($request->product_id);
         // try{
             // dd($request->file('file'));
             $image_index[0] = null;
