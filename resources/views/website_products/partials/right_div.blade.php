@@ -5,7 +5,7 @@
           {{-- @dd($categories) --}}
           <select class="select2" id="product_category" style="width:45% !important">
 
-               <option value="all">@lang('lang_v1.all_category')</option>
+               <option value="0">@lang('lang_v1.all_category')</option>
 
                @foreach($categories as $id=>$category)
                     <option value="{{$id}}">{{$category}}</option>
