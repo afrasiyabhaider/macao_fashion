@@ -317,9 +317,9 @@ $(document).ready(function() {
     $("#psr_grouped_tab").click(function() {
         grouped_stock_report_table.ajax.reload();
     });
-    $("#psr_detailed_tab").click(function() {
-        stock_report_table.ajax.reload();
-    });
+    // $("#psr_detailed_tab").click(function() {
+    //     stock_report_table.ajax.reload();
+    // });
     if ($('#tax_report_date_filter').length == 1) {
         $('#tax_report_date_filter').daterangepicker(dateRangeSettings, function(start, end) {
             $('#tax_report_date_filter span').html(

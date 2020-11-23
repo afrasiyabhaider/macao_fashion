@@ -287,7 +287,9 @@ class WebsiteController extends Controller
 
         $rack_enabled = (request()->session()->get('business.enable_racks') || request()->session()->get('business.enable_row') || request()->session()->get('business.enable_position'));
 
-        $categories = Category::forDropdown($business_id);
+        $categories = Category::where('business_id', $business_id)
+                                ->where('parent_id', 0)
+                                ->pluck('name', 'id');
         $suppliers = Supplier::forDropdown($business_id);
         $businessArr = Business::forDropdown($business_id);
 

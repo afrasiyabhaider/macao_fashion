@@ -84,7 +84,7 @@
               <!-- Menu Footer-->
               <li class="user-footer">
                 <div class="pull-left">
-                  <a href="{{url('/')}}" class="btn btn-default btn-flat">Website</a>
+                  <a href="{{url('/')}}" target="__blank" class="btn btn-default btn-flat">Website</a>
                 </div>
                 <div class="pull-left">
                   <a href="{{action('UserController@getProfile')}}" class="btn btn-default btn-flat">@lang('lang_v1.profile')</a>

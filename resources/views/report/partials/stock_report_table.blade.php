@@ -7,7 +7,7 @@
                 </th>
                 <th>
                     <input type="checkbox" id="select-all-row">
-                    All
+                    Select All
                 </th>
                 <th>
                     Printing
