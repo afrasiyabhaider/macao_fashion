@@ -390,12 +390,12 @@
 <script>
      $(function () {
           get_product_suggestion_list();
-          $("#category_id").change(function () {
-               get_product_suggestion_list();
-          });
-          $("#sub_category_id").change(function () {
-               get_product_suggestion_list();
-          });
+          // $("#category_id").change(function () {
+          //      get_product_suggestion_list();
+          // });
+          // $("#sub_category_id").change(function () {
+          //      get_product_suggestion_list();
+          // });
           var category_id = null;
           var sub_category_id = null;
           if ('{{Session::get("category_id")}}') {
