@@ -508,14 +508,14 @@
           $.ajax({
                method: 'GET',
                url: url,
-               data:function(d) {
-                    d.category_id= $("#category_id").val();
-                    d.sub_category_id= $("#sub_category_id").val();
+               data:{
+                    category_id: $("#category_id").val(),
+                    sub_category_id: $("#sub_category_id").val(),
                     // page: page,
                },
                dataType: 'html',
                success: function(result) {
-               console.log(result);
+                    // console.log(result);
                     $('div#product_list_body').html(result);
                     $('#suggestion_page_loader').fadeOut(700);
                },
