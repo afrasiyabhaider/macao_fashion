@@ -494,6 +494,7 @@
           }
           var app_url = {!! json_encode(url('/')) !!}
           url = app_url+'/website/product/ajax';
+          // url = app_url+'/website/product/ajax?category='+$("#category_id").val()+'&sub_category_id='+$("#sub_category_id").val();
           $('#suggestion_page_loader').fadeIn(700);
           // var page = $('input#suggestion_page').val();
           // if (page == 1) {
@@ -509,8 +510,8 @@
                method: 'GET',
                url: url,
                data:{
-                    category_id: $("#category_id").val(),
-                    sub_category_id: $("#sub_category_id").val(),
+                    "category_id": $("#category_id").val(),
+                    "sub_category_id": $("#sub_category_id").val(),
                     // page: page,
                },
                dataType: 'html',

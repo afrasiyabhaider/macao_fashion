@@ -433,7 +433,7 @@ class WebsiteController extends Controller
                     Session::put('category_id',$category_id);
                     // dd($category_id);
                 }
-                if(!empty($sub_category_id) && $sub_category_id != 'none'){
+                if(!empty($sub_category_id) && $sub_category_id != 'none'&& $sub_category_id != 'all'&& $sub_category_id != null){
                     $products->where('products.sub_category_id',$sub_category_id);
                     Session::put('sub_category_id', $sub_category_id);
                     // dd($sub_category_id);

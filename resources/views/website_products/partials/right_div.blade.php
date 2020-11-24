@@ -30,7 +30,7 @@
                     <div class="form-group">
                          {!! Form::label('sub_category_id', __('product.subcategory') . ':') !!}
                          {!! Form::select('sub_category_id', [], null, ['class' => 'form-control select2', 'style' => 'width:100%',
-                         'id' => 'product_list_filter_category_id', 'placeholder' => __('lang_v1.all'),'onchange'=>'get_product_suggestion_list();']); !!}
+                         'id' => 'sub_category_id', 'placeholder' => __('lang_v1.all'),'onchange'=>'get_product_suggestion_list();']); !!}
                     </div>
                </div>
           </div>
