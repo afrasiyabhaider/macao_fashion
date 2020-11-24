@@ -1,28 +1,39 @@
 <div class="box box-widget">
      <div class="box-header with-border">
-
-          @if(!empty($categories))
-          {{-- @dd($categories) --}}
-          <select class="select2" id="product_category" style="width:45% !important">
-
-               <option value="all">@lang('lang_v1.all_category')</option>
-
-               @foreach($categories as $id=>$category)
-                    <option value="{{$id}}">{{$category}}</option>
-               @endforeach
-
-               @foreach($categories as $category)
-                    @if(!empty($category['sub_categories']))
-                    <optgroup label="{{$category['name']}}">
-                         @foreach($category['sub_categories'] as $sc)
-                         <i class="fa fa-minus"></i>
-                         <option value="{{$sc['id']}}">{{$sc['name']}}</option>
-                         @endforeach
-                    </optgroup>
+          <div class="row">
+               <div class="col-sm-6">
+                    @if(!empty($categories))
+                    {{-- @dd($categories) --}}
+                         {!! Form::label('category_id', __('product.category') . ':') !!}
+                         <select class="select2" id="category_id" style="width:100% !important" onchange="get_product_suggestion_list();">
+               
+                              <option value="all">@lang('lang_v1.all_category')</option>
+               
+                              @foreach($categories as $id=>$category)
+                                   <option value="{{$id}}">{{$category}}</option>
+                              @endforeach
+               
+                              {{-- @foreach($categories as $category)
+                                   @if(!empty($category['sub_categories']))
+                                   <optgroup label="{{$category['name']}}">
+                                        @foreach($category['sub_categories'] as $sc)
+                                        <i class="fa fa-minus"></i>
+                                        <option value="{{$sc['id']}}">{{$sc['name']}}</option>
+                                        @endforeach
+                                   </optgroup>
+                                   @endif
+                              @endforeach --}}
+                         </select>
                     @endif
-               @endforeach
-          </select>
-          @endif
+               </div>
+               <div class="col-sm-6">
+                    <div class="form-group">
+                         {!! Form::label('sub_category_id', __('product.subcategory') . ':') !!}
+                         {!! Form::select('sub_category_id', [], null, ['class' => 'form-control select2', 'style' => 'width:100%',
+                         'id' => 'product_list_filter_category_id', 'placeholder' => __('lang_v1.all'),'onchange'=>'get_product_suggestion_list();']); !!}
+                    </div>
+               </div>
+          </div>
           {{-- <input type="text" name="search" id="search_box" class="form-control" placeholder="Search...."
                style="width: 75%;margin-top: 10px;"> --}}
 

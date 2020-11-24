@@ -427,9 +427,16 @@ class WebsiteController extends Controller
                 ->where('products.type', '!=', 'modifier');
             if(request()->ajax()){
                 $category_id = request()->get('category_id',null);
+                $sub_category_id = request()->get('sub_category_id',null);
                 if(!empty($category_id) && $category_id != 'all'){
-                    $products->where('c1.id',$category_id);
+                    $products->where('products.category_id',$category_id);
                     Session::put('category_id',$category_id);
+                    // dd($category_id);
+                }
+                if(!empty($sub_category_id) && $sub_category_id != 'none'){
+                    $products->where('products.sub_category_id',$sub_category_id);
+                    Session::put('sub_category_id', $sub_category_id);
+                    // dd($sub_category_id);
                 }
             }
             $products = $products->select(
@@ -484,7 +491,14 @@ class WebsiteController extends Controller
         // dd($all);
         // dd($categories);
         // dd(Session::get('category_id'));
-        return view('website_products.images',compact('product','product_images','categories'));
+
+        /**
+         * Special Category Content 
+         * 
+         **/
+
+        $special_product = SpecialCategoryProduct::where('refference', $product->refference)->first();
+        return view('website_products.images',compact('product','product_images','categories', 'special_product'));
     }
 
     /**

@@ -184,7 +184,7 @@
 				</div>
 			</div>
 		</form>
-@endcomponent
+	@endcomponent
 </section>
 
 @endsection
