@@ -38,9 +38,9 @@
                                                        $images = App\ProductImages::where('refference',$item->products()->first()->refference)->get();
                                                        @endphp
                                                        @if (!is_null($images) && $images->count() > 0)
-                                                       <img src="{{asset('uploads/img/'.$images[0]->image)}}" style="height:300px;width:300px" class="img-thumbnail">
+                                                       <img src="{{asset('uploads/'.$images[0]->image)}}" style="height:300px;width:300px" class="img-thumbnail">
                                                        @if (isset($images[1]) && $images[1])
-                                                            <img src="{{asset('uploads/img/'.$images[1]->image)}}" style="height:300px;width:300px" class="img-thumbnail">
+                                                            <img src="{{asset('uploads/'.$images[1]->image)}}" style="height:300px;width:300px" class="img-thumbnail">
                                                        @endif
                                                   @else
                                                        <img src="{{asset('img/product-placeholder-1.jpg')}}" id="preview1" alt="Image 1 Preview Here" style="height:300px;width:300px" class="img-thumbnail">
