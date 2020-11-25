@@ -469,7 +469,7 @@ class WebsiteController extends Controller
                 ->groupBy('products.id')
                 ->get();
             // return $products;
-            return view('website_products.partials.products',compact('products'));
+        return view('website_products.partials.products',compact('products'))->render();
         // }
     }
 
