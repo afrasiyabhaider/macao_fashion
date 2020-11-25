@@ -38,13 +38,13 @@
                                                        $images = App\ProductImages::where('refference',$item->products()->first()->refference)->get();
                                                        @endphp
                                                        @if (!is_null($images) && $images->count() > 0)
-                                                       <img src="{{asset('uploads/'.$images[0]->image)}}" style="height:300px;width:250px;padding:30px" class="img-thumbnail">
+                                                       <img src="{{asset('uploads/'.$images[0]->image)}}" style="height:300px;width:250px" class="img-thumbnail">
                                                        @if (isset($images[1]) && $images[1])
-                                                            <img src="{{asset('uploads/'.$images[1]->image)}}" style="height:300px;width:250px;padding:30px" class="img-thumbnail">
+                                                            <img src="{{asset('uploads/'.$images[1]->image)}}" style="height:300px;width:250px" class="img-thumbnail">
                                                        @endif
                                                   @else
-                                                       <img src="{{asset('img/product-placeholder-1.jpg')}}" id="preview1" alt="Image 1 Preview Here" style="height:300px;width:250px;padding:30px" class="img-thumbnail">
-                                                       <img src="{{asset('img/product-placeholder-2.jpg')}}" id="preview1" alt="Image 1 Preview Here" style="height:300px;width:250px;padding:30px" class="img-thumbnail">
+                                                       <img src="{{asset('img/product-placeholder-1.jpg')}}" id="preview1" alt="Image 1 Preview Here" style="height:300px;width:250px" class="img-thumbnail">
+                                                       <img src="{{asset('img/product-placeholder-2.jpg')}}" id="preview1" alt="Image 1 Preview Here" style="height:300px;width:250px" class="img-thumbnail">
                                                   @endif
                                              </a>
                                              {{-- <div class="label-group">
