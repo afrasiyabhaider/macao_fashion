@@ -58,9 +58,9 @@
                                         <div class="product-details">
                                              <div class="category-wrap">
                                                   <div class="category-list">
-                                                       <a href="{{url('products/category/'.encrypt($item->products()->first()->category()->first()['id']))}}" class="product-category">{{$item->products()->first()->category()->first()['name']}}
-                                                       </a>
-                                                       / {{$category->name}}
+                                                       {{-- <a href="{{url('products/category/'.encrypt($item->products()->first()->category()->first()['id']))}}" class="product-category">{{$item->products()->first()->category()->first()['name']}}
+                                                       </a> --}}
+                                                       {{$category->name}}
                                                   </div>
                                                   <a href="#" class="btn-icon-wish"><i class="icon-heart"></i></a>
                                              </div>
@@ -71,11 +71,17 @@
                                                   <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}">{{$item->products()->first()->name}}</a>
                                              </h2>
                                              <span>
+                                                  Sub Category:
+                                                  {{
+                                                                                                                                                 $item->products->sub_category()->first()->name
+                                                                                                                             }}
+                                             </span>
+                                             {{-- <span>
                                                   Product Code:
                                                   {{
                                                        $item->products()->first()->refference
                                                   }}
-                                             </span>
+                                             </span> --}}
                                              {{-- <div class="ratings-container">
                                                   <div class="product-ratings">
                                                        <span class="ratings" style="width:100%"></span><!-- End .ratings -->
