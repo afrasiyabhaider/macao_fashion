@@ -31,7 +31,7 @@
                     <div class="row row-sm">
                          @foreach ($products as $item)
                               <div class="col-6 col-sm-3">
-                                   <div class="product-default inner-quickview inner-icon" style="padding: 30px">
+                                   <div class="product-default inner-quickview inner-icon">
                                         <figure>
                                              <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}">
                                                        @php
