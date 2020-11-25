@@ -21,7 +21,7 @@ Product Detail
                                                   <img class="product-single-image"
                                                        src="{{asset('uploads/'.$item->image)}}"
                                                        data-zoom-image="{{asset('uploads/'.$item->image)}}"
-                                                       style="width:400px;height:400px">
+                                                       style="width:200px;height:300px">
                                              </div>
                                              @endforeach
                                              @else
@@ -144,7 +144,7 @@ Product Detail
                                                             <div class="custom-control custom-radio">
                                                                  <div style="width:50px; border:1px solid black; background-color: {{$item->color_code}}"
                                                                       class="float-left">&nbsp;</div>
-                                                                 <input type="radio" id="customRadio{{$item->id}}" name="color" @if (old('color') == $item->id) checked @endif value="{{$item->id}}" class="custom-control-input">
+                                                                 <input type="radio" id="customRadio{{$item->id}}" name="color" @if (old('color') == $item->id) checked @endif value="{{$item->id}}" class="custom-control-input" checked>
                                                                  <label class="custom-control-label"
                                                                       for="customRadio{{$item->id}}">
                                                                       {{$item->name}}

@@ -52,6 +52,7 @@
                                         </div> --}}
                                         <div class="btn-icon-group">
                                              <button class="btn-icon btn-add-cart" data-toggle="modal" data-target="#addCartModal"><i class="icon-bag"></i></button>
+                                             <a href="#" class="btn-icon btn-icon-wish"><i class="icon-heart"></i></a>
                                         </div>
                                         <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}" class="btn-quickview" title="Quick View">View Details</a> 
                                    </figure>
@@ -60,7 +61,7 @@
                                              <div class="category-list">
                                                   <a href="category.html" class="product-category">{{$item->products()->first()->category()->first()['name']}}</a>
                                              </div>
-                                             <a href="#" class="btn-icon-wish"><i class="icon-heart"></i></a>
+                                             {{-- <a href="#" class="btn-icon-wish"><i class="icon-heart"></i></a> --}}
                                         </div>
                                         {{-- <h2 class="product-title">
                                              <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}">{{$item->products()->first()->name}}</a>
@@ -69,11 +70,17 @@
                                              <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}">{{$item->products()->first()->name}}</a>
                                         </h2>
                                         <span>
+                                             Sub Category:
+                                             {{
+                                                  $item->products->sub_category()->first()->name
+                                             }}
+                                        </span>
+                                        {{-- <span>
                                              Product Code:
                                              {{
                                                   $item->products()->first()->refference
                                              }}
-                                        </span>
+                                        </span> --}}
                                         {{-- <div class="ratings-container">
                                              <div class="product-ratings">
                                                   <span class="ratings" style="width:100%"></span><!-- End .ratings -->
