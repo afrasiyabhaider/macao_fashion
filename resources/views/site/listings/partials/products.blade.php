@@ -13,8 +13,8 @@
      <!-- End .container -->
 </div>
 <div class="container products-body">
-     {{-- <div class="row">
-          <div class="col-lg-9 main-content"> --}}
+     <div class="row">
+          <div class="col-lg-9 main-content">
                <div class="row">
                     <div class="col-12">
                          <hr>
@@ -28,6 +28,7 @@
                          </p>
                     </div>
                </div>
+               @include('site.listings.partials.filters')
                <div class="row row-sm">
                     @foreach ($products as $item)
                          <div class="col-6 col-sm-3">
@@ -123,27 +124,11 @@
                               $products->links()
                          }}
                     </div>
-                    {{-- <ul class="pagination">
-                         <li class="page-item disabled">
-                              <a class="page-link page-link-btn" href="#"><i class="icon-angle-left"></i></a>
-                         </li>
-                         <li class="page-item active">
-                              <a class="page-link" href="#">1 <span class="sr-only">(current)</span></a>
-                         </li>
-                         <li class="page-item"><a class="page-link" href="#">2</a></li>
-                         <li class="page-item"><a class="page-link" href="#">3</a></li>
-                         <li class="page-item"><a class="page-link" href="#">4</a></li>
-                         <li class="page-item"><a class="page-link" href="#">5</a></li>
-                         <li class="page-item"><span class="page-link">...</span></li>
-                         <li class="page-item">
-                              <a class="page-link page-link-btn" href="#"><i class="icon-angle-right"></i></a>
-                         </li>
-                    </ul> --}}
                </nav>
-          {{-- </div> --}}
+          </div>
           <!-- End .col-lg-9 -->
-
-          {{-- @include('site.listings.partials.filters') --}}
+          {{-- <div class="col-lg-3"></div> --}}
+          @include('site.listings.partials.mobile_filters')
           <!-- End .col-lg-3 -->
-     {{-- </div> --}}
+     </div>
 </div>

@@ -1,78 +1,42 @@
-<div class="sidebar-overlay"></div>
-<aside class="sidebar-shop col-lg-3 order-lg-first mobile-sidebar">
-     <div class="sidebar-wrapper p-sm-3 p-0">
-          <div class="widget">
-               <h3 class="widget-title">
-                    <a data-toggle="collapse" href="#widget-body-1" role="button" aria-expanded="true" aria-controls="widget-body-1">Categories</a>
-               </h3>
+<nav class="toolbox">
+     <div class="toolbox-left">
+          <div class="toolbox-item toolbox-sort">
+               <label>Sort By:</label>
 
-               <div class="collapse show" id="widget-body-1">
-                    <div class="widget-body">
-                    <ul class="cat-list">
-                         <li><a href="#">Women</a></li>
-                         <li><a href="#">Men</a></li>
-                    </ul>
-                    </div>
-                    <!-- End .widget-body -->
-               </div>
-               <!-- End .collapse -->
-          </div>
-          <!-- End .widget -->
+               <div class="select-custom">
+                    <select name="orderby" class="form-control">
+                         <option value="menu_order" selected="selected">Default sorting</option>
+                         <option value="popularity">Sort by popularity</option>
+                         <option value="rating">Sort by average rating</option>
+                         <option value="date">Sort by newness</option>
+                         <option value="price">Sort by price: low to high</option>
+                         <option value="price-desc">Sort by price: high to low</option>
+                    </select>
+               </div><!-- End .select-custom -->
 
-          <div class="widget">
-               <h3 class="widget-title">
-                    <a data-toggle="collapse" href="#widget-body-2" role="button" aria-expanded="true" aria-controls="widget-body-2">Price</a>
-               </h3>
+               <a href="#" class="sorter-btn" title="Set Ascending Direction"><span class="sr-only">Set Ascending
+                         Direction</span></a>
+          </div><!-- End .toolbox-item -->
+     </div><!-- End .toolbox-left -->
 
-               <div class="collapse show" id="widget-body-2">
-                    <div class="widget-body">
-                    <form action="#">
-                         <div class="price-slider-wrapper">
-                              <div id="price-slider"></div>
-                              <!-- End #price-slider -->
-                         </div>
-                         <!-- End .price-slider-wrapper -->
-                         <br>
-                         <div class="filter-price-text">
-                              Price:
-                              <span id="filter-price-range"></span>
-                         </div>
+     <div class="toolbox-item toolbox-show">
+          <label>Show:</label>
 
-                         <div class="filter-price-action">
-                              <button type="submit" class="btn btn-primary">Filter</button>
+          <div class="select-custom">
+               <select name="count" class="form-control">
+                    <option value="9">9 Products</option>
+                    <option value="18">18 Products</option>
+                    <option value="27">27 Products</option>
+               </select>
+          </div><!-- End .select-custom -->
+     </div><!-- End .toolbox-item -->
 
-                              <!-- End .filter-price-text -->
-                         </div>
-                         <!-- End .filter-price-action -->
-                    </form>
-                    </div>
-                    <!-- End .widget-body -->
-               </div>
-               <!-- End .collapse -->
-          </div>
-          <!-- End .widget -->
-
-          <div class="widget">
-               <h3 class="widget-title">
-                    <a data-toggle="collapse" href="#widget-body-3" role="button" aria-expanded="true" aria-controls="widget-body-3">Size</a>
-               </h3>
-
-               <div class="collapse show" id="widget-body-3">
-                    <div class="widget-body">
-                    <ul class="config-size-list">
-                         <li class="active"><a href="#">S</a></li>
-                         <li><a href="#">M</a></li>
-                         <li><a href="#">L</a></li>
-                         <li><a href="#">XL</a></li>
-                         <li><a href="#">2XL</a></li>
-                         <li><a href="#">3XL</a></li>
-                    </ul>
-                    </div>
-                    <!-- End .widget-body -->
-               </div>
-               <!-- End .collapse -->
-          </div>
-          <!-- End .widget -->
-     </div>
-     <!-- End .sidebar-wrapper -->
-</aside>
+     <div class="layout-modes">
+          <a href="category.html" class="layout-btn btn-grid active" title="Grid">
+               <i class="icon-mode-grid"></i>
+          </a>
+          <a href="category-list.html" class="layout-btn btn-list" title="List">
+               <i class="icon-mode-list"></i>
+          </a>
+     </div><!-- End .layout-modes -->
+</nav>

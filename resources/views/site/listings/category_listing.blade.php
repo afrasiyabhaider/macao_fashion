@@ -1,6 +1,6 @@
 @extends('site.layout.app')
 @section('title')
-    {{$category->name}}
+    {{$category->name ?? $category_name}}
 @endsection
 @section('content')
      <div class="page-header align-items-end" style="background-image: url(../../site_assets/images/page-header-bg-2.jpg)">
@@ -18,7 +18,7 @@
                               <hr class="mt-n5">
                                    <h2 class="text-center">
                                         <i class="fa fa-shopping-bag"></i>
-                                        {{$category->name}}
+                                        {{$category->name ?? $category_name}}
                                    </h2>
                               <hr>
                          </div>
@@ -60,7 +60,7 @@
                                                   <div class="category-list">
                                                        {{-- <a href="{{url('products/category/'.encrypt($item->products()->first()->category()->first()['id']))}}" class="product-category">{{$item->products()->first()->category()->first()['name']}}
                                                        </a> --}}
-                                                       {{$category->name}}
+                                                       {{$category->name ?? $category_name}}
                                                   </div>
                                                   <a href="#" class="btn-icon-wish"><i class="icon-heart"></i></a>
                                              </div>
@@ -149,7 +149,7 @@
                                         No Product Found
                                    </h3>
                                    <p>
-                                        0 product found in <strong>{{$category->name}}</strong> category. 
+                                        0 product found in <strong>{{$category->name ?? $category_name}}</strong> category. 
                                         Please choose another category or <strong><a href="{{url('product/list')}}">click here</a></strong> to view all products
                                    </p>
                               </div>

@@ -47,14 +47,49 @@ class SiteController extends Controller
     public function products_by_category($id)
     {
         $id = decrypt($id);
+
         $location_id = BusinessLocation::where('name', 'Web Shop')->orWhere('name', 'webshop')->orWhere('name', 'web shop')->orWhere('name', 'Website')->orWhere('name', 'website')->orWhere('name', 'MACAO WEBSHOP')->first()->id;
         // dd($id);
+        if ($id == "top") {
+            $category_name = "TOP";
+            // whereIn('category_id', [40, 41, 42, 59])->or
+            $product_id = Product::WhereIn('sub_category_id', [40, 41, 42, 59])->groupBy('refference')->pluck('id');
+
+            $products = WebsiteProducts::join('products as p', 'p.id', '=', 'website_products.product_id')->whereIn('p.id', $product_id)->orderBy('p.created_at', 'Desc')->paginate(12);
+
+            return view('site.listings.category_listing', compact('category_name', 'products'));
+        }elseif ($id == "robe") {
+            $category_name = "ROBE";
+            // whereIn('category_id', [40, 41, 42, 59])->or
+            $product_id = Product::WhereIn('sub_category_id', [45,47,22,38,39,36,43])->groupBy('refference')->pluck('id');
+
+            $products = WebsiteProducts::join('products as p', 'p.id', '=', 'website_products.product_id')->whereIn('p.id', $product_id)->orderBy('p.created_at', 'Desc')->paginate(12);
+
+            return view('site.listings.category_listing', compact('category_name', 'products'));
+        }elseif ($id == "veste") {
+            $category_name = "VESTE";
+            // whereIn('category_id', [40, 41, 42, 59])->or
+            $product_id = Product::WhereIn('sub_category_id', [44,58,57])->groupBy('refference')->pluck('id');
+
+            $products = WebsiteProducts::join('products as p', 'p.id', '=', 'website_products.product_id')->whereIn('p.id', $product_id)->orderBy('p.created_at', 'Desc')->paginate(12);
+
+            return view('site.listings.category_listing', compact('category_name', 'products'));
+        }elseif ($id == "bah") {
+            $category_name = "BAH";
+            // whereIn('category_id', [40, 41, 42, 59])->or
+            $product_id = Product::WhereIn('sub_category_id', [23,30,31,32,33,46,49,50])->groupBy('refference')->pluck('id');
+
+            $products = WebsiteProducts::join('products as p', 'p.id', '=', 'website_products.product_id')->whereIn('p.id', $product_id)->orderBy('p.created_at', 'Desc')->paginate(12);
+
+            return view('site.listings.category_listing', compact('category_name', 'products'));
+        }
+
 
         $category = Category::find($id);
-
         $product_id = Product::where('category_id', $id)->orWhere('sub_category_id', $id)->groupBy('refference')->pluck('id');
 
         $products = WebsiteProducts::join('products as p', 'p.id', '=', 'website_products.product_id')->whereIn('p.id', $product_id)->orderBy('p.created_at', 'Desc')->paginate(12);
+
 
         return view('site.listings.category_listing', compact('category', 'products'));
     }

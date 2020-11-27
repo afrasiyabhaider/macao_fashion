@@ -14,6 +14,10 @@ class WebsiteProducts extends Model
     {
         return $this->belongsTo(Product::class,'refference','refference');
     }
+    public function images()
+    {
+        return $this->belongsTo(ProductImages::class,'refference','refference');
+    }
     // public function products()
     // {
     //     return $this->belongsTo(Product::class, 'product_id', 'id');

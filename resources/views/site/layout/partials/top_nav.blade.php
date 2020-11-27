@@ -75,7 +75,7 @@ $ut = new \App\Utils\ProductUtil();
                                         </a>
                                    </li>
                                    @foreach ($categories as $parent)
-                                   @if ($loop->iteration <= 8) <li>
+                                        @if ($loop->iteration <= 8 && $parent['name']== "ACCESSOIRE") <li>
                                         <a href="#" class="sf-with-ul">
                                              {{$parent['name']}}
                                         </a>
@@ -107,6 +107,49 @@ $ut = new \App\Utils\ProductUtil();
                                         </li>
                                         @endif
                                         @endforeach
+                                   <li>
+                                        <a href="#" class="sf-with-ul">
+                                             Women
+                                        </a>
+                                        <ul>
+                                             <li>
+                                                  <a href="{{url('products/category/'.encrypt(2))}}">
+                                                       Women
+                                                  </a>
+                                             </li>
+                                             <hr>
+                                             <li>
+                                                  <a href="{{url('products/category/'.encrypt("top"))}}">
+                                                       TOP
+                                                  </a>
+                                             </li>
+                                             <li>
+                                                  <a href="{{url('products/category/'.encrypt("robe"))}}">
+                                                       ROBE
+                                                  </a>
+                                             </li>
+                                             <li>
+                                                  <a href="{{url('products/category/'.encrypt("veste"))}}">
+                                                       VESTE
+                                                  </a>
+                                             </li>
+                                             <li>
+                                                  <a href="{{url('products/category/'.encrypt("bah"))}}">
+                                                       BAH
+                                                  </a>
+                                             </li>
+                                             <li>
+                                                  <a href="{{url('products/category/'.encrypt(48))}}">
+                                                       CHEMISE
+                                                  </a>
+                                             </li>
+                                             <li>
+                                                  <a href="{{url('products/category/'.encrypt(35))}}">
+                                                       ENSAMBLE
+                                                  </a>
+                                             </li>
+                                        </ul>
+                                   </li>
                               </ul>
                          </nav>
 

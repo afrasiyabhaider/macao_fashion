@@ -242,6 +242,10 @@ class WebsiteController extends Controller
                         return $html;
                     }
                 )
+                ->addColumn('website_images',function ($row)
+                {
+                    return $row->images()->get()->count();
+                })
                 ->editColumn('product', function ($row) {
                     $product = $row->is_inactive == 1 ? $row->product . ' <span class="label bg-gray">Inactive
                         </span>' : $row->product;
