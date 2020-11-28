@@ -6,6 +6,7 @@ use App\BusinessLocation;
 use App\Category;
 use App\Color;
 use App\Http\Controllers\Controller;
+use App\Mail\ContactEmail;
 use App\Product;
 use App\ProductImages;
 use App\ProductVariation;
@@ -15,6 +16,7 @@ use App\VariationLocationDetails;
 use App\WebsiteProducts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class SiteController extends Controller
 {
@@ -242,5 +244,29 @@ class SiteController extends Controller
             $vld->product_updated_at = $date;
             $vld->save();
         }
+    }
+    /**
+     * Contact Us
+     *  
+     **/
+    public function contactUs()
+    {
+        return view('site.contact-us');
+    }
+    /**
+     * Send Mail
+     *  
+     **/
+    public function sendMail(Request $request)
+    {
+        $request->validate([
+            'contact-name' => 'required',
+            'contact-email' => 'required|email',
+            'contact-phone' => 'required',
+            'contact-message' => 'required|min:10',
+        ]);
+        Mail::to(env('MAIL_FROM_ADDRESS'))->send(new ContactEmail($request->input('contact-name'),$request->input('contact-phone'),$request->input('contact-message'),$request->input('contact-email')));
+        
+        return redirect()->back();
     }
 }

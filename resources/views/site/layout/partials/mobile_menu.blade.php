@@ -8,11 +8,19 @@
             <span class="mobile-menu-close"><i class="icon-cancel"></i></span>
             <nav class="mobile-nav">
                 <ul class="mobile-menu">
-                    <li>
+                    {{-- <li>
                         <a href="{{url('product/list')}}">
                             All Products
                         </a>
+                    </li> --}}
+                    @if (!Request::is('/'))
+                    <li>
+                        <a href="{{url('/')}}">
+                            Home
+                        </a>
                     </li>
+                    
+                    @endif
                     @foreach ($categories as $parent)
                     @if ($loop->iteration <= 8 && $parent['name']=="ACCESSOIRE" ) <li>
                         <a href="#" class="sf-with-ul">
@@ -87,6 +95,11 @@
                                 </li>
                             </ul>
                         </li>
+                    <li>
+                        <a href="{{url('contact-us')}}">
+                            Contact Us
+                        </a>
+                    </li>
                 </ul>
             </nav><!-- End .mobile-nav -->
 

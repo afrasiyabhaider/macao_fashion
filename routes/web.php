@@ -481,3 +481,9 @@ Route::group(['prefix' => 'cart'], function () {
     Route::get('/remove/{id}', 'website\CartController@removeItem');
     Route::get('/empty', 'website\CartController@emptyCart');
 });
+/**
+ * Contact Us 
+ * 
+ **/
+Route::get('/contact-us', 'website\SiteController@contactUs');
+Route::post('/contact-us', 'website\SiteController@sendMail');

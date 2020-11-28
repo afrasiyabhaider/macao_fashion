@@ -69,11 +69,11 @@ $ut = new \App\Utils\ProductUtil();
                                    </li>
 
                                    @endif
-                                   <li>
+                                   {{-- <li>
                                         <a href="{{url('product/list')}}">
                                              All Products
                                         </a>
-                                   </li>
+                                   </li> --}}
                                    @foreach ($categories as $parent)
                                         @if ($loop->iteration <= 8 && $parent['name']== "ACCESSOIRE") <li>
                                         <a href="#" class="sf-with-ul">
@@ -149,6 +149,11 @@ $ut = new \App\Utils\ProductUtil();
                                                   </a>
                                              </li>
                                         </ul>
+                                   </li>
+                                   <li>
+                                        <a href="{{url('contact-us')}}">
+                                             Contact Us
+                                        </a>
                                    </li>
                               </ul>
                          </nav>
