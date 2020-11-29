@@ -174,8 +174,8 @@
 						<div class="form-group">
 							{!! Form::label('color_id', __('product.color') . ':') !!}
 							<div class="input-group">
-								{!! Form::select('color_idc', $colors, null, ['placeholder' =>
-								__('messages.please_select'), 'class' => ' form-control select2','id' => 'color_idc',
+								{!! Form::select('color_idc_ext', $colors, null, ['placeholder' =>
+								__('messages.please_select'), 'class' => ' form-control select2','id' => 'color_idc_ext',
 								'required' => 'true']); !!}
 								<span class="input-group-btn">
 									<button type="button" @if(!auth()->user()->can('color.create')) disabled @endif
@@ -206,6 +206,16 @@
 							{!! Form::text('custom_price', null, ['class' => 'req form-control',
 							'placeholder' => __('product.sale_price'), 'required' => 'true', 'onChange' =>
 							"DittoThis(this,'single_dsp');", 'required' => 'true']); !!}
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<div class="form-group">
+							{!! Form::label('chooseSize_ext',"Sizes" . ':') !!}
+							<div class="input-group">
+								{!! Form::select('chooseSize_ext', $dd_sizes, null, ['placeholder' =>
+								__('messages.please_select'), 'class' => ' form-control select2','id' => 'chooseSize_ext',
+								'required' => 'true']); !!}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -246,17 +256,45 @@
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-sm-4">
+					{{-- <div class="col-sm-4">
 						<div class="form-group">
-							{!! Form::label('chooseSize',"Sizes" . ':') !!}
+							{!! Form::label('chooseSize_ext',"Sizes" . ':') !!}
 							<div class="input-group">
-								{!! Form::select('chooseSize', $dd_sizes, null, ['placeholder' =>
-								__('messages.please_select'), 'class' => ' form-control select2','id' => 'chooseSize',
+								{!! Form::select('chooseSize_ext', $dd_sizes, null, ['placeholder' =>
+								__('messages.please_select'), 'class' => ' form-control select2','id' => 'chooseSize_ext',
 								'required' => 'true']); !!}
 							</div>
 						</div>
+					</div> --}}
+					<div style="margin-top:50px">
+					{{-- Hide Choose Size Button --}}
+					<div class="col-sm-4">
+						<div class="form-group">
+							{{-- {!! Form::label('size_id', __('product.size') . ':') !!} --}}
+							<span>
+								<button type="button" class="btn btn-primary btn-lg" data-toggle="modal"
+									data-target="#myModal"
+									onclick="$('#btnClose').focus();console.log('done');"><i
+										class="fa fa-plus-circle"></i> Choose Size</button>
+
+							</span>
+						</div>
 					</div>
-					<div class="col-sm-4" style="margin-top: 30px;">
+
+					<div class="col-sm-2">
+						<div class="form-group">
+
+							<div class="input-group">
+
+								<span class="input-group-btn">
+									{{-- <button type="button" onclick="openPrintProducts();" class="btn btn-success btn-lg" ><i class="fa fa-print"></i> Print Products</button>
+
+									</span> --}}
+							</div>
+						</div>
+					</div>
+				</div>
+					<div class="col-sm-4">
 						<button type="button" class="btn btn-danger btn-lg" onclick="clearAll(1);" data-dismiss="modal">Clear</button>
 						<button type="button" class="btn btn-success btn-lg" onclick="addAnother(); getSupplierDetails();"
 							data-dismiss="modal">Add This</button>
@@ -281,7 +319,7 @@
 						<div class="col-md-3"><b>Qty</b></div>
 						<div class="col-md-1"><b>X</b></div>
 					</div>
-					<div id="sizeArea"></div>
+					<div id="sizeArea_ext"></div>
 				</div>
 				<div class="row hide" style="margin-top:50px">
 					<div class="col-sm-4">
@@ -294,39 +332,6 @@
 
 				</div>
 				<div class="clearfix"></div>
-				<div style="margin-top:50px">
-					<div class="col-xs-4">
-						{{-- This is only for alternative of offset --}}
-					</div>
-					{{-- Hide Choose Size Button --}}
-					<div class="col-sm-2 hide">
-						<div class="form-group">
-							{{-- {!! Form::label('size_id', __('product.size') . ':') !!} --}}
-							<div class="input-group">
-
-								<span class="input-group-btn">
-									<button type="button" class="btn btn-primary btn-lg" data-toggle="modal"
-										data-target="#myModal"
-										onclick="$('#btnClose').focus();console.log('done');"><i
-											class="fa fa-plus-circle"></i> Choose Size</button>
-
-								</span>
-							</div>
-						</div>
-					</div>
-					<div class="col-sm-2">
-						<div class="form-group">
-
-							<div class="input-group">
-
-								<span class="input-group-btn">
-									{{-- <button type="button" onclick="openPrintProducts();" class="btn btn-success btn-lg" ><i class="fa fa-print"></i> Print Products</button>
-
-									</span> --}}
-							</div>
-						</div>
-					</div>
-				</div>
 				<!-- data-toggle="modal" data-target="#myModal" -->
 
 
@@ -692,7 +697,7 @@
 				<div class="col-md-12">
 					@foreach($sizes as $id => $objSize)
 					<div class="col-sm-4">
-						<input type="radio" id="btnSize_{{$objSize->id}}" name="chooseSize_old" class=""
+						<input type="radio" id="btnSize_{{$objSize->id}}" name="chooseSize" class=""
 							value="{{$objSize->id}}">
 						{{-- onclick="getSizes({{$objSize->id}})" --}}
 						<label class="custom-control-label" for="btnSize_{{$objSize->id}}">{{$objSize->name}}
@@ -706,7 +711,7 @@
 					{!! Form::label('color_id', __('product.color') . ':') !!}
 					<div class="input-group">
 						{!! Form::select('color_idc', $colors, null, ['placeholder' =>
-						__('messages.please_select'), 'class' => ' form-control','id' => 'color_idc_old']); !!}
+						__('messages.please_select'), 'class' => ' form-control','id' => 'color_idc']); !!}
 						<span class="input-group-btn">
 							<button type="button" @if(!auth()->user()->can('color.create')) disabled @endif
 								class="btn btn-default bg-white btn-flat btn-modal"
@@ -725,7 +730,7 @@
 			@endforeach
 		</div>
 	</div> --}}
-	<div class="row" id="sizeArea_old">
+	<div class="row" id="sizeArea">
 		<div class="col-md-12">
 			<div class="col-md-4"><b>Size</b></div>
 			<div class="col-md-4"><b>Sub-Size</b></div>
@@ -773,7 +778,7 @@
 
 		setTimeout(function(){
 			$("#sub_category_id").val(38).change();
-			$("#color_idc").val(14).change();
+			$("#color_idc_ext").val(14).change();
 		},1000);
 		
     });
@@ -831,23 +836,29 @@
      function setValue(obj)
      {
       obj.defaultValue = obj.value;
-     }
-	$("#chooseSize, #color_idc").change(function(){
-		var chooseSizeRadio = $("select[name='chooseSize']").val();
+	}
+	/**
+	 * External - Colors Adding 
+	 * 
+	 **/
+	// , #color_idc_ext
+	$("#chooseSize_ext").change(function(){
+		var chooseSizeRadio = $("select[name='chooseSize_ext']").val();
+		var colorValue = $("select#color_idc_ext").val();
 		// console.log(chooseSizeRadio);
 		if(chooseSizeRadio){
 			// console.log($("input[name='chooseSize']:checked").val());
 			sizeId = chooseSizeRadio;
 			name = sizeId;
 		}else{
-			if($("#color_idc").val() == 14){
+			if(colorValue){
 				return(false);
 			}else{
-				alert("Please Select Size First "); 
+				alert("Color must be selected "); 
 				return(false);
 			}
 		}
-		var html = $("#sizeArea").html(); 
+		var html = $("#sizeArea_ext").html(); 
 		$.ajax({
 			type:'GET',
 			url:'/sizes/getSubSize/'+name, 
@@ -864,7 +875,58 @@
 					html += "<div class=' col-md-2 hide'><select tab-index='-1' class='form-control' readonly><option value='"+sizeId+"'>"+size_idtext+"</option></select></div>";
 					html += "<div class=' col-md-4'><select tab-index='-1'class='form-control'  readonly><option value='"+obj[i]['id']+"'>"+obj[i]['name']+"</option></select></div>";
 
-					html += "<div class=' col-md-4'><select tab-index='-1' onchange='setColorWithSize("+i+");' class='form-control' form='product_add_form'  readonly required id='color_id_"+i+"'> <option selected='selected' value='"+$("#color_idc option:selected").val()+"'>"+$("#color_idc option:selected").text()+"</option></select></div>";
+					html += "<div class=' col-md-4'><select tab-index='-1' onchange='setColorWithSize("+i+");' class='form-control' form='product_add_form'  readonly required id='color_id_"+i+"'> <option selected='selected' value='"+$("#color_idc_ext option:selected").val()+"'>"+$("#color_idc_ext option:selected").text()+"</option></select></div>";
+
+					html += "<div class=' col-md-3'><input tab-index='"+(0)+"' onChange='setValue(this);' type='number' data-size='"+sizeId+"' data-size-name='"+size_idtext+"' data-size-sub='"+obj[i]['id']+"' data-size-sub-name='"+obj[i]['name']+"' data-color='"+$("#color_idc_ext option:selected").val()+"' data-color-name='"+$("#color_idc_ext option:selected").text()+"' class='form-control sizeQty'  value='1'  id='datasize_"+i+"'/></div>";
+
+					html += "<div class=' col-md-1'><button tab-index=-1 onclick='removeSize("+rowSize+")' class='btn btn-sm btn-danger'>X</button></div>";
+					html += "</div>";
+					}
+					$("#sizeArea_ext").html(html);
+
+				}else
+				{
+					alert(" "+data.msg);
+					$("#amount_"+rowIndex).val(0).change();
+					$("#note_"+rowIndex).val('');
+					ResetFields(rowIndex);
+				}
+			}
+		});
+
+		$("#chooseSize_ext").val("").change();
+	});
+	/**
+	*  Modal -  Colors Adding
+	* 
+	**/
+	$("#color_idc").change(function(){
+		var chooseSizeRadio = $("input[name='chooseSize']").is(':checked')
+		if(chooseSizeRadio){
+			// console.log($("input[name='chooseSize']:checked").val());
+			sizeId = $("input[name='chooseSize']:checked").val();
+			name = sizeId;
+		}else{
+			alert("Please Select Size First "); 
+			return(false);
+		}
+		var html = $("#sizeArea").html(); 
+		$.ajax({
+			type:'GET',
+			url:'/sizes/getSubSize/'+name, 
+			success:function(data){
+				if(data.success)
+				{ 
+					var obj = data.msg;
+					size_idtext = $("#btnSize_"+sizeId).html();
+					
+					for (i = 0  ; i < obj.length; i++) {
+					rowSize++ ;
+					html += "<div class=' col-md-12' id='sizeRow_"+rowSize+"'> ";
+					html += "<div class=' col-md-2'><select tab-index='-1' class='form-control' readonly><option value='"+sizeId+"'>"+size_idtext+"</option></select></div>";
+					html += "<div class=' col-md-2'><select tab-index='-1'class='form-control'  readonly><option value='"+obj[i]['id']+"'>"+obj[i]['name']+"</option></select></div>";
+
+					html += "<div class=' col-md-2'><select tab-index='-1' onchange='setColorWithSize("+i+");' class='form-control' form='product_add_form'  readonly required id='color_id_"+i+"'> <option selected='selected' value='"+$("#color_idc option:selected").val()+"'>"+$("#color_idc option:selected").text()+"</option></select></div>";
 
 					html += "<div class=' col-md-3'><input tab-index='"+(0)+"' onChange='setValue(this);' type='number' data-size='"+sizeId+"' data-size-name='"+size_idtext+"' data-size-sub='"+obj[i]['id']+"' data-size-sub-name='"+obj[i]['name']+"' data-color='"+$("#color_idc option:selected").val()+"' data-color-name='"+$("#color_idc option:selected").text()+"' class='form-control sizeQty'  value='1'  id='datasize_"+i+"'/></div>";
 
@@ -878,62 +940,11 @@
 					alert(" "+data.msg);
 					$("#amount_"+rowIndex).val(0).change();
 					$("#note_"+rowIndex).val('');
-					ResetFields(rowIndex);
+			ResetFields(rowIndex);
 				}
 			}
 		});
-
-		$("#chooseSize").val("").change();
 	});
-	/**
-	*  OLD Colors Adding
-	* 
-	**/
-	// $("#color_idc").change(function(){
-	// 	var chooseSizeRadio = $("input[name='chooseSize']").is(':checked')
-	// 	if(chooseSizeRadio){
-	// 		// console.log($("input[name='chooseSize']:checked").val());
-	// 		sizeId = $("input[name='chooseSize']:checked").val();
-	// 		name = sizeId;
-	// 	}else{
-	// 		alert("Please Select Size First "); 
-	// 		return(false);
-	// 	}
-	// 	var html = $("#sizeArea").html(); 
-	// 	$.ajax({
-	// 		type:'GET',
-	// 		url:'/sizes/getSubSize/'+name, 
-	// 		success:function(data){
-	// 			if(data.success)
-	// 			{ 
-	// 				var obj = data.msg;
-	// 				size_idtext = $("#btnSize_"+sizeId).html();
-					
-	// 				for (i = 0  ; i < obj.length; i++) {
-	// 				rowSize++ ;
-	// 				html += "<div class=' col-md-12' id='sizeRow_"+rowSize+"'> ";
-	// 				html += "<div class=' col-md-2'><select tab-index='-1' class='form-control' readonly><option value='"+sizeId+"'>"+size_idtext+"</option></select></div>";
-	// 				html += "<div class=' col-md-2'><select tab-index='-1'class='form-control'  readonly><option value='"+obj[i]['id']+"'>"+obj[i]['name']+"</option></select></div>";
-
-	// 				html += "<div class=' col-md-2'><select tab-index='-1' onchange='setColorWithSize("+i+");' class='form-control' form='product_add_form'  readonly required id='color_id_"+i+"'> <option selected='selected' value='"+$("#color_idc option:selected").val()+"'>"+$("#color_idc option:selected").text()+"</option></select></div>";
-
-	// 				html += "<div class=' col-md-3'><input tab-index='"+(0)+"' onChange='setValue(this);' type='number' data-size='"+sizeId+"' data-size-name='"+size_idtext+"' data-size-sub='"+obj[i]['id']+"' data-size-sub-name='"+obj[i]['name']+"' data-color='"+$("#color_idc option:selected").val()+"' data-color-name='"+$("#color_idc option:selected").text()+"' class='form-control sizeQty'  value='1'  id='datasize_"+i+"'/></div>";
-
-	// 				html += "<div class=' col-md-1'><button tab-index=-1 onclick='removeSize("+rowSize+")' class='btn btn-sm btn-danger'>X</button></div>";
-	// 				html += "</div>";
-	// 				}
-	// 				$("#sizeArea").html(html);
-
-	// 			}else
-	// 			{
-	// 				alert(" "+data.msg);
-	// 				$("#amount_"+rowIndex).val(0).change();
-	// 				$("#note_"+rowIndex).val('');
-	// 		ResetFields(rowIndex);
-	// 			}
-	// 		}
-	// 	});
-	// });
      function getSizes(sizeId)
      {
       if($("#color_idc").val() == "")
@@ -1075,6 +1086,7 @@
       $(".sizeQty").val("0");
       countSize = 0;
       $("#sizeArea").empty();
+      $("#sizeArea_ext").empty();
       var fieldsArr = ["supplier_id", "brand_id",  "name","upload_image","unit_price","ref_description","sku","chooseSize"];
      //  var notIncludeArr = ["single_dpp", "single_dpp_inc_tax", "single_dsp", "single_dsp_inc_tax", "profit_percent","upload_image"];
       var ignoreArr = ["supplier_id", "brand_id", "category_id", "name", "unit_price","custom_price","single_dpp", "single_dpp_inc_tax", "single_dsp", "single_dsp_inc_tax", "profit_percent","upload_image","refference_id"];
