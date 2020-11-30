@@ -7,10 +7,11 @@
 			</div>
 			<span class="text text-uppercase">
 				<small>
-					<strong class="text-dark">Name : {{$product->name}} </strong> <br>
+					<strong class="text-dark">{{$product->name}} </strong> 
+					{{-- <br>
 					@if($product->type == 'variable')
 					- {{$product->variation}}
-					@endif
+					@endif --}}
 				</small>
                </span>
                @php
@@ -25,11 +26,15 @@
 			@endphp
 			{{-- <span class="text-info">Size: {{$size['name']}} </span>
 			<br> --}}
-			<span class="text-info">Color: {{$color['name']}} </span>
+			{{-- <span class="text-info">Color: {{$color['name']}} </span>
 			<br>
 			<span class="text-success">
 				Barcode: [{{$product->sku}}]
-			</span>
+			</span> --}}
+			Images: 
+			{{
+				$product->images()->count()
+			}}
 		</a>
 		</div>
 	</div>
