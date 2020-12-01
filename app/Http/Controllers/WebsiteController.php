@@ -44,8 +44,9 @@ class WebsiteController extends Controller
                 $count = 0;
                 foreach ($product as $key => $value) {
                     $product = Product::find($value);
+                    $product_ids = Product::where('name',$product->name)->pluck('id');
                     $count++;
-                    if (!WebsiteProducts::where('refference',$product->refference)->first()) {
+                    if (!WebsiteProducts::whereIn('product_id',$product_ids)->first()) {
         
                         $qty = VariationLocationDetails::where('product_refference',$product->refference)->sum('qty_available');
                     
