@@ -466,6 +466,12 @@
             Add Image
           </a>
         </li>
+        <li class="{{ url()->current() == url('website/banner/images') ? 'active' : '' }}">
+          <a href="{{action('SiteImageController@create')}}">
+            <i class="fa fa-image"></i>
+            Add Banner Images
+          </a>
+        </li>
       </ul>
     </li>
     @if(Module::has('Repair'))

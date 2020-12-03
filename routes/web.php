@@ -416,6 +416,15 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::delete('website/product/{id}/images', 'WebsiteController@deleteImage');
     Route::get('website/product/priority', 'WebsiteController@setPriority');
     Route::post('website/product/priority', 'WebsiteController@savePriority');
+
+    /**
+     * Site Images for banners
+     *  
+     **/
+    Route::get('website/banner/images', 'SiteImageController@create');
+    Route::post('website/slider/images', 'SiteImageController@storeSlider');
+    Route::post('website/category/images', 'SiteImageController@categoryImage');
+    Route::delete('website/slider/images/{id}', 'SiteImageController@destroySlider');
 });
 
 Route::get('migrate-fresh', function () {
@@ -454,6 +463,7 @@ Route::get('force-logout', function () {
     Auth::logout();
     dd("Logged Out");
 });
+
 
 /**
  *  WebSite Routes Starts from here
