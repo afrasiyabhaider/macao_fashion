@@ -1,5 +1,9 @@
 @php
     $ut = new \App\Utils\ProductUtil();
+    $slider = App\SiteImage::where('image_for','slider')->get();
+    $banner = "url(site_assets/images/promo-bg.jpg)";
+    $promo1 = App\SiteImage::where('image_for','promo_1')->first();
+    $promo2 = App\SiteImage::where('image_for','promo_2')->first();
 @endphp
 
 @extends('site.layout.app')
@@ -9,45 +13,50 @@
 @section('content')
     <div class="home-slider-container">
         <div class="home-slider owl-carousel owl-theme owl-theme-light">
-            <div class="home-slide">
-                <div class="slide-bg owl-lazy" data-src="{{asset('site_assets/images/bg-2.jpg')}}" style="background-position:32% center;"></div><!-- End .slide-bg -->
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-5 offset-md-7">
-                            <div class="home-slide-content slide-content-big">
-                                <h1>Dresses</h1>
-                                <h3>
-                                    <span>up to </span>
-                                    <strong>30%</strong>
-                                    <span>OFF in the<br>collection</span>
-                                </h3>
-                                <a href="category.html" class="btn btn-primary">Shop Now</a>
-                            </div><!-- End .home-slide-content -->
-                        </div><!-- End .col-lg-5 -->
-                    </div><!-- End .row -->
-                </div><!-- End .container -->
-            </div><!-- End .home-slide -->
+            {{-- !-- End .home-slide --> --}}
+            @if($slider)
+                @foreach ($slider as $item)
+                    <div class="home-slide">
+                        <div class="slide-bg owl-lazy" data-src="{{asset('uploads/'.$item->image)}}" style="background-position:64% center;"></div><!-- End .slide-bg -->
+                        {{-- <div class="container">
+                            <div class="row">
+                                <div class="col-md-5 offset-md-1">
+                                    <div class="home-slide-content slide-content-big">
+                                        <h1>Fashion</h1>
+                                        <h3>
+                                            <span>up to </span>
+                                            <strong>70%</strong>
+                                            <span>OFF in the<br>collection</span>
+                                        </h3>
+                                        <a href="category.html" class="btn btn-primary">Shop Now</a>
+                                    </div><!-- End .home-slide-content -->
+                                </div><!-- End .col-lg-5 -->
+                            </div><!-- End .row -->
+                        </div><!-- End .container --> --}}
+                    </div><!-- End .home-slide -->
+                @endforeach
+            @else
+                <div class="home-slide">
+                    <div class="slide-bg owl-lazy" data-src="{{asset('site_assets/images/bg-1.jpg')}}" style="background-position:64% center;"></div><!-- End .slide-bg -->
+                    {{-- <div class="container">
+                        <div class="row">
+                            <div class="col-md-5 offset-md-1">
+                                <div class="home-slide-content slide-content-big">
+                                    <h1>Fashion</h1>
+                                    <h3>
+                                        <span>up to </span>
+                                        <strong>70%</strong>
+                                        <span>OFF in the<br>collection</span>
+                                    </h3>
+                                    <a href="category.html" class="btn btn-primary">Shop Now</a>
+                                </div><!-- End .home-slide-content -->
+                            </div><!-- End .col-lg-5 -->
+                        </div><!-- End .row -->
+                    </div><!-- End .container --> --}}
+                </div><!-- End .home-slide -->
+            @endif
 
-            <div class="home-slide">
-                <div class="slide-bg owl-lazy" data-src="{{asset('site_assets/images/bg-1.jpg')}}" style="background-position:64% center;"></div><!-- End .slide-bg -->
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-5 offset-md-1">
-                            <div class="home-slide-content slide-content-big">
-                                <h1>Fashion</h1>
-                                <h3>
-                                    <span>up to </span>
-                                    <strong>70%</strong>
-                                    <span>OFF in the<br>collection</span>
-                                </h3>
-                                <a href="category.html" class="btn btn-primary">Shop Now</a>
-                            </div><!-- End .home-slide-content -->
-                        </div><!-- End .col-lg-5 -->
-                    </div><!-- End .row -->
-                </div><!-- End .container -->
-            </div><!-- End .home-slide -->
-
-            <div class="home-slide">
+            {{-- <div class="home-slide">
                 <div class="slide-bg owl-lazy" data-src="{{asset('site_assets/images/bg-4.jpg')}}" style="background-position:64% center;"></div><!-- End .slide-bg -->
                 <div class="container">
                     <div class="row">
@@ -64,7 +73,7 @@
                         </div><!-- End .col-lg-5 -->
                     </div><!-- End .row -->
                 </div><!-- End .container -->
-            </div><!-- End .home-slide -->
+            </div><!-- End .home-slide --> --}}
         </div><!-- End .home-slider -->
     </div><!-- End .home-slider-container -->
 
@@ -141,9 +150,14 @@
         @endif
     </div><!-- End .container -->
 
-    <div class="promo-section" style="background-image: url(site_assets/images/promo-bg.jpg)">
+    @if($promo1)
+        <div class="promo-section" style="background-image: url({{'uploads/'.$promo1->image }})">
+        
+    @else
+        <div class="promo-section" style="background-image: {{$banner}}">
+    @endif
         <div class="container">
-            <div class="container">
+            {{-- <div class="container">
                 <div class="row">
                     <div class="col-lg-8 offset-lg-2">
                         <div class="promo-slider owl-carousel owl-theme owl-theme-light">
@@ -159,7 +173,7 @@
                         </div><!-- End .promo-slider -->
                     </div><!-- End .col-lg-6 -->
                 </div><!-- End .row -->
-            </div><!-- End .container -->
+            </div><!-- End .container --> --}}
         </div><!-- End .container -->
     </div><!-- End .promo-section -->
 
@@ -365,8 +379,12 @@
         </div><!-- End .container -->
     </div><!-- End .blog-section --> --}}
     {{-- All Products --}}
-    <div class="promo-section" style="background-image: url(site_assets/images/promo-bg.jpg)">
-        <div class="container">
+    @if($promo2)
+        <div class="promo-section" style="background-image: url({{'uploads/'.$promo2->image }})">
+    @else
+        <div class="promo-section" style="background-image: {{$banner}}">
+    @endif
+        {{-- <div class="container">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-8 offset-lg-2">
@@ -384,7 +402,7 @@
                     </div><!-- End .col-lg-6 -->
                 </div><!-- End .row -->
             </div><!-- End .container -->
-        </div><!-- End .container -->
+        </div><!-- End .container --> --}}
     </div><!-- End .promo-section -->
 
     <div class="container mb-2 mb-lg-4 mb-xl-5">

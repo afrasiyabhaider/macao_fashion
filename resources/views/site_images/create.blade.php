@@ -8,7 +8,7 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
      <h1>
-          Special Categories
+          Banner Images
      </h1>
 </section>
 
@@ -18,7 +18,7 @@
           <div class="col-sm-12">
                @component('components.widget', ['class' => 'box-primary'])
                     <h3 class="text-primary">
-                         Site Banner Images
+                         Site Banner Images <small>1970x800</small>
                          <i class="fa fa-image"></i>
                     </h3>
                     @if ($errors->any())
@@ -99,7 +99,7 @@
           <div class="col-sm-12">
                @component('components.widget', ['class' => 'box-primary'])
                     <h3 class="text-primary">
-                         Category Images
+                         Category Images <small>399x210</small>
                          <i class="fa fa-image"></i>
                     </h3>
                     @if ($errors->any())
@@ -124,14 +124,10 @@
                               </label>
                               <br>
                               @if (isset($cat1))
-                              <img src="{{asset('uploads/'.$cat1->image)}}" id="preview1" alt="Image 1 Preview Here"
-                                   style="width:150px;height:150px" class="img-thumbnail img-fluid">
-                              @else
-                              <img src="{{asset('img/upload_image.png')}}" id="preview1" alt="Image 1 Preview Here" style="width:150px;height:150px"
-                                   class="img-thumbnail img-fluid">
+                                   <img src="{{asset('uploads/'.$cat1->image)}}"  alt="Image Here" style="width:150px;height:150px" class="img-thumbnail img-fluid">
                               @endif
-                              <input type="file" class="custom-file" name="image" id="cat1" @if(isset($cat1)) style="display:none"
-                                   @endif>
+                                   <img src="{{asset('img/upload_image.png')}}" id="preview1" alt="Image Here" style="width:150px;height:150px" class="img-thumbnail img-fluid">
+                                   <input type="file" class="custom-file" name="image" id="cat1">
                               </div>
                               <button class="btn btn-success mt-sm-5" type="submit">
                                    Upload Image
@@ -152,14 +148,11 @@
                               </label>
                               <br>
                               @if (isset($cat2))
-                              <img src="{{asset('uploads/'.$cat2->image)}}" id="preview2" alt="Image 1 Preview Here"
-                                   style="width:150px;height:150px" class="img-thumbnail img-fluid">
-                              @else
-                                   <img src="{{asset('img/upload_image.png')}}" id="preview2" alt="Image 1 Preview Here" style="width:150px;height:150px"
-                                        class="img-thumbnail img-fluid">
+                                   <img src="{{asset('uploads/'.$cat2->image)}}"  alt="Image Here" style="width:150px;height:150px" class="img-thumbnail img-fluid">
                               @endif
-                              <input type="file" class="custom-file" name="image" id="cat2" @if(isset($cat2)) style="display:none"
-                                   @endif>
+                              <img src="{{asset('img/upload_image.png')}}" id="preview2" alt="Image Here" style="width:150px;height:150px"
+                                   class="img-thumbnail img-fluid">
+                              <input type="file" class="custom-file" name="image" id="cat2">
                               </div>
                               <button class="btn btn-success mt-sm-5" type="submit">
                                    Upload Image
@@ -180,14 +173,11 @@
                               </label>
                               <br>
                               @if (isset($cat3))
-                              <img src="{{asset('uploads/'.$cat3->image)}}" id="preview3" alt="Image 1 Preview Here"
-                                   style="width:150px;height:150px" class="img-thumbnail img-fluid">
-                              @else
-                              <img src="{{asset('img/upload_image.png')}}" id="preview3" alt="Image 1 Preview Here" style="width:150px;height:150px"
-                                   class="img-thumbnail img-fluid">
+                                   <img src="{{asset('uploads/'.$cat3->image)}}" id="preview3" alt="Image Here" style="width:150px;height:150px" class="img-thumbnail img-fluid">
                               @endif
-                              <input type="file" class="custom-file" name="image" id="cat3" @if(isset($cat3)) style="display:none"
-                                   @endif>
+                              <img src="{{asset('img/upload_image.png')}}" id="preview3" alt="Image Here" style="width:150px;height:150px"
+                                   class="img-thumbnail img-fluid">
+                              <input type="file" class="custom-file" name="image" id="cat3">
                               </div>
                               <button class="btn btn-success mt-sm-5" type="submit">
                                    Upload Image
@@ -202,7 +192,7 @@
           <div class="col-sm-12">
                @component('components.widget', ['class' => 'box-primary'])
                     <h3 class="text-primary">
-                         Promo Images
+                         Promo Images <small>1970x480</small>
                          <i class="fa fa-image"></i>
                     </h3>
                     @if ($errors->any())
@@ -227,14 +217,12 @@
                               </label>
                               <br>
                               @if (isset($promo1))
-                              <img src="{{asset('uploads/'.$promo1->image)}}" id="promo_preview1" alt="Image 1 Preview Here"
+                              <img src="{{asset('uploads/'.$promo1->image)}}" alt="Image Here"
                                    style="width:150px;height:150px" class="img-thumbnail img-fluid">
-                              @else
-                              <img src="{{asset('img/upload_image.png')}}" id="promo_preview1" alt="Image 1 Preview Here" style="width:150px;height:150px"
-                                   class="img-thumbnail img-fluid">
                               @endif
-                              <input type="file" class="custom-file" name="image" id="promo1" @if(isset($promo1)) style="display:none"
-                                   @endif>
+                              <img src="{{asset('img/upload_image.png')}}" id="promo_preview1" alt="Image Here" style="width:150px;height:150px"
+                                   class="img-thumbnail img-fluid">
+                              <input type="file" class="custom-file" name="image" id="promo1">
                               </div>
                               <button class="btn btn-success mt-sm-5" type="submit">
                                    Upload Image
@@ -255,14 +243,12 @@
                               </label>
                               <br>
                               @if (isset($promo_2))
-                              <img src="{{asset('uploads/'.$promo_2->image)}}" id="promo_preview2" alt="Image 1 Preview Here"
+                              <img src="{{asset('uploads/'.$promo_2->image)}}"  alt="Image Here"
                                    style="width:150px;height:150px" class="img-thumbnail img-fluid">
-                              @else
-                                   <img src="{{asset('img/upload_image.png')}}" id="promo_preview2" alt="Image 1 Preview Here" style="width:150px;height:150px"
-                                        class="img-thumbnail img-fluid">
                               @endif
-                              <input type="file" class="custom-file" name="image" id="promo2" @if(isset($promo_2)) style="display:none"
-                                   @endif>
+                              <img src="{{asset('img/upload_image.png')}}" id="promo_preview2" alt="Image Here" style="width:150px;height:150px"
+                                   class="img-thumbnail img-fluid">
+                              <input type="file" class="custom-file" name="image" id="promo2">
                               </div>
                               <button class="btn btn-success mt-sm-5" type="submit">
                                    Upload Image

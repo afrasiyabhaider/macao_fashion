@@ -60,7 +60,10 @@ class SiteImageController extends Controller
     {
         $image_index[0] = null;
         // foreach ($request->file('file') as $key => $value) {
-            $slider_images = new SiteImage();
+            $slider_images = SiteImage::where('image_for', $request->type)->first();
+            if(!$slider_images){
+                $slider_images = new SiteImage();
+            }
             $name = Storage::put('img/website/banner', $request->file('image'));
             $slider_images->image = $name;
             $slider_images->image_for = $request->type;
