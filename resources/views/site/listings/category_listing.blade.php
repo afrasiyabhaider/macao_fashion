@@ -1,9 +1,22 @@
+@php
+     if (isset($category_name)) {
+          $name = $category_name;
+     }
+     if(isset($category)){
+          $name = $category->name;
+     }
+     $category_image = App\SiteImage::where('image_for',$name)->first();
+@endphp
 @extends('site.layout.app')
 @section('title')
     {{$category->name ?? $category_name}}
 @endsection
 @section('content')
-     <div class="page-header align-items-end" style="background-image: url(../../site_assets/images/page-header-bg-2.jpg)">
+     @if ($category_image)
+          <div class="page-header align-items-end" style="background-image: url('../../uploads/{{$category_image->image}}')">
+     @else
+          <div class="page-header align-items-end" style="background-image: url(../../site_assets/images/page-header-bg-2.jpg)">
+     @endif
      <div class="container">
      {{-- <img src="site_assets/images/page-header-img.png" alt="image"> --}}
      </div>

@@ -472,6 +472,12 @@
             Add Banner Images
           </a>
         </li>
+        <li class="{{ url()->current() == url('website/page/images') ? 'active' : '' }}">
+          <a href="{{action('SiteImageController@create_page')}}">
+            <i class="fa fa-image"></i>
+            Add Page Images
+          </a>
+        </li>
       </ul>
     </li>
     @if(Module::has('Repair'))

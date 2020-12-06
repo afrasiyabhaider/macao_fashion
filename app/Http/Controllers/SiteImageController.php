@@ -27,6 +27,15 @@ class SiteImageController extends Controller
     {
         return view('site_images.create');
     }
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create_page()
+    {
+        return view('site_images.pages');
+    }
 
     /**
      * Store a newly created resource in storage.

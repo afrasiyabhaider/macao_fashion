@@ -422,6 +422,7 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
      *  
      **/
     Route::get('website/banner/images', 'SiteImageController@create');
+    Route::get('website/page/images', 'SiteImageController@create_page');
     Route::post('website/slider/images', 'SiteImageController@storeSlider');
     Route::post('website/category/images', 'SiteImageController@categoryImage');
     Route::delete('website/slider/images/{id}', 'SiteImageController@destroySlider');
