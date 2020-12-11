@@ -415,10 +415,11 @@ class WebsiteController extends Controller
     {
         $business_id = request()->session()->get('user.business_id');
         // if (request()->ajax()) {
-            $products = WebsiteProducts::leftJoin('products', 'website_products.product_id', '=', 'products.id')
-            // $products = Product::leftJoin('website_products as wp', 'wp.refference', '=', 'products.refference')
-            // ->whereIn('products.refference',[$websiteProducts])
-            ->join('units', 'products.unit_id', '=', 'units.id')
+            $products = WebsiteProducts::join('products', 'website_products.product_id', '=', 'products.id')
+                // $products = Product::leftJoin('website_products as wp', 'wp.refference', '=', 'products.refference')
+                // ->whereIn('products.refference',[$websiteProducts])
+                ->leftJoin('product_images as pi', 'website_products.product_id', '=', 'pi.product_id')
+                ->join('units', 'products.unit_id', '=', 'units.id')
                 ->leftJoin('categories as c1', 'products.category_id', '=', 'c1.id')
                 ->leftJoin('categories as c2', 'products.sub_category_id', '=', 'c2.id')
                 ->leftJoin('tax_rates', 'products.tax', '=', 'tax_rates.id')
@@ -433,17 +434,38 @@ class WebsiteController extends Controller
             if(request()->ajax()){
                 $category_id = request()->get('category_id',null);
                 $sub_category_id = request()->get('sub_category_id',null);
+                $supplier_id = request()->get('supplier_id',null);
                 if(!empty($category_id) && $category_id != 'all'){
                     $products->where('products.category_id',$category_id);
                     Session::put('category_id',$category_id);
                     // dd($category_id);
                 }
-                if(!empty($sub_category_id) && $sub_category_id != 'none'&& $sub_category_id != 'all'&& $sub_category_id != null){
+                if(!empty($sub_category_id) && $sub_category_id != 'none' && $sub_category_id != 'all' &&  $sub_category_id != null){
                     $products->where('products.sub_category_id',$sub_category_id);
                     Session::put('sub_category_id', $sub_category_id);
                     // dd($sub_category_id);
                 }
+                if(!empty($supplier_id) && $supplier_id != 'none' && $supplier_id != 'all' &&  $supplier_id != null){
+                    $products->where('products.supplier_id',$supplier_id);
+                    Session::put('supplier_id', $supplier_id);
+                    // dd($sub_category_id);
+                }
+                if ($category_id == 'none' || $category_id == 'all') {
+                    Session::put('category_id', $category_id);
+                }
+                if ($sub_category_id == 'none' || $sub_category_id == 'all') {
+                    Session::put('sub_category_id', $sub_category_id);
+                }
+                if ($supplier_id == 'none' || $supplier_id == 'all') {
+                    Session::put('supplier_id', $supplier_id);
+                }
             }
+            // if(Session::get('category_id')){
+            //     $products->where('products.category_id',Session::get('category_id'));
+            // }
+            // if(Session::get('sub_category_id')){
+            //     $products->where('products.sub_category_id',Session::get('sub_category_id'));
+            // }
             $products = $products->select(
                     'products.id',
                     'products.name as name',
@@ -468,9 +490,10 @@ class WebsiteController extends Controller
                     'v.sell_price_inc_tax as selling_price',
                     DB::raw('SUM(vld.qty_available) as current_stock'),
                     DB::raw('MAX(v.sell_price_inc_tax) as max_price'),
-                    DB::raw('MIN(v.sell_price_inc_tax) as min_price')
+                    DB::raw('MIN(v.sell_price_inc_tax) as min_price'),
+                    'pi.updated_at'
                 )
-                ->orderBy('created_at', 'asc')
+                ->orderBy('pi.updated_at', 'desc')
                 ->groupBy('products.id')
                 ->get();
             // return $products;
@@ -493,6 +516,7 @@ class WebsiteController extends Controller
         $all = Product::where('refference',$product->refference)->get();
         // $categories = Category::forDropdown($business_id);
         $categories = Category::where('parent_id', 0)->pluck('name', 'id');
+        $suppliers = Supplier::pluck('name', 'id');
         // dd($all);
         // dd($categories);
         // dd(Session::get('category_id'));
@@ -503,7 +527,7 @@ class WebsiteController extends Controller
          **/
 
         $special_product = SpecialCategoryProduct::where('refference', $product->refference)->first();
-        return view('website_products.images',compact('product','product_images','categories', 'special_product'));
+        return view('website_products.images',compact('product','product_images','categories', 'special_product','suppliers'));
     }
 
     /**

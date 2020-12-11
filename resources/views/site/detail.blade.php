@@ -117,12 +117,12 @@ Product Detail
                                                        }}
                                                   </span>
                                                   @endif
-                                                  <p>
+                                                  {{-- <p>
                                                        Product Code:
                                                        {{
                                                        $product->refference
                                                   }}
-                                                  </p>
+                                                  </p> --}}
                                              </div><!-- End .price-box -->
 
                                              <input type="hidden" name="refference" value="{{$product->refference}}"

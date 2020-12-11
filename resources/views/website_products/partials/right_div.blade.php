@@ -34,6 +34,24 @@
                     </div>
                </div>
           </div>
+          <div class="row">
+               <div class="col-sm-6">
+                    @if(!empty($categories))
+                    {{-- @dd($categories) --}}
+                    {!! Form::label('supplier_id', __('product.supplier') . ':') !!}
+                    <select class="select2" id="supplier_id" style="width:100% !important" onchange="get_product_suggestion_list();">
+                    
+                         <option value="all">
+                              All Suppliers
+                         </option>
+                    
+                         @foreach($suppliers as $id=>$supplier)
+                         <option value="{{$id}}">{{$supplier}}</option>
+                         @endforeach
+                    </select>
+                    @endif
+               </div>
+          </div>
           {{-- <input type="text" name="search" id="search_box" class="form-control" placeholder="Search...."
                style="width: 75%;margin-top: 10px;"> --}}
 

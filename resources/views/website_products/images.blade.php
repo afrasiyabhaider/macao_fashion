@@ -90,7 +90,7 @@
                     Product Images
                     <i class="fa fa-image"></i>
                </h3>
-               @if ($errors->any())
+               {{-- @if ($errors->any())
                <div class="alert alert-danger">
                     <ul>
                          @foreach ($errors->all() as $error)
@@ -98,7 +98,7 @@
                          @endforeach
                     </ul>
                </div>
-               @endif
+               @endif --}}
                <form action="{{action('WebsiteController@addImages')}}" method="post" enctype="multipart/form-data"
                     class="dropzone" id="imageForm">
                     @csrf
@@ -187,8 +187,7 @@
                					</label> --}}
                                    <input type="text" @if (!is_null($special_product) && $special_product->after_discount)
                                    value="{{$ut->num_f($special_product->after_discount)}}"
-                                   @endif name="after_discount" class="form-control" id="sale_percent" placeholder="Enter Sale Price
-                                   e.g 35,79" min="1">
+                                   @endif name="after_discount" class="form-control" id="sale_percent" placeholder="Enter Sale Price e.g 35,79" min="1">
                               </div>
                          </div>
                          <div class="row">
@@ -393,19 +392,27 @@
           // $("#category_id").change(function () {
           //      get_product_suggestion_list();
           // });
-          // $("#sub_category_id").change(function () {
-          //      get_product_suggestion_list();
-          // });
           var category_id = null;
           var sub_category_id = null;
+          // $("#sub_category_id").change(function () {
+          //      // get_product_suggestion_list();
+          //      // sub_category_id = $("sub_category_id").val();
+          // });
           // console.log('{{Session::get("category_id")}}');
           if ('{{Session::get("category_id")}}') {
                category_id = '{{Session::get("category_id")}}';
                $("#category_id").val(category_id).change();
           }
+          if ('{{Session::get("supplier_id")}}') {
+               supplier_id = '{{Session::get("supplier_id")}}';
+               $("#supplier_id").val(supplier_id).change();
+          }
           if ('{{Session::get("sub_category_id")}}') {
                sub_category_id = '{{Session::get("sub_category_id")}}';
-               $("#sub_category_id").val(sub_category_id).change();
+               setTimeout(function () {
+                    $("#sub_category_id").val(sub_category_id).change();
+               },1000);
+               // console.log("Sub-Cat = "+sub_category_id);
           }
           
           CKEDITOR.config.height = 120;
@@ -438,6 +445,7 @@
                data:{
                     "category_id": $("#category_id").val(),
                     "sub_category_id": $("#sub_category_id").val(),
+                    "supplier_id": $("#supplier_id").val(),
                     // page: page,
                },
                dataType: 'html',

@@ -84,10 +84,10 @@
                                                   <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}">{{$item->products()->first()->name}}</a>
                                              </h2>
                                              <span>
-                                                  Sub Category:
+                                                  Category:
                                                   {{
-                                                                                                                                                 $item->products->sub_category()->first()->name
-                                                                                                                             }}
+                                                     $item->products->category()->first()->name           
+                                                  }}
                                              </span>
                                              {{-- <span>
                                                   Product Code:

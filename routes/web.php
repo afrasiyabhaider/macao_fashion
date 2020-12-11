@@ -475,6 +475,8 @@ Route::get('force-logout', function () {
 Route::get('/', 'website\SiteController@home')->name('site.home');
 Route::get('product/{id}/detail', 'website\SiteController@detail')->name('product.detail');
 
+// Route::get('customer/login','')
+
 Route::get('product/{ref}/color/{id}', 'website\SiteController@get_color_sizes');
 Route::get('product/{ref}/color/{color}/size/{size}', 'website\SiteController@get_color_size_qty');
 Route::get('product/{ref}/size/{size}', 'website\SiteController@get_size_qty');

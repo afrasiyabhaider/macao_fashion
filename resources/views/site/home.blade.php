@@ -127,12 +127,12 @@
                             <h2>
                                 <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}">{{$item->products()->first()->name}}</a>
                             </h2>
-                            <span>
+                            {{-- <span>
                                 Product Code:
                                 {{
                                     $item->products()->first()->refference
                                 }}
-                            </span>
+                            </span> --}}
                             <div class="price-box">
                                 <span class="product-price">
                                     <i class="fa fa-euro-sign"></i>
@@ -224,12 +224,12 @@
                              <h2>
                                 <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}">{{$item->products()->first()->name}}</a>
                             </h2>
-                            <span>
+                            {{-- <span>
                                 Product Code:
                                 {{
                                     $item->products()->first()->refference
                                 }}
-                            </span>
+                            </span> --}}
                             <div class="price-box">
                                 <span class="product-price">
                                     <i class="fa fa-euro-sign"></i>
@@ -291,12 +291,12 @@
                              <h2>
                                 <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}">{{$item->products()->first()->name}}</a>
                             </h2>
-                            <span>
+                            {{-- <span>
                                 Product Code:
                                 {{
                                     $item->products()->first()->refference
                                 }}
-                            </span>
+                            </span> --}}
                             <div class="price-box">
                                 <span class="product-price">
                                     <i class="fa fa-euro-sign"></i>
