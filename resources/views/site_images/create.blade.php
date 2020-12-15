@@ -289,7 +289,7 @@
           uploadMultiple: true,
           parallelUploads: 8,
           maxFiles: "{{$count}}",
-          maxFilesize: 2,
+          maxFilesize: 12,
           acceptedFiles: 'image/*',
           addRemoveLinks: true,
           success:function(file, response)
