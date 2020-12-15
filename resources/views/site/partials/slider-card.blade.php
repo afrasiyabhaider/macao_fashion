@@ -12,7 +12,7 @@
           <div class="row no-gutters">
                <div class="col-md-4">
                <div class="banner">
-                    <div class="banner-content">
+                    <div class="banner-content text-light">
                          <h3 class="banner-title">BLOUSE</h3>
 
                          <a href="{{url('products/category/'.encrypt($blouse))}}" class="btn">View</a>
@@ -28,7 +28,7 @@
                </div><!-- End .col-md-4 -->
                <div class="col-md-4">
                <div class="banner">
-                    <div class="banner-content">
+                    <div class="banner-content text-light">
                          <h3 class="banner-title">ROBE</h3>
 
                          <a href="{{url('products/category/'.encrypt($robe))}}" class="btn">View</a>
@@ -44,7 +44,7 @@
                </div><!-- End .col-md-4 -->
                <div class="col-md-4">
                <div class="banner">
-                    <div class="banner-content">
+                    <div class="banner-content text-light">
                          <h3 class="banner-title">SACS</h3>
 
                          <a href="{{url('products/category/'.encrypt($sacs))}}" class="btn">View</a>
