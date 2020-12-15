@@ -1,6 +1,6 @@
 @php
     $ut = new \App\Utils\ProductUtil();
-    $slider = App\SiteImage::where('image_for','slider')->get();
+    $slider = App\SiteImage::where('image_for','slider')->orderBy('created_at','DESC')->get();
     $banner = "url(site_assets/images/promo-bg.jpg)";
     $promo1 = App\SiteImage::where('image_for','promo_1')->first();
     $promo2 = App\SiteImage::where('image_for','promo_2')->first();
