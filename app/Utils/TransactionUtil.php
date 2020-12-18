@@ -16,6 +16,7 @@ use App\Events\TransactionPaymentUpdated;
 use App\Exceptions\PurchaseSellMismatch;
 use App\InvoiceScheme;
 use App\Product;
+use App\ProductVariation;
 use App\PurchaseLine;
 use App\Restaurant\ResTable;
 use App\TaxRate;
@@ -307,12 +308,13 @@ class TransactionUtil extends Util
 
                     $modifiers_array[] = $sell_line_modifiers;
                 }
-
+                
                 $lines_formatted[] = new TransactionSellLine($line);
                 // dd("Hello");
             }
             $i++;
         }
+        // dd("Lines" , $lines_formatted);
         // dd("Hello");
 
         if (!is_object($transaction)) {
@@ -347,6 +349,7 @@ class TransactionUtil extends Util
         if ($return_deleted) {
             return $deleted_lines;
         }
+        // dd("Lines", $transaction);
         return true;
     }
 
@@ -495,6 +498,7 @@ class TransactionUtil extends Util
         // dd($payments);
         $cash = true;
         $card = true;
+        $new_coupon = true;
         foreach ($payments as $payment) {
             //Check if transaction_sell_lines_id is set.
             // dd("Hello on 472");
@@ -588,8 +592,7 @@ class TransactionUtil extends Util
                                 //you can use orWhere the first time, dosn't need to be ->where
                                 $query->orWhere($key, $value);
                             }
-                        })
-                            ->select(
+                        })->select(
                                 'gift_cards.id',
                                 'gift_cards.name',
                                 'gift_cards.value',
@@ -621,7 +624,7 @@ class TransactionUtil extends Util
                             );
                             $objCoupon = Coupon::create($crCoupon);
                             $payment_data['is_convert'] = 'gift_card';
-                            $dataUpdate['isActive'] = "consumed";
+                            $dataUpdate['isActive'] = "consumed";  
                         } else {
                             $dataUpdate['isActive'] = "consumed";
                         }
@@ -658,10 +661,9 @@ class TransactionUtil extends Util
                         $leftAmount = $objCoupon->value - ($transaction->final_total - $totalAmountByRows);
                         $upTransaction = $objCoupon->transaction_id . "," . $transaction->id;
                         $upDetails = $objCoupon->details . "<br/> Used At " . date("Y-m-d h:i A");
-
-
-
-                        $dataUpdate = ['transaction_id' => $upTransaction, 'details' => $upDetails];
+                        $dataUpdate = [
+                            'transaction_id' => $upTransaction, 'details' => $upDetails
+                        ];
                         if ($leftAmount <= 0) {
                             $dataUpdate['value'] = 0;
                             $dataUpdate['isActive'] = "consumed";
@@ -685,11 +687,17 @@ class TransactionUtil extends Util
                                 "details" => $objCoupon->barcode . " Used and Generated New Coupon <br/> ",
                                 "isUsed" => "0"
                             );
-                            $objNewCoupon = Coupon::create($crCoupon);
+                            $new_coupon = Coupon::create($crCoupon);
                         }
                         $payment_data['is_convert'] = 'coupon';
-                        Coupon::where('coupons.id', $objCoupon->id)->update($dataUpdate);
-                    } else if ($payment['method'] == "bonus_points") {
+                        $cpn = Coupon::where('coupons.id', $objCoupon->id)->update($dataUpdate);
+                        $new_coupon = Coupon::where('coupons.id', $objCoupon->id)->first();
+                        $payment_data = [
+                            'amount' => $payment_amount,
+                            'method' => 'coupon'
+                        ];
+                        // dd($new_coupon);
+                    } else if ($payment['method'] == "bonus_points"){
                         $objContact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
 
                         $leftAmount = $payment_amount - ($transaction->final_total - $totalAmountByRows);
@@ -704,19 +712,16 @@ class TransactionUtil extends Util
                         $dataWhere = ['business_id' => $transaction->business_id, 'id' => $objContact->id];
                         Contact::where($dataWhere)->update($dataUpdate);
                     }
-
                     if ($cash && $card) {
+                        // dd("hello");
                         $payments_formatted[] = new TransactionPayment($payment_data);
                     }
-
                     $account_transactions[$c] = [];
-
                     //create account transaction
                     if (!empty($payment['account_id'])) {
                         $payment_data['transaction_type'] = $transaction->type;
                         $account_transactions[$c] = $payment_data;
                     }
-
                     $c++;
                     $totalAmountByRows += $payment_amount;
                 }
@@ -746,7 +751,8 @@ class TransactionUtil extends Util
             }
         }
 
-        return true;
+        return $new_coupon;
+        // return true;
     }
 
     public function RandomId()
@@ -817,7 +823,7 @@ class TransactionUtil extends Util
      *
      * @return array
      */
-    public function getReceiptDetails($transaction_id, $location_id, $invoice_layout, $business_details, $location_details, $receipt_printer_type)
+    public function getReceiptDetails($transaction_id, $location_id, $invoice_layout, $business_details, $location_details, $receipt_printer_type, $new_coupon=null)
     {
         $il = $invoice_layout;
 
@@ -1164,6 +1170,9 @@ class TransactionUtil extends Util
                 }
             }
             $o = NULL;
+            if ($il->show_payments == 1) {
+                $payments = $transaction->payment_lines->toArray();
+            }
 
             //Get payment details
             $output['payments'] = [];
@@ -1195,12 +1204,23 @@ class TransactionUtil extends Util
                         $o['coupon'][] = $obj->toArray();
                     }
                 }
-            } else {
+            }else {
                 $o = NULL;
             }
+            // If new coupon is made it will concate it
+            if (!is_null($new_coupon)) {
+                $obj = Coupon::where("id", $new_coupon)->first();
+                // ['id','name','barcode', 'coupon_id', 'business_id', 'value', 'orig_value', 'isActive', 'transaction_id', 'start_date', 'start_date','created_at']
+                // dd($obj->isActive);
+                if($obj->value > 0){
+                    $o['coupon'][] = $obj->toArray();
+                }
+                // dd($o);
+            }
+            // dd($o, $new_coupon);
             if ($il->show_payments == 1) {
-                $payments = $transaction->payment_lines->toArray();
-
+                // $payments = $transaction->payment_lines->toArray();
+                // dd($payments[0]['method']);
                 if (!empty($payments)) {
                     foreach ($payments as $value) {
                         if ($value['method'] == 'cash') {
@@ -1252,6 +1272,7 @@ class TransactionUtil extends Util
                                 ];
                         } elseif ($value['method'] == 'coupon') {
                             $arrCouponDetailsNew  = "";
+                            // dd($value['is_convert']);
                             if ($value['is_convert'] == "coupon") {
                                 $objCouponOld = Coupon::where("coupon_id", $value['coupon'])->orderBy('created_at', 'desc')
                                     ->select(
@@ -1276,14 +1297,19 @@ class TransactionUtil extends Util
                                 if ($objCoupon->isActive == 'active') {
                                     $arrCouponDetails = ' Remaning :' . $objCoupon->value;
                                 }
+                                // $o['coupon'][] = $objCoupon->toArray();
                             }
+                            
+                            // dd($new_coupon);
                             $output['payments'][] =
                                 [
                                     'method' => 'Coupon' . (!empty($value['coupon']) ? (', Barcode:' . $value['coupon']) : '') . $arrCouponDetails,
                                     'method_name' => $value['method'],
                                     'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
                                     'coupon' => $arrCouponDetailsNew,
-                                    'date' => $this->format_date($value['paid_on'], false, $business_details)
+                                    'date' => $this->format_date($value['paid_on'], false, $business_details),
+                                    'p_type' => $new_coupon,
+                                    
                                 ];
                         } elseif ($value['method'] == 'bonus_points') {
                             $arrCouponDetails  = "";
@@ -1297,7 +1323,7 @@ class TransactionUtil extends Util
                                 ];
                         } elseif ($value['method'] == 'unknown') {
                             $arrCouponDetails  = "";
-
+                            
                             $output['payments'][] =
                                 [
                                     'method' => 'UNKOWN Method : ',
@@ -1310,10 +1336,11 @@ class TransactionUtil extends Util
                             $output['payments'][] =
                                 [
                                     'method' => trans("lang_v1.card"),
-                                    // 'method' => trans("lang_v1.card") . (!empty($value['card_transaction_number']) ? (', Transaction Number:' . $value['card_transaction_number']) : ''),
+                                    'method' => trans("lang_v1.card") . (!empty($value['card_transaction_number']) ? (', Transaction Number:' . $value['card_transaction_number']) : ''),
                                     'method_name' => $value['method'],
                                     'date' => $this->format_date($value['paid_on'], false, $business_details),
-                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details)
+                                    'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
+                                    
                                 ];
                         } elseif ($value['method'] == 'unknown') {
                             $output['payments'][] =
@@ -1374,8 +1401,9 @@ class TransactionUtil extends Util
                         }
                     }
                 }
-
-                $output['payments'][0]['p_type'] = $o;
+                if($value['method'] != 'coupon'){
+                    $output['payments'][0]['p_type'] = $o;
+                }
             }
         }
 
@@ -1454,6 +1482,7 @@ class TransactionUtil extends Util
 
         $output['design'] = $il->design;
         $output['table_tax_headings'] = !empty($il->table_tax_headings) ? array_filter(json_decode($il->table_tax_headings), 'strlen') : null;
+        // dd($output);
 
         return (object) $output;
     }

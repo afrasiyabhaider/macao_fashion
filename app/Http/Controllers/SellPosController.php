@@ -515,8 +515,9 @@ class SellPosController extends Controller
 
                 if (!$transaction->is_suspend && !empty($input['payment'])) {
 
-                    // dd($input['payment']);
-                    $this->transactionUtil->createOrUpdatePaymentLines($transaction, $input['payment']);
+                    // dd($input['payment'], $input['payment'][0]['method'],$transaction);
+                    // dd($input['payment'][0]['method']);
+                    $new_coupon = $this->transactionUtil->createOrUpdatePaymentLines($transaction, $input['payment']);
                 }
                 // ADD BONUS POINTS 
                 if ($transaction->contact_id != '1') {
@@ -623,10 +624,11 @@ class SellPosController extends Controller
                         $receipt = '';
                     }
                 } elseif ($input['status'] == 'final') {
+                    // dd("Controller ".(object)$new_coupon);
                     if (empty($input['sub_type'])) {
                         $msg = trans("sale.pos_sale_added");
                         if (!$is_direct_sale && !$transaction->is_suspend) {
-                            $receipt = $this->receiptContent($business_id, $input['location_id'], $transaction->id);
+                            $receipt = $this->receiptContent($business_id, $input['location_id'], $transaction->id,null,false,$new_coupon);
                         } else {
                             $receipt = '';
                         }
@@ -635,7 +637,7 @@ class SellPosController extends Controller
                         $receipt = '';
                     }
                 }
-
+                
                 $output = ['success' => 1, 'msg' => $msg, 'receipt' => $receipt];
             } else {
                 $output = [
@@ -1337,7 +1339,8 @@ class SellPosController extends Controller
         $location_id,
         $transaction_id,
         $printer_type = null,
-        $is_package_slip = false
+        $is_package_slip = false,
+        $new_coupon = null
     ) {
         $output = [
             'is_enabled' => false,
@@ -1359,9 +1362,14 @@ class SellPosController extends Controller
 
             //Check if printer setting is provided.
             $receipt_printer_type = is_null($printer_type) ? $location_details->receipt_printer_type : $printer_type;
-
-            $receipt_details = $this->transactionUtil->getReceiptDetails($transaction_id, $location_id, $invoice_layout, $business_details, $location_details, $receipt_printer_type);
-
+            // dd($new_coupon->first());
+            $coupon_id = null;
+            if(isset($new_coupon->id)){
+                $coupon_id = $new_coupon->id;
+            }
+            $receipt_details = $this->transactionUtil->getReceiptDetails($transaction_id, $location_id, $invoice_layout, $business_details, $location_details, $receipt_printer_type, $coupon_id);
+            
+            
             $currency_details = [
                 'symbol' => $business_details->currency_symbol,
                 'thousand_separator' => $business_details->thousand_separator,
@@ -1384,6 +1392,8 @@ class SellPosController extends Controller
                 $output['html_content'] = view($layout, compact('receipt_details'))->render();
             }
         }
+
+        // dd($receipt_details);
 
         return $output;
     }

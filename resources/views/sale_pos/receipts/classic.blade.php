@@ -444,7 +444,7 @@
 @if(!empty($receipt_details->payments))
 @foreach($receipt_details->payments as $payment)
 
-@if(($payment['method_name'] == 'gift_card' && !empty($payment['coupon'])) || ($payment['method_name'] == 'coupon' &&
+@if(($payment['method_name'] == 'coupon' && !empty($payment['coupon'])) || ($payment['method_name'] == 'coupon' &&
 !empty($payment['coupon'])))
 <div class="row pgBr">
 	<div class="col-xs-12 text-center pgBr">
@@ -457,7 +457,7 @@
 		<h1>
 			Value : {{$payment['coupon']['amount']}} €
 		</h1>
-		<p>Details : {{$payment['coupon']['details']}}</p>
+		<p>Details : {!!$payment['coupon']['details']!!}</p>
 		<p>You Can use this <b>Coupon</b> For Next Purchase within 3 Months or You can Extend the Expiry Date <br />
 			Happy Shopping </p>
 	</div>
