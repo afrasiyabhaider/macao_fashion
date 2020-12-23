@@ -56,14 +56,15 @@ $all_web_products = App\WebsiteProducts::join('products as p','p.id','=','websit
                          <a href="category.html"
                               class="product-category">{{$item->products()->first()->category()->first()['name']}}</a>
                     </div>
-                    <a href="#" class="btn-icon-wish"><i class="icon-heart"></i></a>
+                    {{-- <a href="#" class="btn-icon-wish"><i class="icon-heart"></i></a> --}}
                </div>
                {{-- <h2 class="product-title">
                                    <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}">{{$item->products()->first()->name}}</a>
                </h2> --}}
                <h2>
-                    <a
-                         href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}">{{$item->products()->first()->name}}</a>
+                    <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}">
+                         {{$item->products()->first()->name}}
+                    </a>
                </h2>
                <span>
                     Product Code:

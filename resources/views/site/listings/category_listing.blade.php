@@ -63,9 +63,9 @@
                                              {{-- <div class="label-group">
                                                   <div class="product-label label-cut">-20%</div>
                                              </div> --}}
-                                             <div class="btn-icon-group">
+                                             {{-- <div class="btn-icon-group">
                                                   <button class="btn-icon btn-add-cart" data-toggle="modal" data-target="#addCartModal"><i class="icon-bag"></i></button>
-                                             </div>
+                                             </div> --}}
                                              <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}" class="btn-quickview" title="Quick View">View Details</a> 
                                         </figure>
                                         <div class="product-details">
@@ -75,7 +75,7 @@
                                                        </a> --}}
                                                        {{$category->name ?? $category_name}}
                                                   </div>
-                                                  <a href="#" class="btn-icon-wish"><i class="icon-heart"></i></a>
+                                                  {{-- <a href="#" class="btn-icon-wish"><i class="icon-heart"></i></a> --}}
                                              </div>
                                              {{-- <h2 class="product-title">
                                                   <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}">{{$item->products()->first()->name}}</a>

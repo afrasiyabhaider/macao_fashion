@@ -48,10 +48,10 @@
                                                   <img src="{{asset('img/product-placeholder-2.jpg')}}" id="preview1" alt="Image 1 Preview Here" style="height:300px;width:300px;padding:30px" class="img-thumbnail">
                                              @endif
                                         </a>
-                                        <div class="btn-icon-group">
+                                        {{-- <div class="btn-icon-group">
                                              <button class="btn-icon btn-add-cart" data-toggle="modal" data-target="#addCartModal"><i class="icon-bag"></i></button>
                                              <a href="#" class="btn-icon btn-icon-wish"><i class="icon-heart"></i></a>
-                                        </div>
+                                        </div> --}}
                                         <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}" class="btn-quickview" title="Quick View">View Details</a> 
                                    </figure>
                                    <div class="product-details">
