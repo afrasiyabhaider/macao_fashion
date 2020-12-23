@@ -4,10 +4,11 @@ namespace App\Http\Controllers\website;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Product;
-use Cart;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+
+use App\Product;
+use Cart;
 
 class CartController extends Controller
 {
@@ -25,20 +26,17 @@ class CartController extends Controller
             alert()->error('Oops',$validate->errors()->first())->timerProgressBar();
             return redirect()->back();
         }
-        // Cart::destroy();
         $product = Product::find($request->product_id);
-        // dd($validate->errors()->first(),$request->input());
-        // $product = Product::find($id);
         Cart::add([
                 'id' => $product->id, 
                 'name' => $product->name, 
                 'qty' => 1, 
                 'price' => $product->variations()->first()['sell_price_inc_tax'],'weight' => 1,
                 'options' => [
-                            'size' => (int)$request->size,
-                            'color'=> (int)$request->color,
-                            'product_id'=> (int)$product->id,
-                        ]
+                    'size' => (int)$request->size,
+                    'color'=> (int)$request->color,
+                    'product_id'=> (int)$product->id,
+                ]
             ]);
         // Cart::add(['id' => '2935555', 'name' => 'Product 1', 'qty' => 1, 'price' => 9.99, 'weight' => 550, 'options' => ['size' => 'large']]);
         
@@ -74,6 +72,16 @@ class CartController extends Controller
     {
         Cart::destroy();
         alert()->info('Ohh', 'Cart empty')->timerProgressBar();
+        return redirect()->back();
+    }
+    /**
+     *  Update Cart
+     *
+     * */
+    public function updateCartItem($id,$qty)
+    {
+        Cart::update($id, ['qty' => $qty]);
+        alert()->success('Yayy', 'Cart updated')->timerProgressBar();
         return redirect()->back();
     }
 }

@@ -492,6 +492,7 @@ Route::group(['prefix' => 'cart'], function () {
     Route::post('/', 'website\CartController@addToCart');
     Route::get('/view', 'website\CartController@viewCart');
     Route::get('/remove/{id}', 'website\CartController@removeItem');
+    Route::get('/update/{id}/{qty}', 'website\CartController@updateCartItem');
     Route::get('/empty', 'website\CartController@emptyCart');
 });
 /**

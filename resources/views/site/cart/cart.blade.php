@@ -19,4 +19,11 @@ Cart
 </div>
 @endsection
 @section('scripts')
+<script>
+     function updateQuantity(id) {
+          var url = "{{url('cart/update/')}}"+"/"+$(id).attr("data-rowid");
+          var updateUrl = url+"/"+$(id).val();
+          window.location.href = updateUrl;
+     }
+</script>
 @endsection

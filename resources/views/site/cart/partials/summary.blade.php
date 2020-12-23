@@ -63,7 +63,6 @@
                               {{Cart::total()}}
                          </td>
                     </tr>
-
                     <tr>
                          <td>Tax</td>
                          <td>

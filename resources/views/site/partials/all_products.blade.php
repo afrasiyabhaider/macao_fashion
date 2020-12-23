@@ -5,6 +5,7 @@ shop')->orWhere('name','Website')->orWhere('name','website')->orWhere('name','MA
 $all_web_products = App\WebsiteProducts::join('products as p','p.id','=','website_products.product_id')->orderBy('p.created_at','Desc')->get();
 // $all_web_products = App\VariationLocationDetails::where('qty_available', '>',
 // 0)->join('products as
+//
 // p',p.id','=','variation_location_details.product_id')->groupBy('p.refference')->orderBy('p.created_at','Desc')->get();
 // dd($all_web_products);
 @endphp
@@ -42,10 +43,10 @@ $all_web_products = App\WebsiteProducts::join('products as p','p.id','=','websit
                {{-- <div class="label-group">
                                    <div class="product-label label-cut">-20%</div>
                               </div> --}}
-               <div class="btn-icon-group">
+               {{-- <div class="btn-icon-group">
                     <button class="btn-icon btn-add-cart" data-toggle="modal" data-target="#addCartModal"><i
                               class="icon-bag"></i></button>
-               </div>
+               </div> --}}
                <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}" class="btn-quickview"
                     title="Quick View">View Details</a>
           </figure>
@@ -67,21 +68,15 @@ $all_web_products = App\WebsiteProducts::join('products as p','p.id','=','websit
                <span>
                     Product Code:
                     {{
-                                        $item->products()->first()->refference
-                                   }}
+                         $item->products()->first()->refference
+                    }}
                </span>
-               {{-- <div class="ratings-container">
-                                   <div class="product-ratings">
-                                        <span class="ratings" style="width:100%"></span><!-- End .ratings -->
-                                        <span class="tooltiptext tooltip-top"></span>
-                                   </div><!-- End .product-ratings -->
-                              </div><!-- End .product-container --> --}}
                <div class="price-box">
                     <span class="product-price">
                          <i class="fa fa-euro-sign"></i>
                          {{
-                                             $ut->num_f($item->products()->first()->variations()->first()['sell_price_inc_tax'])
-                                        }}
+                              $ut->num_f($item->products()->first()->variations()->first()['sell_price_inc_tax'])
+                         }}
                     </span>
                </div><!-- End .price-box -->
           </div><!-- End .product-details -->

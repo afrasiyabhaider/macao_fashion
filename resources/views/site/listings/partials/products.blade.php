@@ -34,13 +34,13 @@
                          <div class="col-6 col-sm-3">
                               <div class="product-default inner-quickview inner-icon" style="padding: 30px">
                                    <figure>
-                                        <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}">
-                                                  @php
-                                                  $images = App\ProductImages::where('refference',$item->products()->first()->refference)->get();
-                                                  @endphp
-                                                  @if (!is_null($images) && $images->count() > 0)
+                                   <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}">
+                                             @php
+                                             $images = App\ProductImages::where('refference',$item->products()->first()->refference)->get();
+                                             @endphp
+                                             @if (!is_null($images) && $images->count() > 0)
                                                   <img src="{{asset('uploads/'.$images[0]->image)}}" style="height:300px;width:250px;padding:30px" class="img-thumbnail">
-                                                  @if (isset($images[1]) && $images[1])
+                                                  @if(isset($images[1]) && $images[1])
                                                        <img src="{{asset('uploads/'.$images[1]->image)}}" style="height:300px;width:250px;padding:30px" class="img-thumbnail">
                                                   @endif
                                              @else
@@ -48,9 +48,6 @@
                                                   <img src="{{asset('img/product-placeholder-2.jpg')}}" id="preview1" alt="Image 1 Preview Here" style="height:300px;width:300px;padding:30px" class="img-thumbnail">
                                              @endif
                                         </a>
-                                        {{-- <div class="label-group">
-                                             <div class="product-label label-cut">-20%</div>
-                                        </div> --}}
                                         <div class="btn-icon-group">
                                              <button class="btn-icon btn-add-cart" data-toggle="modal" data-target="#addCartModal"><i class="icon-bag"></i></button>
                                              <a href="#" class="btn-icon btn-icon-wish"><i class="icon-heart"></i></a>
@@ -62,11 +59,7 @@
                                              <div class="category-list">
                                                   <a href="category.html" class="product-category">{{$item->products()->first()->category()->first()['name']}}</a>
                                              </div>
-                                             {{-- <a href="#" class="btn-icon-wish"><i class="icon-heart"></i></a> --}}
                                         </div>
-                                        {{-- <h2 class="product-title">
-                                             <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}">{{$item->products()->first()->name}}</a>
-                                        </h2> --}}
                                         <h2>
                                              <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}">{{$item->products()->first()->name}}</a>
                                         </h2>
@@ -76,18 +69,6 @@
                                                   $item->products->sub_category()->first()->name
                                              }}
                                         </span>
-                                        {{-- <span>
-                                             Product Code:
-                                             {{
-                                                  $item->products()->first()->refference
-                                             }}
-                                        </span> --}}
-                                        {{-- <div class="ratings-container">
-                                             <div class="product-ratings">
-                                                  <span class="ratings" style="width:100%"></span><!-- End .ratings -->
-                                                  <span class="tooltiptext tooltip-top"></span>
-                                             </div><!-- End .product-ratings -->
-                                        </div><!-- End .product-container --> --}}
                                         <div class="price-box">
                                              <span class="product-price">
                                                   <i class="fa fa-euro-sign"></i>
@@ -106,19 +87,6 @@
                <!-- End .row -->
 
                <nav class="toolbox toolbox-pagination">
-                    {{-- <div class="toolbox-item toolbox-show">
-                         <label>Show:</label>
-
-                         <div class="select-custom">
-                              <select name="count" class="form-control">
-                              <option value="9">9 Products</option>
-                              <option value="18">18 Products</option>
-                              <option value="27">27 Products</option>
-                              </select>
-                         </div>
-                         <!-- End .select-custom -->
-                    </div> --}}
-                    <!-- End .toolbox-item -->
                     <div class="pagination">
                          {{
                               $products->links()
@@ -127,7 +95,6 @@
                </nav>
           </div>
           <!-- End .col-lg-9 -->
-          {{-- <div class="col-lg-3"></div> --}}
           @include('site.listings.partials.mobile_filters')
           <!-- End .col-lg-3 -->
      </div>

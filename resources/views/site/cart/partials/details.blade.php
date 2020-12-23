@@ -28,7 +28,7 @@
                                         {{-- </a> --}}
                                    </figure>
                                    <h2 class="product-title h2">
-                                        <a href="{{url('product/'.encrypt($item['options']['product_id']).'/details')}}">
+                                        <a href="{{url('product/'.encrypt($item['options']['product_id']).'/detail')}}">
                                              {{$item['name']}}
                                         </a>
                                         @php
@@ -37,8 +37,7 @@
                                         @endphp
                                         <br>
                                         <span class="h5">
-                                             {{$size}} -
-                                             {{$color}}
+                                             {{$size}} - {{$color}}
                                         </span>
                                    </h2>
                               </td>
@@ -46,43 +45,41 @@
                                    <i class="fa fa-euro-sign"></i>{{$item['price']}}
                               </td>
                               <td>
-                                   <input class="vertical-quantity form-control" type="text" id="qty" name="qty"
-                                        value="{{$item['qty']}}">
+                                   <input class="vertical-quantity form-control" type="text" data-rowid="{{$item['rowId']}}" name="qty" value="{{$item['qty']}}" onchange="updateQuantity(this);" min="0">
                               </td>
                               <td>
-                                   <i class="fa fa-euro-sign"></i>{{$item['subtotal']}}
+                                   <i class="fa fa-euro-sign"></i>
+                                   {{$item['subtotal']}}
                               </td>
                          </tr>
                          <tr class="product-action-row">
                               <td colspan="4" class="clearfix">
                                    <div class="float-left">
-                                        <a href="#" class="btn-move">
+                                        <a href="{{url('cart/remove/'.$item['rowId'])}}" class="btn-move" title="Remove Product">
                                              Remove Product
                                         </a>
                                    </div><!-- End .float-left -->
-
                                    <div class="float-right">
-                                        {{-- <a href="#" title="Edit product" class="btn-edit"><span class="sr-only">Edit</span><i
-                                                  class="icon-pencil"></i></a> --}}
-                                        <a href="{{url('cart/remove/'.$item['rowId'])}}" title="Remove product" class="btn-remove"><span
-                                                  class="sr-only">Remove</span></a>
+                                        <a href="{{url('cart/remove/'.$item['rowId'])}}" title="Remove Product" class="btn-remove">
+                                             <span class="sr-only">Remove</span>
+                                        </a>
                                    </div><!-- End .float-right -->
                               </td>
                          </tr>
                          @endforeach
                     </tbody>
-
                     <tfoot>
                          <tr>
                               <td colspan="4" class="clearfix">
                                    <div class="float-left">
-                                        <a href="category.html" class="btn btn-outline-secondary">Continue Shopping</a>
+                                        <a href="{{url('/')}}" class="btn btn-outline-secondary">Continue Shopping</a>
                                    </div><!-- End .float-left -->
 
                                    <div class="float-right">
                                         <a href="{{url('cart/empty')}}" class="btn btn-outline-secondary btn-clear-cart">Clear Shopping Cart</a>
-                                        <a href="#" class="btn btn-outline-secondary btn-update-cart">Update Shopping
-                                             Cart</a>
+                                        {{-- <a href="#" class="btn btn-outline-secondary btn-update-cart">
+                                             Update Shopping Cart
+                                        </a> --}}
                                    </div><!-- End .float-right -->
                               </td>
                          </tr>

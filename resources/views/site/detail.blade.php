@@ -207,11 +207,6 @@ Product Detail
 
                                         </strong>
                                         <div class="product-action product-all-icons pt-5">
-                                             {{-- <div class="product-single-qty">
-                                                       <input class="horizontal-quantity form-control" type="text">
-                                                  </div><!-- End .product-single-qty -->
-
-                                                  --}}
                                              <button type="submit" class="paction add-cart text-dark" title="Add to Cart">
                                                   <span>Add to Cart</span>
                                              </button>

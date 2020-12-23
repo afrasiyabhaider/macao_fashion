@@ -111,9 +111,9 @@
                             {{-- <div class="label-group">
                                 <div class="product-label label-cut">-20%</div>
                             </div> --}}
-                            <div class="btn-icon-group">
+                            {{-- <div class="btn-icon-group">
                                 <button class="btn-icon btn-add-cart" data-toggle="modal" data-target="#addCartModal"><i class="icon-bag"></i></button>
-                            </div>
+                            </div> --}}
                             <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}" class="btn-quickview" title="Detail View">
                                 View Details
                             </a> 
@@ -198,15 +198,15 @@
                                     @endif
                                 @else
                                     <img src="{{asset('img/product-placeholder-1.jpg')}}" id="preview1" alt="Image 1 Preview Here" style="height:300px;width:300px" class="img-thumbnail">
-                                    <img src="{{asset('img/product-placeholder-2.jpg')}}" id="preview1" alt="Image 1 Preview Here" style="height:300px;width:300px" class="img-thumbnail">
+                                    <img src="{{asset('img/product-placeholder-2.jpg')}}" id="preview1" alt="Imbtn-add-cartage 1 Preview Here" style="height:300px;width:300px" class="img-thumbnail">
                                 @endif
                             </a>
                             {{-- <div class="label-group">
                                 <div class="product-label label-cut">-20%</div>
                             </div> --}}
-                            <div class="btn-icon-group">
-                                <button class="btn-icon btn-add-cart" data-toggle="modal" data-target="#addCartModal"><i class="icon-bag"></i></button>
-                            </div>
+                            {{-- <div class="btn-icon-group">
+                                <button class="btn-icon " data-toggle="modal" data-target="#addCartModal"><i class="icon-bag"></i></button>
+                            </div> --}}
                             <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}" class="btn-quickview" title="Quick View">View Details</a> 
                         </figure>
                         <div class="product-details">
@@ -271,9 +271,9 @@
                             {{-- <div class="label-group">
                                 <div class="product-label label-cut">-20%</div>
                             </div> --}}
-                            <div class="btn-icon-group">
+                            {{-- <div class="btn-icon-group">
                                 <button class="btn-icon btn-add-cart" data-toggle="modal" data-target="#addCartModal"><i class="icon-bag"></i></button>
-                            </div>
+                            </div> --}}
                             <a href="{{url('product/'.encrypt($item->products()->first()->id).'/detail')}}" class="btn-quickview" title="Detail View">
                                 View Details
                             </a> 
