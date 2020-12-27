@@ -187,7 +187,9 @@ return [
         ConsoleTVs\Charts\ChartsServiceProvider::class,
         App\Providers\DropboxServiceProvider::class,
 
-        RealRashid\SweetAlert\SweetAlertServiceProvider::class,
+        // RealRashid\SweetAlert\SweetAlertServiceProvider::class,
+        // Viva-wallet
+        // Sebdesign\VivaPayments\VivaPaymentsServiceProvider::class,
 
     ],
 

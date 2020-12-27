@@ -501,3 +501,14 @@ Route::group(['prefix' => 'cart'], function () {
  **/
 Route::get('/contact-us', 'website\SiteController@contactUs');
 Route::post('/contact-us', 'website\SiteController@sendMail');
+
+/**
+ * Viva Payments
+ *  
+ **/
+Route::get('checkout', function ()
+{
+    return redirect(url('/'));
+});
+// Route::get('checkout', 'CheckoutController@create');
+Route::post('checkout', 'CheckoutController@store');

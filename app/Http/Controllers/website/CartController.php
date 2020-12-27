@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Sebdesign\VivaPayments\Client;
 
 use App\Product;
 use Cart;
@@ -23,7 +24,7 @@ class CartController extends Controller
             'size' => ['required',Rule::notIn(0)]
         ]);
         if($validate->fails()){
-            alert()->error('Oops',$validate->errors()->first())->timerProgressBar();
+            // alert()->error('Oops',$validate->errors()->first())->timerProgressBar();
             return redirect()->back();
         }
         $product = Product::find($request->product_id);
@@ -41,18 +42,22 @@ class CartController extends Controller
         // Cart::add(['id' => '2935555', 'name' => 'Product 1', 'qty' => 1, 'price' => 9.99, 'weight' => 550, 'options' => ['size' => 'large']]);
         
         // return Cart::content();
-        alert()->success('Yayy!','Product added into cart')->timerProgressBar();
+        // alert()->success('Yayy!','Product added into cart')->timerProgressBar();
         return redirect()->back();
     }
     /**
      * View Cart 
      * 
      **/
-    public function viewCart()
+    public function viewCart(Client $client)
     {
         $cart = Cart::content()->toArray();
-
-        return view('site.cart.cart',compact('cart'));
+        
+        return view('site.cart.cart', [
+            'publicKey' => config('services.viva.public_key'),
+            'baseUrl' => $client->getUrl(),
+            'cart' => $cart
+        ]);
     }
     /**
      *  Remove Item from Cart
@@ -61,7 +66,7 @@ class CartController extends Controller
     public function removeItem($id)
     {
         Cart::remove($id);
-        alert()->info('Ohh', 'Product removed from cart')->timerProgressBar();
+        // alert()->info('Ohh', 'Product removed from cart')->timerProgressBar();
         return redirect()->back();
     }
     /**
@@ -71,7 +76,7 @@ class CartController extends Controller
     public function emptyCart()
     {
         Cart::destroy();
-        alert()->info('Ohh', 'Cart empty')->timerProgressBar();
+        // alert()->info('Ohh', 'Cart empty')->timerProgressBar();
         return redirect()->back();
     }
     /**
@@ -81,7 +86,7 @@ class CartController extends Controller
     public function updateCartItem($id,$qty)
     {
         Cart::update($id, ['qty' => $qty]);
-        alert()->success('Yayy', 'Cart updated')->timerProgressBar();
+        // alert()->success('Yayy', 'Cart updated')->timerProgressBar();
         return redirect()->back();
     }
 }

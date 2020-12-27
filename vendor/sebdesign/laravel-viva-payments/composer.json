@@ -1,0 +1,61 @@
+{
+    "name": "sebdesign/laravel-viva-payments",
+    "description": "A Laravel package for integrating the Viva Payments gateway",
+    "type": "library",
+    "keywords": [
+        "checkout",
+        "ecommerce",
+        "gateway",
+        "laravel",
+        "pay",
+        "payment",
+        "viva",
+        "webhooks"
+    ],
+    "homepage": "https://github.com/sebdesign/laravel-viva-payments",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sébastien Nikolaou",
+            "email": "info@sebdesign.eu",
+            "homepage": "https://github.com/sebdesign",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "guzzlehttp/guzzle": "^6.0|^7.0",
+        "illuminate/config": "^5.5|^6.0|^7.0|^8.0",
+        "illuminate/routing": "^5.5|^6.0|^7.0|^8.0",
+        "illuminate/support": "^5.5|^6.0|^7.0|^8.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^3.5|^4.0|^5.0|^6.0",
+        "phpunit/phpunit": "^6.0|^7.0|^8.0|^9.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sebdesign\\VivaPayments\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sebdesign\\VivaPayments\\Test\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit --colors=always"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Sebdesign\\VivaPayments\\VivaPaymentsServiceProvider"
+            ]
+        }
+    }
+}

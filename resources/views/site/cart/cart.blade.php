@@ -19,6 +19,8 @@ Cart
 </div>
 @endsection
 @section('scripts')
+{{-- <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script> --}}
+<script src="https://demo.vivapayments.com/web/checkout/js"></script>
 <script>
      function updateQuantity(id) {
           var url = "{{url('cart/update/')}}"+"/"+$(id).attr("data-rowid");

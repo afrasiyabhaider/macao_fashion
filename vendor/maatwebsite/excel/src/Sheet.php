@@ -586,6 +586,10 @@ class Sheet
      */
     public function appendRows($rows, $sheetExport)
     {
+        if (method_exists($sheetExport, 'prepareRows')) {
+            $rows = $sheetExport->prepareRows($rows);
+        }
+
         $rows = (new Collection($rows))->flatMap(function ($row) use ($sheetExport) {
             if ($sheetExport instanceof WithMapping) {
                 $row = $sheetExport->map($row);
@@ -616,7 +620,7 @@ class Sheet
     {
         // When dealing with eloquent models, we'll skip the relations
         // as we won't be able to display them anyway.
-        if (method_exists($row, 'attributesToArray')) {
+        if (is_object($row) && method_exists($row, 'attributesToArray')) {
             return $row->attributesToArray();
         }
 

@@ -20,6 +20,7 @@
         "milon/barcode": "^5.0",
         "nwidart/laravel-modules": "^7.0",
         "razorpay/razorpay": "2.*",
+        "sebdesign/laravel-viva-payments": "^5.1",
         "spatie/flysystem-dropbox": "^1.0",
         "spatie/laravel-activitylog": "^3.2",
         "spatie/laravel-backup": "^5.0",
