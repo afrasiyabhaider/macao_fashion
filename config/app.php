@@ -189,7 +189,7 @@ return [
 
         // RealRashid\SweetAlert\SweetAlertServiceProvider::class,
         // Viva-wallet
-        // Sebdesign\VivaPayments\VivaPaymentsServiceProvider::class,
+        Sebdesign\VivaPayments\VivaPaymentsServiceProvider::class,
 
     ],
 
