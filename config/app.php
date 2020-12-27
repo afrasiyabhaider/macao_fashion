@@ -246,6 +246,6 @@ return [
         'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
         'Charts' => ConsoleTVs\Charts\Facades\Charts::class,
         'Datatables' => Yajra\DataTables\Facades\DataTables::class,
-        'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
+        // 'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
     ]
 ];
