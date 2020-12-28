@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Sebdesign\VivaPayments\Client;
+use Sebdesign\VivaPayments\OAuth;
 
 use App\Product;
 use Cart;
@@ -48,14 +49,23 @@ class CartController extends Controller
     /**
      * View Cart 
      * 
-     **/
-    public function viewCart(Client $client)
+     * @param  \Sebdesign\VivaPayments\Client $client
+     * @param  \Sebdesign\VivaPayments\OAuth  $oauth
+     * @return \Illuminate\Http\Response
+     */ 
+    public function viewCart(Client $client, OAuth $oauth)
     {
         $cart = Cart::content()->toArray();
-        
+        try {
+            $token = $oauth->requestToken();
+        } catch (RequestException | VivaException $e) {
+            report($e);
+
+            return back()->withErrors($e->getMessage());
+        }
         return view('site.cart.cart', [
-            'publicKey' => config('services.viva.public_key'),
-            'baseUrl' => $client->getUrl(),
+            'baseUrl' => $client->getApiUrl(),
+            'accessToken' => $token->access_token,
             'cart' => $cart
         ]);
     }

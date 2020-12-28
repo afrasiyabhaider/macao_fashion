@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Sebdesign\VivaPayments\Client;
 
 use GuzzleHttp\Exception\RequestException;
-use Sebdesign\VivaPayments\Transaction;
+use Sebdesign\VivaPayments\NativeCheckout;
+use Sebdesign\VivaPayments\OAuth;
 use Sebdesign\VivaPayments\VivaException;
 
 use Cart;
@@ -38,28 +39,41 @@ class CheckoutController extends Controller
     }
 
     /**
-     * 
-     * @param  \Illuminate\Http\Request            $request
-     * @param  \Sebdesign\VivaPayments\Transaction $transactions
+     * Create a new transaction with the charge token from the form.
+     *
+     * @param  \Illuminate\Http\Request               $request
+     * @param  \Sebdesign\VivaPayments\OAuth          $oauth
+     * @param  \Sebdesign\VivaPayments\NativeCheckout $nativeCheckout
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request, Transaction $transactions)
+    public function store(Request $request, OAuth $oauth, NativeCheckout $nativeCheckout)
     {
         // dd($request);
         try {
-            $transaction = $transactions->create([
-                'PaymentToken' => $request->input('vivaWalletToken')
+            $oauth->requestToken();
+
+            $transactionId = $nativeCheckout->createTransaction([
+                'amount' => 1000,
+                'tipAmount' => 0,
+                'preauth' => false,
+                'chargeToken' => $request->input('chargeToken'),
+                'installments' => $request->input('installments'),
+                'merchantTrns' => 'Merchant transaction reference',
+                'customerTrns' => 'Description that the customer sees',
+                'currencyCode' => 826,
+                'customer' => [
+                    'email' => 'native@vivawallet.com',
+                    'phone' => '442037347770',
+                    'fullname' => 'John Smith',
+                    'requestLang' => 'en',
+                    'countryCode' => 'GB',
             ]);
-            Cart::destroy();
-            // dd($transaction);
         } catch (RequestException | VivaException $e) {
             report($e);
-            // dd($e->getMessage());
-            return back()->withErrors($e->getMessage());
+            return redirect()->back()->withErrors($e->getMessage());
         }
-
         // alert()->success('Paid','Payment paid successfully');
-        return redirect(url('/'));
+        return redirect()->back();
         // return redirect('order/success');
     }
 
