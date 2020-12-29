@@ -1382,7 +1382,7 @@ class ProductController extends Controller
             'refference' => 'required',
             'unit_price' => 'required',
             'custom_price' => 'required',
-            'sku' => 'required',
+            // 'sku' => 'required',
             'color' => ['required', Rule::notIn(0)],
             'quantity' => 'required',
             'size' => ['required', Rule::notIn(0)],
@@ -1418,7 +1418,7 @@ class ProductController extends Controller
                 $product[$i]->color_id = $request->input('color');
                 // $product[$i]->size_id = $size->parent_id;
                 // $product[$i]->sub_size_id = $request->input('size');
-                $product[$i]->sku = $request->input('sku');
+                // $product[$i]->sku = $request->input('sku');
                 $product[$i]->description = $request->input('description');
                 $product[$i]->product_updated_at = Carbon::now();
 
@@ -1428,7 +1428,7 @@ class ProductController extends Controller
                 // $unit = str_replace($request->input('unit_price'),'.',',');
                 // dd($this->productUtil->num_uf($request->input('unit_price')));
                 // dd($unit);
-                $variation->sub_sku = $product[$i]->sku;
+                // $variation->sub_sku = $product[$i]->sku;
                 $variation->dpp_inc_tax = $this->productUtil->num_uf($request->input('unit_price'));
                 $variation->sell_price_inc_tax = $this->productUtil->num_uf($request->input('custom_price'));
                 $variation->save();
