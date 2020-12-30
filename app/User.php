@@ -52,6 +52,10 @@ class User extends Authenticatable
         return $this->belongsTo(\App\BusinessLocation::class);
     }
 
+    public function customer()
+    {
+        return $this->hasOne(App\Contact::Class);
+    }
     /**
      * The contact the user has access to.
      * Applied only when selected_contacts is true for a user in

@@ -39,6 +39,10 @@ class Contact extends Authenticatable
         return $query->whereIn('contacts.type', ['customer', 'both']);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(App\User::Class);
+    }
     /**
      * Return list of contact dropdown for a business
      *

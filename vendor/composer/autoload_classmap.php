@@ -112,6 +112,7 @@ return array(
     'AddTransactionPaymentsForExistingExpenses' => $baseDir . '/database/migrations/2018_09_26_105557_add_transaction_payments_for_existing_expenses.php',
     'AddUnitPriceBeforeDiscountColumnToTransactionSellLineTable' => $baseDir . '/database/migrations/2018_07_26_170424_add_unit_price_before_discount_column_to_transaction_sell_line_table.php',
     'AddUserContactAccess' => $baseDir . '/database/migrations/2018_10_31_175627_add_user_contact_access.php',
+    'AddUserIdInContacts' => $baseDir . '/database/migrations/2020_12_30_174659_add_user_id_in_contacts.php',
     'AddViewPurchasePricePermission' => $baseDir . '/database/migrations/2019_05_25_104922_add_view_purchase_price_permission.php',
     'AddWebsiteProductIdInSpecialCategories' => $baseDir . '/database/migrations/2020_10_23_222921_add_website_product_id_in_special_categories.php',
     'AddWeightToProductsTable' => $baseDir . '/database/migrations/2018_05_14_125223_add_weight_to_products_table.php',

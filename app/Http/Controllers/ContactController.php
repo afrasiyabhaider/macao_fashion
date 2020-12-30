@@ -327,8 +327,9 @@ class ContactController extends Controller
         }
 
         try {
+            DB::beginTransaction();
             $business_id = $request->session()->get('user.business_id');
-
+            
             if (!$this->moduleUtil->isSubscribed($business_id)) {
                 return $this->moduleUtil->expiredResponse();
             }
@@ -366,27 +367,41 @@ class ContactController extends Controller
                     $input['contact_id'] = $this->commonUtil->generateReferenceNumber('contacts', $ref_count);
                 }
 
+                $location_id = $request->session()->get('user.business_location_id');
 
                 $contact = Contact::create($input);
+                $user = User::create([
+                    'business_id' => $business_id,
+                    'business_location_id' => $location_id,
+                    'first_name' => $objInput['first_name'],
+                    'last_name' => $objInput['last_name'],
+                    'username' => $objInput['email'],
+                    'email' => $objInput['email'],
+                    'password' => bcrypt('12345678')
+                ]);
 
                 //Add opening balance
                 if (!empty($request->input('opening_balance'))) {
                     $this->transactionUtil->createOpeningBalanceTransaction($business_id, $contact->id, $request->input('opening_balance'));
                 }
 
-                $output = ['success' => true,
-                            'data' => $contact,
-                            'msg' => __("contact.added_success")
-                        ];
+                $output = [
+                    'success' => true,
+                    'data' => $contact,
+                    'msg' => __("contact.added_success")." User also registered with password 12345678"
+                ];
             } else {
                 throw new \Exception("Error Processing Request", 1);
             }
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollback();
             \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             
-            $output = ['success' => false,
-                            'msg' =>__("messages.something_went_wrong"). $e->getMessage()
-                        ];
+            $output = [
+                'success' => false,
+                'msg' =>__("messages.something_went_wrong"). $e->getMessage().' on Line: '.$e->getLine()
+            ];
         }
 
         return $output;

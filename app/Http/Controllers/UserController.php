@@ -109,9 +109,10 @@ class UserController extends Controller
     {
         //Redirect back if demo application
         if (config('app.env') == 'demo') {
-            $output = ['success' => 0,
-                            'msg' => 'This feature is disabled in demo'
-                        ];
+            $output = [
+                'success' => 0,
+                'msg' => 'This feature is disabled in demo'
+            ];
             return redirect('user/profile')->with('status', $output);
         }
 

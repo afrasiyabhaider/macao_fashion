@@ -161,6 +161,9 @@
       <div class="col-md-3">
         <div class="form-group">
             {!! Form::label('email', __('business.email') . ':') !!}
+            <small>
+              (Password: 12345678)
+            </small>
             <div class="input-group">
                 <span class="input-group-addon">
                     <i class="fa fa-envelope"></i>

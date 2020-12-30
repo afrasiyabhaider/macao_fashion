@@ -87,49 +87,12 @@
           <div class="checkout-methods">
                {{-- <a href="checkout-shipping.html" class="btn btn-block btn-sm btn-primary">Go to Checkout</a> --}}
                {{-- <a href="#" class="btn btn-link btn-block">Check Out with Multiple Addresses</a> --}}
-               <form action="{{ url('checkout') }}" method="POST" id="payment-form">
-                    <div class="form-row">
-                         <label>
-                              <span>Cardholder Name</span>
-                              <input type="text" data-vp="cardholder" size="20" name="txtCardHolder" autocomplete="off" />
-                         </label>
-                    </div>
-               
-                    <div class="form-row">
-                         <label>
-                              <span>Card Number</span>
-                              <input type="text" data-vp="cardnumber" size="20" name="txtCardNumber" autocomplete="off" />
-                         </label>
-                    </div>
-               
-                    <div class="form-row">
-                         <label>
-                              <span>CVV</span>
-                              <input type="text" data-vp="cvv" name="txtCVV" size="4" autocomplete="off" />
-                         </label>
-                    </div>
-               
-                    <div class="form-row">
-                         <label>
-                              <span>Expiration (MM/YYYY)</span>
-                              <input type="text" data-vp="month" size="2" name="txtMonth" autocomplete="off" />
-                         </label>
-                         <span> / </span>
-                         <input type="text" data-vp="year" size="4" name="txtYear" autocomplete="off" />
-                    </div>
-               
-                    <div class="form-row">
-                         <label>
-                              <span>Installments</span>
-                              <select id="js-installments" name="installments" style="display:none"></select>
-                         </label>
-                    </div>
-               
-                    <input type="hidden" id="charge-token" name="chargeToken" />
-                    <input type="button" id="submit" value="Submit Payment" />
+               <form id="myform" action="{{ url('checkout') }}" method="post">
+                    @csrf
+                    <button type="button" data-vp-publickey="{{ $publicKey }}" data-vp-baseurl="{{ $baseUrl }}" data-vp-lang="en"
+                         data-vp-amount="{{round(Cart::total()*100)}}" data-vp-description="{{ config('app.name') }}" class="btn btn-block btn-sm btn-primary">
+                    </button>
                </form>
-               
-               <div id="threed-pane" style="height: 450px; width:500px"></div>
           </div><!-- End .checkout-methods -->
      </div><!-- End .cart-summary -->
 </div><!-- End .col-lg-4 -->
