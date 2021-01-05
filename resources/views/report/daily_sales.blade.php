@@ -296,7 +296,7 @@
                // $('#total_items').text(
                // sum_table_col($('#daily_sale_report_table'), 'items')
                // );
-               __currency_convert_recursively($('#daily_sale_report_table'));
+               // __currency_convert_recursively($('#daily_sale_report_table'));
           },
      });
 
