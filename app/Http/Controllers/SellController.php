@@ -139,6 +139,7 @@ class SellController extends Controller
             }
             if (!empty(request()->input('payment_method'))) {
                 $sells->where('tp.method', request()->input('payment_method'));
+                // dd(request()->input('payment_method'));
             }
 
             //Add condition for location,used in sales representative expense report

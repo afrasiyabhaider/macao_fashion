@@ -9,7 +9,7 @@
 <div class="col-md-3">
     <div class="form-group">
         {!! Form::label('sell_list_filter_payment_method',  'Payment Method' . ':') !!}
-            {!! Form::select('sell_list_filter_payment_method', ['cash' =>'Cash', 'card' => 'Card'], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
+            {!! Form::select('sell_list_filter_payment_method', ['cash' =>'Cash', 'card' => 'Card','coupon' => 'Coupon'], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'placeholder' => __('lang_v1.all')]); !!}
     </div>
 </div>
 <div class="col-md-3">

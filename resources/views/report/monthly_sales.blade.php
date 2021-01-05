@@ -250,34 +250,34 @@
           fnDrawCallback: function(oSettings) {
                __currency_convert_recursively($('#monthly_sale_report_table'));
                $('#total_amount_top').text(
-               sum_table_col($('#monthly_sale_report_table'), 'total_amount')
+               sum_table_col($('#monthly_sale_report_table'), 'total_amount').toFixed(2)
                );
                $('#total_amount').text(
-               sum_table_col($('#monthly_sale_report_table'), 'total_amount')
+               sum_table_col($('#monthly_sale_report_table'), 'total_amount').toFixed(2)
                );
                $('.total_cash').text(
-               sum_table_col($('#monthly_sale_report_table'), 'cash_amount')
+               sum_table_col($('#monthly_sale_report_table'), 'cash_amount').toFixed(2)
                );
                $('.total_card').text(
-               sum_table_col($('#monthly_sale_report_table'), 'card_amount')
+               sum_table_col($('#monthly_sale_report_table'), 'card_amount').toFixed(2)
                );
                $('.total_coupon').text(
-               sum_table_col($('#monthly_sale_report_table'), 'coupon_amount')
+               sum_table_col($('#monthly_sale_report_table'), 'coupon_amount').toFixed(2)
                );
                $('.total_gift_card').text(
-               sum_table_col($('#monthly_sale_report_table'), 'giftcard_amount')
+               sum_table_col($('#monthly_sale_report_table'), 'giftcard_amount').toFixed(2)
                );
                // $('#total_discount').text(
                // sum_table_col($('#monthly_sale_report_table'), 'discounted_amount')
                // );
                $('.total_invoices').text(
-               sum_table_col($('#monthly_sale_report_table'), 'invoices')
+               sum_table_col($('#monthly_sale_report_table'), 'invoices').toFixed(2)
                );
                // $('#total_items').text(
                // sum_table_col($('#monthly_sale_report_table'), 'items')
                // );
                $('#total').text(
-               sum_table_col($('#monthly_sale_report_table'), 'total_amount')
+               sum_table_col($('#monthly_sale_report_table'), 'total_amount').toFixed(2)
                );
           },
      });
