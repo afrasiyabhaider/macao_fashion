@@ -138,8 +138,7 @@ class SellController extends Controller
                 }
             }
             if (!empty(request()->input('payment_method'))) {
-                $sells->where('tp.method', request()->input('payment_method'));
-                // ->where('tp.amount','>',0);
+                $sells->where('tp.method', request()->input('payment_method'))->where('tp.amount','>',0);
                 // dd(request()->input('payment_method'));
             }
 
