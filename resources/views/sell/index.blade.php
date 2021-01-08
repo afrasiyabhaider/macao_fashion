@@ -13,80 +13,84 @@
 <!-- Main content -->
 <section class="content no-print">
     @component('components.filters', ['title' => __('report.filters')])
-        @include('sell.partials.sell_list_filters')
-        @if($is_woocommerce)
-            <div class="col-md-4">
-                <div class="form-group">
-                    <div class="checkbox">
-                        <label>
-                          {!! Form::checkbox('only_woocommerce_sells', 1, false, 
-                          [ 'class' => 'input-icheck', 'id' => 'synced_from_woocommerce']); !!} {{ __('lang_v1.synced_from_woocommerce') }}
-                        </label>
-                    </div>
-                </div>
+    @include('sell.partials.sell_list_filters')
+    @if($is_woocommerce)
+    <div class="col-md-4">
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    {!! Form::checkbox('only_woocommerce_sells', 1, false,
+                    [ 'class' => 'input-icheck', 'id' => 'synced_from_woocommerce']); !!}
+                    {{ __('lang_v1.synced_from_woocommerce') }}
+                </label>
             </div>
-        @endif
+        </div>
+    </div>
+    @endif
     @endcomponent
     @component('components.widget', ['class' => 'box-primary', 'title' => __( 'lang_v1.all_sales')])
-        @can('sell.create')
-            @slot('tool')
-                @if(request()->session()->get('user.id') == "1")
-                <div class="col-md-3 pull-right">
-                    <a class="btn btn-block  btn-primary" id="bulk-delete-sale" href="#" onClick="multipleHide(this)">
-                    <i class="fa fa-plus"></i>Multiple Hide</a>
-                    
-                </div>
-                 <div class="col-md-3 pull-right">
-                    <a class="btn btn-block  btn-danger" id="bulk-delete-sale" href="#" onClick="multipleUnHide(this)">
-                    <i class="fa fa-plus"></i>multipleUnHide</a>
-                    
-                </div>
-                @endif
-            @endslot
-        @endcan
-        @can('direct_sell.access')
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped ajax_view" id="sell_table">
-                    <thead>
-                        <tr>
-                            <th>
-                                <input type="checkbox" id="select-all-row">
-                                Select All
-                            </th>
-                            <th>@lang('messages.date')</th>
-                            <th>@lang('sale.invoice_no')</th>
-                            <th>@lang('sale.customer_name')</th>
-                            <th>@lang('sale.location')</th>
-                            <th>@lang('sale.payment_status')</th>
-                            <th>Method</th>
-                            <th>@lang('sale.total_amount')</th>
-                            <th>@lang('sale.total_paid')</th>
-                            <th>@lang('purchase.payment_due')</th>
-                            <th>@lang('messages.action')</th>
-                        </tr>
-                    </thead>
-                    <tfoot>
-                        <tr class="bg-gray font-17 footer-total text-center">
-                            <td colspan="6"><strong>@lang('sale.total'):</strong></td>
-                            <td id="footer_payment_status_count"></td>
-                            <td><span class="display_currency" id="footer_sale_total" data-currency_symbol ="true"></span></td>
-                            <td><span class="display_currency" id="footer_total_paid" data-currency_symbol ="true"></span></td>
-                            <td class="text-left"><small>@lang('lang_v1.sell_due') - <span class="display_currency" id="footer_total_remaining" data-currency_symbol ="true"></span><br>@lang('lang_v1.sell_return_due') - <span class="display_currency" id="footer_total_sell_return_due" data-currency_symbol ="true"></span></small></td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        @endcan
+    @can('sell.create')
+    @slot('tool')
+    @if(request()->session()->get('user.id') == "1")
+    <div class="col-md-3 pull-right">
+        <a class="btn btn-block  btn-primary" id="bulk-delete-sale" href="#" onClick="multipleHide(this)">
+            <i class="fa fa-plus"></i>Multiple Hide</a>
+
+    </div>
+    <div class="col-md-3 pull-right">
+        <a class="btn btn-block  btn-danger" id="bulk-delete-sale" href="#" onClick="multipleUnHide(this)">
+            <i class="fa fa-plus"></i>multipleUnHide</a>
+
+    </div>
+    @endif
+    @endslot
+    @endcan
+    @can('direct_sell.access')
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped ajax_view" id="sell_table">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" id="select-all-row">
+                        Select All
+                    </th>
+                    <th>@lang('messages.date')</th>
+                    <th>@lang('sale.invoice_no')</th>
+                    <th>@lang('sale.customer_name')</th>
+                    <th>@lang('sale.location')</th>
+                    <th>@lang('sale.payment_status')</th>
+                    <th>Method</th>
+                    <th>@lang('sale.total_amount')</th>
+                    <th>@lang('sale.total_paid')</th>
+                    {{-- <th>@lang('purchase.payment_due')</th> --}}
+                    <th>@lang('messages.action')</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr class="bg-gray font-17 footer-total text-center">
+                    <td colspan="7"><strong>@lang('sale.total'):</strong></td>
+                    {{-- <td id="footer_payment_status_count"></td> --}}
+                    <td><span class="display_currency" id="footer_sale_total" data-currency_symbol="true"></span></td>
+                    <td><span class="display_currency" id="footer_total_paid" data-currency_symbol="true"></span></td>
+                    {{-- <td class="text-left"><small>@lang('lang_v1.sell_due') - <span class="display_currency"
+                                id="footer_total_remaining"
+                                data-currency_symbol="true"></span><br>@lang('lang_v1.sell_return_due') - <span
+                                class="display_currency" id="footer_total_sell_return_due"
+                                data-currency_symbol="true"></span></small>
+                    </td> --}}
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    @endcan
     @endcomponent
 </section>
 <!-- /.content -->
-<div class="modal fade payment_modal" tabindex="-1" role="dialog" 
-    aria-labelledby="gridSystemModalLabel">
+<div class="modal fade payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
 </div>
 
-<div class="modal fade edit_payment_modal" tabindex="-1" role="dialog" 
-    aria-labelledby="gridSystemModalLabel">
+<div class="modal fade edit_payment_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
 </div>
 
 <!-- This will be printed -->
@@ -97,7 +101,7 @@
 
 @section('javascript')
 <script type="text/javascript">
-function multipleHide(e)
+    function multipleHide(e)
 {  
      swal({
             title: LANG.sure,
@@ -242,7 +246,7 @@ $(document).ready( function(){
             { data: 'method', name: 'tp.method'},
             { data: 'final_total', name: 'final_total'},
             { data: 'total_paid', name: 'total_paid', "searchable": false},
-            { data: 'total_remaining', name: 'total_remaining'},
+            // { data: 'total_remaining', name: 'total_remaining'},
             { data: 'action', name: 'action'}
         ],
         "fnDrawCallback": function (oSettings) {
@@ -251,11 +255,11 @@ $(document).ready( function(){
             
             $('#footer_total_paid').text(sum_table_col($('#sell_table'), 'total-paid'));
 
-            $('#footer_total_remaining').text(sum_table_col($('#sell_table'), 'payment_due'));
+            // $('#footer_total_remaining').text(sum_table_col($('#sell_table'), 'payment_due'));
 
-            $('#footer_total_sell_return_due').text(sum_table_col($('#sell_table'), 'sell_return_due'));
+            // $('#footer_total_sell_return_due').text(sum_table_col($('#sell_table'), 'sell_return_due'));
 
-            $('#footer_payment_status_count').html(__sum_status_html($('#sell_table'), 'payment-status-label'));
+            // $('#footer_payment_status_count').html(__sum_status_html($('#sell_table'), 'payment-status-label'));
 
             __currency_convert_recursively($('#sell_table'));
         },
