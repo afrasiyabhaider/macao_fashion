@@ -272,6 +272,7 @@ ranges[LANG.last_month] = [
     .subtract(1, 'month')
     .endOf('month'),
 ];
+ranges[LANG.yearly] = [moment().subtract(365, 'days'), moment()];
 ranges[LANG.this_financial_year] = [financial_year.start, financial_year.end];
 var dateRangeSettings = {
     ranges: ranges,

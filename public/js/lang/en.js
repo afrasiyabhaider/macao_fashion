@@ -20,6 +20,7 @@ LANG = {
     'this_month': 'This Month',
     'last_month': 'Last Month',
     'this_financial_year': 'Current financial year',
+    'yearly': "Yearly",
     'clear': 'Clear',
     'no_products_added': 'No Products added, add some products first',
     'some_error_in_input_field': 'Invalid inputs, Check & try again!!',

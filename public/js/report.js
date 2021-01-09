@@ -1158,8 +1158,8 @@ $(document).ready(function() {
     if ($('#product_purchase_date_filter').length == 1) {
         var purchasedateRangeSettings = {
             ranges: ranges,
-            startDate: financial_year.start,
-            endDate: financial_year.end,
+            startDate: moment().subtract(365, 'days'),
+            endDate: moment(),
             locale: {
                 cancelLabel: LANG.clear,
                 applyLabel: LANG.apply,
