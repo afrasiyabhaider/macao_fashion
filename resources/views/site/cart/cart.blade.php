@@ -20,7 +20,7 @@ Cart
 @endsection
 @section('scripts')
 {{-- <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script> --}}
-<script src="https://demo.vivapayments.com/web/checkout/js"></script>
+{{-- <script src="https://demo.vivapayments.com/web/checkout/js"></script>
 <script type="text/javascript" src="https://demo.vivapayments.com/web/checkout/v2/js"></script>
 <script>
      $(document).ready(function () {
@@ -68,5 +68,5 @@ Cart
           var updateUrl = url+"/"+$(id).val();
           window.location.href = updateUrl;
      }
-</script>
+</script> --}}
 @endsection

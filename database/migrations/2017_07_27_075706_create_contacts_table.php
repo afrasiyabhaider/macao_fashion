@@ -15,8 +15,12 @@ class CreateContactsTable extends Migration
     {
         Schema::create('contacts', function (Blueprint $table) {
             $table->increments('id');
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            
             $table->integer('business_id')->unsigned();
             $table->foreign('business_id')->references('id')->on('business')->onDelete('cascade');
+
             $table->enum('type', ['supplier', 'customer', 'both']);
             $table->string('supplier_business_name')->nullable();
             $table->string('name');
@@ -36,13 +40,13 @@ class CreateContactsTable extends Migration
             $table->integer('pay_term_number')->nullable();
             $table->enum('pay_term_type', ['days', 'months'])->nullable();
             $table->integer('created_by')->unsigned();
-             $table->boolean('is_default')->default(0);
+            $table->boolean('is_default')->default(0);
             $table->softDeletes();
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
-
+    
     /**
      * Reverse the migrations.
      *

@@ -87,12 +87,12 @@
           <div class="checkout-methods">
                {{-- <a href="checkout-shipping.html" class="btn btn-block btn-sm btn-primary">Go to Checkout</a> --}}
                {{-- <a href="#" class="btn btn-link btn-block">Check Out with Multiple Addresses</a> --}}
-               <form id="myform" action="{{ url('checkout') }}" method="post">
+               {{-- <form id="myform" action="{{ url('checkout') }}" method="post">
                     @csrf
                     <button type="button" data-vp-publickey="{{ $publicKey }}" data-vp-baseurl="{{ $baseUrl }}" data-vp-lang="en"
                          data-vp-amount="{{round(Cart::total()*100)}}" data-vp-description="{{ config('app.name') }}" class="btn btn-block btn-sm btn-primary">
                     </button>
-               </form>
+               </form> --}}
           </div><!-- End .checkout-methods -->
      </div><!-- End .cart-summary -->
 </div><!-- End .col-lg-4 -->

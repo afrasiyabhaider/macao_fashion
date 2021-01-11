@@ -10,6 +10,8 @@ use Sebdesign\VivaPayments\Client;
 use Sebdesign\VivaPayments\OAuth;
 
 use App\Product;
+use App\SalePriority;
+use App\VariationLocationDetails;
 use Cart;
 
 class CartController extends Controller
@@ -29,22 +31,39 @@ class CartController extends Controller
             return redirect()->back();
         }
         $product = Product::find($request->product_id);
+        /**
+         * Selecting Priority Location of selected product 
+         * 
+         **/
+        $location_setting = SalePriority::first(['priority_1','priority_2','priority_3','priority_4'])->toArray();
+        // dd($location_setting);
+        for ($i=0; $i < 4; $i++) { 
+            $location = VariationLocationDetails::where('product_id',$product->id)->where('location_id',$location_setting['priority_'.($i+1)])->first();
+            if($location){
+                $location = $location->location_id;
+                // dd($product->id,$location, $location_setting, $location_setting['priority_'.($i+1)]);
+                break;
+            }
+        }
+        // dd($location);
         Cart::add([
-                'id' => $product->id, 
-                'name' => $product->name, 
-                'qty' => 1, 
-                'price' => $product->variations()->first()['sell_price_inc_tax'],'weight' => 1,
-                'options' => [
-                    'size' => (int)$request->size,
-                    'color'=> (int)$request->color,
-                    'product_id'=> (int)$product->id,
-                ]
-            ]);
-        // Cart::add(['id' => '2935555', 'name' => 'Product 1', 'qty' => 1, 'price' => 9.99, 'weight' => 550, 'options' => ['size' => 'large']]);
-        
-        // return Cart::content();
+            'id' => $product->id, 
+            'name' => $product->name, 
+            'qty' => 1, 
+            'price' => $product->variations()->first()['sell_price_inc_tax'],'weight' => 1,
+            'options' => [
+                'size' => (int)$request->size,
+                'color'=> (int)$request->color,
+                'product_id'=> (int)$product->id,
+                'location_id'=> $location,
+                'refference'=> $product->refference,
+                'product'=> $product
+            ]
+        ]);
+
         // alert()->success('Yayy!','Product added into cart')->timerProgressBar();
-        return redirect()->back();
+        // return redirect()->back();
+        return redirect(url('cart/view'));
     }
     /**
      * View Cart 
@@ -56,16 +75,17 @@ class CartController extends Controller
     public function viewCart(Client $client, OAuth $oauth)
     {
         $cart = Cart::content()->toArray();
-        try {
-            $token = $oauth->requestToken();
-        } catch (RequestException | VivaException $e) {
-            report($e);
+        dd($cart);
+        // try {
+        //     $token = $oauth->requestToken();
+        // } catch (RequestException | VivaException $e) {
+        //     report($e);
 
-            return back()->withErrors($e->getMessage());
-        }
+        //     return back()->withErrors($e->getMessage());
+        // }
         return view('site.cart.cart', [
-            'baseUrl' => $client->getApiUrl(),
-            'accessToken' => $token->access_token,
+            // 'baseUrl' => $client->getApiUrl(),
+            // 'accessToken' => $token->access_token,
             'cart' => $cart
         ]);
     }
