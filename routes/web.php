@@ -472,7 +472,7 @@ Route::get('force-logout', function () {
  */
 
 // Route::get('/', 'HomeController@index')->name('site.home');
-Route::get('/', 'website\SiteController@home')->name('site.home');
+// Route::get('/', 'website\SiteController@home')->name('site.home');
 Route::get('product/{id}/detail', 'website\SiteController@detail')->name('product.detail');
 
 // Route::get('customer/login','')
