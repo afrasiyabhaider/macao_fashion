@@ -349,7 +349,6 @@ class ContactController extends Controller
             $input['name'] = $objInput['first_name']."-".$objInput['last_name'];
 
             $input['credit_limit'] = $request->input('credit_limit') != '' ? $this->commonUtil->num_uf($request->input('credit_limit')) : null;
-
             //Check Contact id
             $count = 0;
             if (!empty($input['contact_id'])) {
@@ -370,12 +369,18 @@ class ContactController extends Controller
                 $location_id = $request->session()->get('user.business_location_id');
 
                 $contact = Contact::create($input);
+                $web = DB::connection('website');
                 $user = User::create([
                     'business_id' => $business_id,
                     'business_location_id' => $location_id,
                     'first_name' => $objInput['first_name'],
                     'last_name' => $objInput['last_name'],
                     'username' => $objInput['email'],
+                    'email' => $objInput['email'],
+                    'password' => bcrypt('12345678')
+                ]);
+                $web->table('users')->insert([
+                    'name' => $objInput['first_name'].' '.$objInput['last_name'],
                     'email' => $objInput['email'],
                     'password' => bcrypt('12345678')
                 ]);
