@@ -54,7 +54,7 @@
                                    <th>Available Stock</th>
                                    <th>Total Sold</th>
                                    <th>Total</th>
-                                   <th>Transferred</th>
+                                   {{-- <th>Transferred</th> --}}
                               </tr>
                          </thead>
                     </table>
@@ -86,11 +86,11 @@
         ],
         aaSorting: [2, 'asc'],
         columns: [
-            { data: 'cat_name', name: 'cat_name' },
-            { data: 'quantity_available', name: 'quantity_available' },
-            { data: 'quantity_sold', name: 'quantity_sold' },
+            { data: 'sub_category_name', name: 'sub_category_name' },
+            { data: 'stock', name: 'stock' },
+            { data: 'total_sold', name: 'total_sold' },
             { data: 'total', name: 'total' },
-            { data: 'transfered', name: 'transfered' },
+          //   { data: 'transfered', name: 'transfered' },
         ],
     });
     $(

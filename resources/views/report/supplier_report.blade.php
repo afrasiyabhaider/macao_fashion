@@ -73,7 +73,7 @@
                 d.to_date = $('#product_list_to_date').val();
             },
         },
-        pageLength: 50,
+        pageLength: 100,
         lengthMenu: [
             [20, 50, 70, 100, -1],
             [20, 50, 70, 100, 'All'],
