@@ -24,6 +24,7 @@ use App\VariationGroupPrice;
 
 use App\VariationLocationDetails;
 use App\VariationTemplate;
+use App\WebsiteProducts;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -1058,6 +1059,9 @@ class ProductController extends Controller
             }
 
             DB::commit();
+
+            $this->update_on_website($product->name);
+
             $output = [
                 'success' => 1,
                 'msg' => __('product.product_updated_success')
@@ -1199,6 +1203,7 @@ class ProductController extends Controller
             }
 
             DB::commit();
+            $this->update_on_website($product->name);
             $output = [
                 'success' => 1,
                 'msg' => $message
@@ -1328,6 +1333,7 @@ class ProductController extends Controller
             }
 
             DB::commit();
+            $this->update_on_website($product->name);
             $output = [
                 'success' => 1,
                 'msg' => __('product.product_updated_success')
@@ -1472,6 +1478,7 @@ class ProductController extends Controller
 
                 DB::commit();
             }
+            $this->update_on_website($product_id->name);
             $output = [
                 'success' => 1,
                 'msg' => $message
@@ -1636,6 +1643,124 @@ class ProductController extends Controller
         }
 
         return redirect('products')->with('status', $output);
+    }
+    /**
+     * Update Products on website 
+     * 
+     **/
+    public function update_on_website($product_name)
+    {
+        try {
+            
+            $products = WebsiteProducts::join('products as p', 'p.refference', '=', 'website_products.refference')
+                ->where('p.name',$product_name)
+                ->join('variation_location_details as vld', 'vld.product_id', '=', 'p.id')
+                ->join('variations as v', 'p.id', '=', 'v.product_id')
+                ->join('sizes as s', 'p.sub_size_id', '=', 's.id')
+                ->join('colors as c', 'c.id', '=', 'p.color_id')
+                ->join('categories as cat', 'cat.id', '=', 'p.category_id')
+                ->join('categories as sub_cat', 'sub_cat.id', '=', 'p.sub_category_id')
+                ->groupBy('id')
+                ->get([
+                    'p.id',
+                    'p.name as name',
+                    'p.sku as sku',
+                    'cat.name as category_name',
+                    'sub_cat.name as sub_category_name',
+                    'c.name as color',
+                    'c.color_code as color_code',
+                    's.name as size',
+                    'website_products.quantity as quantity',
+                    'v.sell_price_inc_tax as price',
+                    'p.image',
+                    // DB::raw('(SELECT qty_available from variation_location_details) as qty'),
+                    DB::raw('SUM(vld.qty_available) as qty'),
+                    // 'vld.qty_available',
+                ])
+                ->groupBy('name')
+                ->toArray();
+            // $total = $connection->table('website_products')->count('id');
+            // dd($products);
+            DB::beginTransaction();
+            $qurrey_count = 0;
+            $all_product = 0;
+            $product = 0;
+            // dd($products);
+            foreach ($products as $key => $value) {
+                // for ($i=0; $i < count($products); $i++) {
+                $connection = DB::connection('website');
+                $qurrey_count++;
+                $current_product = $value;
+                // dd($current_product[0]);
+                // dd($connection->table('categories')->where('name', $current_product[0]['category_name'])->first());
+                $cat_id = NULL;
+                $subcat_id = NULL;
+                $child_id = NULL;
+                if ($connection->table('categories')->where('name', $current_product[0]['category_name'])->first()) {
+                    $cat_id = $connection->table('categories')->where('name', $current_product[0]['category_name'])->first()->id;
+                }
+                if ($connection->table('subcategories')->where('name', $current_product[0]['sub_category_name'])->first()) {
+                    $sub_category = $connection->table('subcategories')->where('name', $current_product[0]['sub_category_name'])->first();
+                    $subcat_id = $sub_category->id;
+                    $cat_id = $sub_category->category_id;;
+                }
+                if ($connection->table('childcategories')->where('name', $current_product[0]['sub_category_name'])->first()) {
+                    $child = $connection->table('childcategories')->where('name', $current_product[0]['sub_category_name'])->first();
+                    $child_id = $child->id;
+                    $subcat_id = $child->subcategory_id;
+                    $cat_id = $connection->table('subcategories')->where('id',$subcat_id)->category_id;
+                }
+                $size = [];
+                $color = [];
+                $quantity = [];
+                $price = [];
+                for ($j = 0; $j < count($current_product); $j++) {
+                    $size[$j] =  $current_product[$j]['size'];
+                    if (($j > 0) && (isset($color[($j - 1)]) && ($color[($j - 1)] != $current_product[$j]['color']))) {
+                        $color[$j] = $current_product[$j]['color'];
+                    } elseif ($j == 0) {
+                        $color[0] = $current_product[$j]['color'];
+                    }
+                    // $quantity[$j] = $current_product[$j]->quantity;
+                    if ($current_product[$j]['qty']) {
+                        $quantity[$j] = (int) $current_product[$j]['qty'];
+                    } else {
+                        $quantity[$j] = 0;
+                    }
+                    $price[$j] = (float)$current_product[0]['price'];
+                    $all_product++;
+                }
+                // dd($current_product);
+                // Create Product here
+                if ($connection->table('products')->where('name', $current_product[0]['name'])->first()) {
+                    $data = $connection->table('products')->where('name', $current_product[0]['name']);
+                    $input = [];
+                    $input['name'] = $current_product[0]['name'];
+                    $input['slug'] = strtolower($current_product[0]['name']);
+                    $input['sku'] = $current_product[0]['sku'];
+                    $input['photo'] = $current_product[0]['image'];
+                    $input['thumbnail'] = $current_product[0]['image'];
+                    $input['size'] = implode(",", $size);
+                    $input['size_price'] = implode(",", $price);
+                    $input['size_qty'] = implode(",", $quantity);
+                    $input['stock'] = $current_product[0]['quantity'];
+                    // $input['quantity'] = $current_product[0]['quantity'];
+                    $input['color'] = implode(",", $color);
+                    $input['price'] = (float)$current_product[0]['price'];
+                    $input['category_id'] = $cat_id;
+                    $input['subcategory_id'] = $subcat_id;
+                    $input['childcategory_id'] = $child_id;
+                    // dd($input);
+                    $data->update($input); //save product
+                    $product++;
+                }
+                // dd("Hello");
+            }
+            DB::commit();
+        } catch (\Exception $ex) {
+            DB::rollback();
+            dd($ex->getMessage() . ' on Line: ' . $ex->getLine() . ' in file: ' . $ex->getFile());
+        }
     }
     public function old_bulkUpdate(Request $request)
     {

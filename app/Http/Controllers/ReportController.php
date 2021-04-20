@@ -736,7 +736,7 @@ class ReportController extends Controller
             ->join('suppliers', 'p.supplier_id', '=', 'suppliers.id')
             ->join('categories', 'p.category_id', '=', 'categories.id')
             ->join('categories as sub_cat', 'p.sub_category_id', '=', 'sub_cat.id')
-            ->leftjoin('variation_location_details as vld', 'variations.id', '=', 'vld.variation_id')
+            ->join('variation_location_details as vld', 'variations.id', '=', 'vld.variation_id')
             ->join('business_locations as bl', 'bl.id', '=', 'vld.location_id')
             ->join('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
             ->where('p.business_id', $business_id)
@@ -766,17 +766,17 @@ class ReportController extends Controller
                 // transaction_sell_lines.product_id=products.id) as total_sold"),
 
                 DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions
-JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
-WHERE transactions.status='final' AND transactions.type='sell' $location_filter
-AND TSL.variation_id=variations.id) as total_sold"),
+                JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
+                WHERE transactions.status='final' AND transactions.type='sell' $location_filter
+                AND TSL.variation_id=variations.id) as total_sold"),
                 DB::raw("(SELECT SUM(IF(transactions.type='sell_transfer', TSL.quantity, 0) ) FROM transactions
-JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
-WHERE transactions.status='final' AND transactions.type='sell_transfer' $location_filter
-AND (TSL.variation_id=variations.id)) as total_transfered"),
+                JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
+                WHERE transactions.status='final' AND transactions.type='sell_transfer' $location_filter
+                AND (TSL.variation_id=variations.id)) as total_transfered"),
                 DB::raw("(SELECT SUM(IF(transactions.type='stock_adjustment', SAL.quantity, 0) ) FROM transactions
-JOIN stock_adjustment_lines AS SAL ON transactions.id=SAL.transaction_id
-WHERE transactions.status='received' AND transactions.type='stock_adjustment' $location_filter
-AND (SAL.variation_id=variations.id)) as total_adjusted"),
+                JOIN stock_adjustment_lines AS SAL ON transactions.id=SAL.transaction_id
+                WHERE transactions.status='received' AND transactions.type='stock_adjustment' $location_filter
+                AND (SAL.variation_id=variations.id)) as total_adjusted"),
                 DB::raw("SUM(vld.qty_available) as stock"),
                 'variations.sub_sku as sku',
                 'p.id as product_id',
