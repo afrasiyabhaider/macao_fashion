@@ -1714,6 +1714,7 @@ class ProductController extends Controller
                 $color = [];
                 $quantity = [];
                 $price = [];
+                $total_qty = 0;
                 for ($j = 0; $j < count($current_product); $j++) {
                     $size[$j] =  $current_product[$j]['size'];
                     if (($j > 0) && (isset($color[($j - 1)]) && ($color[($j - 1)] != $current_product[$j]['color']))) {
@@ -1729,6 +1730,7 @@ class ProductController extends Controller
                     }
                     $price[$j] = (float)$current_product[0]['price'];
                     $all_product++;
+                    $total_qty += (int) $current_product[$j]['qty'];
                 }
                 // dd($current_product);
                 // Create Product here
@@ -1743,7 +1745,8 @@ class ProductController extends Controller
                     $input['size'] = implode(",", $size);
                     $input['size_price'] = implode(",", $price);
                     $input['size_qty'] = implode(",", $quantity);
-                    $input['stock'] = $current_product[0]['quantity'];
+                    $input['stock'] = $total_qty;
+                    // $input['stock'] = $current_product[0]['quantity'];
                     // $input['quantity'] = $current_product[0]['quantity'];
                     $input['color'] = implode(",", $color);
                     $input['price'] = (float)$current_product[0]['price'];
