@@ -1276,6 +1276,7 @@ class ReportController extends Controller
                 'bl.name as location_name',
                 'vld.location_id as location_id',
                 'p.created_at',
+                'p.show_pos as show_pos',
                 'p.name as product',
                 'p.image as image',
                 'p.description as description',
@@ -1306,6 +1307,13 @@ class ReportController extends Controller
                 ->addColumn('mass_delete', function ($row) {
                     return  '<input type="checkbox" class="row-select" value="' . $row->product_id . '"> <input type="number" class="row-print-qty form-control disabled" value="' . number_format($row->current_stock) . '" max="' . number_format($row->current_stock) . '" style="width:70px;" id="stock_qty_' . $row->product_id . '">';
                     // return  '<input type="checkbox" class="row-select" value="' . $row->product_id . '"><input type="number" class="row-qty form-control" value="' . number_format($row->current_stock) . '" max="' . number_format($row->current_stock) . '" style="width:70px;" id="qty_' . $row->product_id . '">';
+                })
+                ->editColumn('show_pos',function($row){
+                    if($row->show_pos){
+                        return '<span class="text-success">TOP</span>';
+                    }else{
+                        return '<span class="text-danger">Normal</span>';
+                    }
                 })
                 ->editColumn('printing_qty', function ($row) {
                     if ($row->printing_qty < 1) {
@@ -1489,7 +1497,7 @@ class ReportController extends Controller
                 //     }
                 // ])
                 // ->removeColumn('id')
-                ->rawColumns(['mass_delete', 'printing_qty', 'unit_price', 'total_transfered', 'location_name', 'total_sold', 'total_adjusted', 'stock', 'actions', 'image'])
+                ->rawColumns(['mass_delete', 'printing_qty', 'unit_price', 'total_transfered', 'show_pos', 'location_name', 'total_sold', 'total_adjusted', 'stock', 'actions', 'image'])
                 ->make(true);
         }
 

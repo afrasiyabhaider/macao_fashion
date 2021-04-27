@@ -147,6 +147,10 @@ $(document).ready(function() {
                 name: 'variations.sub_sku'
             },
             {
+                data: 'show_pos',
+                name: 'show_pos'
+            },
+            {
                 data: 'product',
                 name: 'p.name'
             },

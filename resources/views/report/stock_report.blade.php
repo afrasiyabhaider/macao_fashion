@@ -141,6 +141,24 @@
                 <div class="tab-pane" id="psr_detailed_tab">
                     <div class="row" style="margin-bottom: 20px">
                         <div class="col-12">
+                            <form action="{{action('ProductController@showPos')}}" method="post" class="ml-5" style="margin-left: 20px"
+                                id="show_pos">
+                                @csrf
+                                <input type="hidden" name="product_id" id="product_id">
+                                <button type="submit" class="btn btn-danger pull-left" id="show_pos_button">
+                                    <i class="fa fa-desktop"></i>
+                                    Show on POS
+                                </button>
+                            </form>
+                            <form action="{{action('ProductController@showBottomPos')}}" method="post" class="ml-5" style="margin-left: 20px"
+                                id="show_bottom_pos">
+                                @csrf
+                                <input type="hidden" name="product_id" id="product_id">
+                                <button type="submit" class="btn btn-warning pull-left" id="show_bottom_pos_button">
+                                    <i class="fa fa-desktop"></i>
+                                    Show Normal on POS
+                                </button>
+                            </form>
                             {!! Form::open(['url' => action('ProductController@massBulkPrint'), 'method' => 'post', 'id'
                             =>
                             'bulkPrint_form' ]) !!}
@@ -380,6 +398,54 @@
                 if(selected_rows.length > 0){
                     $('input#product_id').val(selected_rows);
                     $("form#add_to_website").submit();
+                } else{
+                    $('input#product_id').val('');
+                    swal('@lang("lang_v1.no_row_selected")');
+                }    
+            })
+            $(document).on('click', '#show_pos_button', function(e){
+                e.preventDefault();
+                var selected_rows = [];
+                var i = 0;
+                $('.row-select:checked').each(function () {
+                    var selectedQty = $("#stock_qty_"+$(this).val()).val();
+                    var selectedMaxQty = $("#stock_qty_"+$(this).val()).attr('max');
+                    if(parseInt(selectedQty) <= parseInt(selectedMaxQty))
+                    {
+                        selected_rows[i++] = $(this).val();
+                    }
+                });
+                // console.log(selected_rows);
+                // return 0;
+                
+                
+                if(selected_rows.length > 0){
+                    $('input#product_id').val(selected_rows);
+                    $("form#show_pos").submit();
+                } else{
+                    $('input#product_id').val('');
+                    swal('@lang("lang_v1.no_row_selected")');
+                }    
+            })
+            $(document).on('click', '#show_bottom_pos_button', function(e){
+                e.preventDefault();
+                var selected_rows = [];
+                var i = 0;
+                $('.row-select:checked').each(function () {
+                    var selectedQty = $("#stock_qty_"+$(this).val()).val();
+                    var selectedMaxQty = $("#stock_qty_"+$(this).val()).attr('max');
+                    if(parseInt(selectedQty) <= parseInt(selectedMaxQty))
+                    {
+                        selected_rows[i++] = $(this).val();
+                    }
+                });
+                // console.log(selected_rows);
+                // return 0;
+                
+                
+                if(selected_rows.length > 0){
+                    $('input#product_id').val(selected_rows);
+                    $("form#show_bottom_pos").submit();
                 } else{
                     $('input#product_id').val('');
                     swal('@lang("lang_v1.no_row_selected")');

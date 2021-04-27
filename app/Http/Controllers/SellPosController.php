@@ -2639,6 +2639,7 @@ class SellPosController extends Controller
             $products = $products->select(
                 'products.id as product_id',
                 'products.name',
+                'products.show_pos as show_pos',
                 'products.type',
                 'products.enable_stock',
                 'products.sub_size_id',
@@ -2659,7 +2660,8 @@ class SellPosController extends Controller
                 // ->orderBy('created_at', 'DESC')
                 ->groupBy('products.id')
                 // ->groupBy('variations.id')
-                ->orderBy('VLD.product_updated_at', 'DESC')
+                ->orderBy('show_pos', 'DESC')
+                // ->orderBy('VLD.product_updated_at', 'DESC')
                 // ->orderBy('products.name', 'asc')
                 ->latest()
                 ->limit(50)

@@ -4040,4 +4040,74 @@ class ProductController extends Controller
 
         dd($count . ' product\'s updated at date is saved into VLD');
     }
+    /**
+     * Show on Top Of POS 
+     * 
+     **/
+    public function showPos(Request $request){
+        // dd($request);
+        try {
+            DB::beginTransaction();
+            $product = explode(",", $request->input('product_id'));
+            foreach ($product as $key => $value) {
+                $product = Product::find($value);
+                $product_ids = Product::where('name', $product->name)->get();
+                // dd($product_ids);
+                foreach ($product_ids as $p_key => $p_value) {
+                    $p_value->update([
+                        'show_pos' => 1,
+                    ]);
+                    // $p_value->show_pos = 1;
+                    // $p_value->save();
+                }
+            }
+            $output = [
+                'success' => 1,
+                'msg' => "Product will show on top on POS"
+            ];
+            DB::commit();
+        } catch (\Exception $ex) {
+            DB::rollback();
+            $output = [
+                'success' => 0,
+                'msg' => __("messages.something_went_wrong") . "Message:" . $ex->getMessage() . ' on Line: ' . $ex->getLine() . ' of ' . $ex->getFile()
+            ];
+        }
+        return redirect()->back()->with('status', $output);
+    }
+    /**
+     * Show on Bottom Of POS 
+     * 
+     **/
+    public function showBottomPos(Request $request){
+        // dd($request);
+        try {
+            DB::beginTransaction();
+            $product = explode(",", $request->input('product_id'));
+            foreach ($product as $key => $value) {
+                $product = Product::find($value);
+                $product_ids = Product::where('name', $product->name)->get();
+                // dd($product_ids);
+                foreach ($product_ids as $p_key => $p_value) {
+                    $p_value->update([
+                        'show_pos' => 0,
+                    ]);
+                    // $p_value->show_pos = 1;
+                    // $p_value->save();
+                }
+            }
+            $output = [
+                'success' => 1,
+                'msg' => "Product will show as normal on POS"
+            ];
+            DB::commit();
+        } catch (\Exception $ex) {
+            DB::rollback();
+            $output = [
+                'success' => 0,
+                'msg' => __("messages.something_went_wrong") . "Message:" . $ex->getMessage() . ' on Line: ' . $ex->getLine() . ' of ' . $ex->getFile()
+            ];
+        }
+        return redirect()->back()->with('status', $output);
+    }
 }
