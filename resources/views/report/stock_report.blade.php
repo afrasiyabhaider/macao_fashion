@@ -147,7 +147,7 @@
                                 <input type="hidden" name="product_id" id="product_id">
                                 <button type="submit" class="btn btn-danger pull-left" id="show_pos_button">
                                     <i class="fa fa-desktop"></i>
-                                    Show on POS
+                                    Show Top in POS
                                 </button>
                             </form>
                             <form action="{{action('ProductController@showBottomPos')}}" method="post" class="ml-5" style="margin-left: 20px"
@@ -156,7 +156,7 @@
                                 <input type="hidden" name="product_id" id="product_id">
                                 <button type="submit" class="btn btn-warning pull-left" id="show_bottom_pos_button">
                                     <i class="fa fa-desktop"></i>
-                                    Show Normal on POS
+                                    Show Normal in POS
                                 </button>
                             </form>
                             {!! Form::open(['url' => action('ProductController@massBulkPrint'), 'method' => 'post', 'id'
