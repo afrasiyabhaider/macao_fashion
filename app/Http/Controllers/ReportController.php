@@ -27,6 +27,7 @@ use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
 use App\Variation;
 use App\VariationLocationDetails;
+use App\WebsiteProducts;
 use Carbon\Carbon;
 use Charts;
 use Datatables;
@@ -1309,11 +1310,17 @@ class ReportController extends Controller
                     // return  '<input type="checkbox" class="row-select" value="' . $row->product_id . '"><input type="number" class="row-qty form-control" value="' . number_format($row->current_stock) . '" max="' . number_format($row->current_stock) . '" style="width:70px;" id="qty_' . $row->product_id . '">';
                 })
                 ->editColumn('show_pos',function($row){
+                    $web_items = WebsiteProducts::where('product_id',$row->product_id)->first();
+                    $data = '';
                     if($row->show_pos){
-                        return '<span class="text-success">TOP</span>';
+                        $data .= '<span class="btn btn-xs btn-info">TOP</span>';
                     }else{
-                        return '<span class="text-danger">Normal</span>';
+                        $data .= '<span class="btn btn-xs btn-danger">Normal</span>';
                     }
+                    if($web_items){
+                        $data .= '<span class="btn btn-xs btn-success">On Website</span>';
+                    }
+                    return $data;
                 })
                 ->editColumn('printing_qty', function ($row) {
                     if ($row->printing_qty < 1) {

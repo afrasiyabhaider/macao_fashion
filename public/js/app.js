@@ -84,11 +84,20 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ajax: '/suppliers',
-        columnDefs: [{
-            targets: 2,
-            orderable: false,
-            searchable: false,
-        }, ],
+        columns: [{
+                data: 'name',
+                name: 'name'
+            },
+            {
+                data: 'description',
+                name: 'description'
+            },
+            {
+                data: 'action',
+                searchable: false,
+                orderable: false
+            },
+        ]
     });
     //Color table
     var color_table = $('#color_table').DataTable({

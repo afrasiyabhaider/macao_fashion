@@ -23,21 +23,34 @@ class SupplierController extends Controller
             $business_id = request()->session()->get('user.business_id');
 
             $suppliers = Supplier::where('business_id', $business_id)
-                        ->select(['name', 'description', 'id']);
+                        ->select([
+                            'id',
+                            'name', 
+                            'description', 
+                            'deleted_at'
+                        ])
+                        ->withTrashed();
             return DataTables::of($suppliers)
-                ->addColumn(
-                    'action',
-                    '@can("supplier.update")
-                    <button data-href="{{action(\'SupplierController@edit\', [$id])}}" class="btn btn-xs btn-primary edit_brand_button"><i class="glyphicon glyphicon-edit"></i> @lang("messages.edit")</button>
+                ->addColumn('action',function ($row)
+                {
+                    // return action('SupplierController@destroy',$row->id);
+                    $edit_url = action('SupplierController@edit', $row->id);
+                    $delete_url = action('SupplierController@destroy', $row->id);
+                    $data =  '
+                    <button data-href="'.$edit_url. '" class="btn btn-xs btn-primary edit_brand_button"><i class="glyphicon glyphicon-edit"></i> Edit</button>
                         &nbsp;
-                    @endcan
-                    @can("supplier.delete")
-                        <button data-href="{{action(\'SupplierController@destroy\', [$id])}}" class="btn btn-xs btn-danger delete_brand_button"><i class="glyphicon glyphicon-trash"></i> @lang("messages.delete")</button>
-                    @endcan'
+                        <button data-href="' . $delete_url . '" class="btn btn-xs btn-danger delete_brand_button"><i class="glyphicon glyphicon-trash"></i> Delete</button>
+                    ';
+                    if($row->deleted_at){
+                        $url = url('supplier/' . $row->id . '/enable');
+                       $data .= '<a href="'.$url.'" class="btn btn-xs btn-success"><i class="glyphicon glyphicon-trash-restore"></i> Restore</a>';
+                    }
+                    return $data;
+                }
                 )
                 ->removeColumn('id')
-                ->rawColumns([2])
-                ->make(false);
+                ->rawColumns(['action'])
+                ->make(true);
         }
 
         return view('supplier.index');
@@ -205,5 +218,36 @@ class SupplierController extends Controller
 
             return $output;
         }
+    }
+    /**
+     * Retrive the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function enable($id)
+    {
+        if (!auth()->user()->can('supplier.delete')) {
+            abort(403, 'Unauthorized action.');
+        }
+        try {
+            $business_id = request()->user()->business_id;
+
+            $supplier = Supplier::where('business_id', $business_id)->withTrashed()->findOrFail($id);
+            $supplier->restore();
+
+            $output = [
+                'success' => true,
+                'msg'=>'Supplier Restored Successfully'
+            ];
+        } catch (\Exception $e) {
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+        
+            $output = ['success' => false,
+                        'msg' => __("messages.something_went_wrong")
+                    ];
+        }
+
+        return redirect()->back()->with('status', $output);
     }
 }
