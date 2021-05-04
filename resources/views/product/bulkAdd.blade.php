@@ -917,7 +917,7 @@
 			alert("Please Select Size First "); 
 			return(false);
 		}
-		var html = $("#sizeArea").html(); 
+		// var html = $("#sizeArea").html(); 
 		$.ajax({
 			type:'GET',
 			url:'/sizes/getSubSize/'+name, 
@@ -926,10 +926,11 @@
 				{ 
 					// rowSize++ ;
 					var obj = data.msg;
+					var html = '';
 					size_idtext = $("#btnSize_"+sizeId).html();
 					html += "<div class=' col-md-6' > ";
 					html += "<br> ";
-					html +="<input type='file' required name='color_image[]' class='form-control col-6 color-image' accept='image/*' id='sizeImage_"+$("#color_idc option:selected").val()+"'>";
+					html +="<input type='file' name='color_image[]' class='form-control col-6 color-image' accept='image/*' id='sizeImage_"+$("#color_idc option:selected").val()+"'>";
 					html += "</div>"
 					for (i = 0  ; i < obj.length; i++) {
 						rowSize++ ;
@@ -947,15 +948,17 @@
 					html += "<div class=' col-md-1'><button tab-index=-1 onclick='removeSize("+rowSize+")' class='btn btn-sm btn-danger'>X</button></div>";
 					html += "</div>";
 					html += "</div>";
+
+
 					}
-					$("#sizeArea").html(html);
+					$("#sizeArea").append(html);
 
 				}else
 				{
 					alert(" "+data.msg);
 					$("#amount_"+rowIndex).val(0).change();
 					$("#note_"+rowIndex).val('');
-			ResetFields(rowIndex);
+					ResetFields(rowIndex);
 				}
 			}
 		});
@@ -1294,8 +1297,10 @@
 			// 	src = e.target.result;
 			// 	console.log(e.target);
 			// }
-			reader.addEventListener('load', reader);
-			src= reader.readAsText($("#sizeImage_"+$(this).attr("data-color"))[0].files[0]);
+
+			// reader.addEventListener('load', reader);
+			// src= reader.readAsText($("#sizeImage_"+$(this).attr("data-color"))[0].files[0]);
+			
 			// reader.readAsDataURL($("#sizeImage_"+$(this).attr("data-color"))[0].files);
 			
 			file.attr("name","file[]");
