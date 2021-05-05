@@ -1282,17 +1282,38 @@
 		
             html += '<div class="col-md-'+size+'"><input type="hidden" name="size_id[]" value="'+$(this).val()+'"><select title="Sub Size" class="custom-form-control" name="sub_size_id[]"><option value="'+$(this).attr("data-size-sub")+'">'+$(this).attr("data-size-sub-name")+'</option></select></div>'; 
 
-		console.log($(this).attr("data-color"),$("#sizeImage_"+$(this).attr("data-color")),$("#sizeImage_"+$(this).attr("data-color"))[0].files);
+		// console.log($(this).attr("data-color"),$("#sizeImage_"+$(this).attr("data-color")),$("#sizeImage_"+$(this).attr("data-color"))[0].files);
 
-            if($("#sizeImage_"+$(this).attr("data-color"))[0].files==undefined)
+            if((($("#sizeImage_"+$(this).attr("data-color"))[0]!= undefined)&&($("#sizeImage_"+$(this).attr("data-color"))[0].files==undefined)) || $(".file-preview-image").attr("src")!=undefined)
             {
-              var file = ""; 
-              html += ' <div class="col-md-1"><img src="{{url("img/default.png")}}" width="86px" height="48px" /> <span class="hide" id="file_'+picRow+'"></span></div>';
+			  if($(".file-preview-image").attr("src")!=undefined)
+			{
+				var file = $("#upload_image").clone();
+				file.attr("name","file[]");
+				html += ' <div class="col-md-1"><img src="'+$(" .file-preview-image").attr("src")+'" width="86px" height="48px" /> <span class="hide" id="'+row+'_file_'+picRow+'"></span></div>';
+			}else{
+				
+				var file = ""; 
+				html += ' <div class="col-md-1"><img src="{{url("img/default.png")}}" width="86px" height="48px" /> <span class="hide" id="file_'+picRow+'"></span></div>';
+			}
             }else
             {
 			var src = null;
 			var file = $("#sizeImage_"+$(this).attr("data-color")).clone();
+			// var reader = new FileReader();
+
 			var reader = new FileReader();
+			
+			reader.onload = function (e) {
+				$('#'+row+'_image_'+picRow).attr('src', e.target.result);
+				// console.log(e.target.result);
+				// src = e.target.result;
+			}
+			reader.readAsDataURL($("#sizeImage_"+$(this).attr("data-color"))[0].files[0]);
+
+			file.attr("name","file[]");
+			html += ' <div class="col-md-1"><img src="'+src+'" width="86px" height="48px" id="'+row+'_image_'+picRow+'"/> <span class="hide" id="'+row+'_file_'+picRow+'"></span></div>';
+
 			// reader.onload = function (e) {
 			// 	src = e.target.result;
 			// 	console.log(e.target);
@@ -1303,8 +1324,10 @@
 			
 			// reader.readAsDataURL($("#sizeImage_"+$(this).attr("data-color"))[0].files);
 			
-			file.attr("name","file[]");
-			html += ' <div class="col-md-1"><img src="'+src+'" width="86px" height="48px" /> <span class="hide" id="'+row+'_file_'+picRow+'"></span></div>';
+			
+		
+			// console.log(reader.readAsDataURL($("#sizeImage_"+$(this).attr("data-color"))[0].files[0]));
+
             }
           //   if($(".file-preview-image").attr("src")==undefined)
           //   {
