@@ -924,13 +924,14 @@
 			success:function(data){
 				if(data.success)
 				{ 
-					// rowSize++ ;
+					rowSize++ ;
 					var obj = data.msg;
 					var html = '';
 					size_idtext = $("#btnSize_"+sizeId).html();
-					html += "<div class=' col-md-6' > ";
+					html += "<div class='col-md-12' id='sizeRow_"+rowSize+"'> ";
 					html += "<br> ";
-					html +="<input type='file' name='color_image[]' class='form-control col-6 color-image' accept='image/*' id='sizeImage_"+$("#color_idc option:selected").val()+"'>";
+					html +="<div class='col-md-9'><input type='file' name='color_image[]' class='form-control color-image' accept='image/*' id='sizeImage_"+$("#color_idc option:selected").val()+"'></div>";
+					html += "<div class=' col-md-1'><button tab-index=-1 onclick='removeSize("+rowSize+")' class='btn btn-sm btn-danger'>X</button></div>";
 					html += "</div>"
 					for (i = 0  ; i < obj.length; i++) {
 						rowSize++ ;
