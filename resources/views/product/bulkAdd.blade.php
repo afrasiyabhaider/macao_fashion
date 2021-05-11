@@ -1197,8 +1197,8 @@
     **/
     function removeThisRow(row){
 		$("#product_row_"+row).remove();
-		if ($("#product_row_"+row).find($("input[name='file[]']"))) {
-			$("input[name='file[]']").remove();
+		if ($("#product_row_"+row).find($("input[type=file]"))) {
+			$(this).remove();
 		}
 		pncRow--;
 		picRow--;
