@@ -46,7 +46,7 @@ class CashRegisterUtil extends Util
         foreach ($payments as $payment) {
             $payments_formatted[] = new CashRegisterTransaction([
                     'amount' => (isset($payment['is_return']) && $payment['is_return'] == 1) ? (-1*$this->num_uf($payment['amount'])) : (float)$payment['amount'],
-                    'pay_method' => $payment['method'],
+                    'pay_method' => (isset($payment['method']) && $payment['method']) ? $payment['method'] : '' ,
                     'type' => 'credit',
                     'transaction_type' => 'sell',
                     'transaction_id' => $transaction->id
