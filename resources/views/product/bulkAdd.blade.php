@@ -903,6 +903,38 @@
 
 		$("#chooseSize_ext").val("").change();
 	});
+	/**@argument
+	 * preview Image for color 
+	 **/
+	function readURL(input,preview_id) {
+		console.log(input.files);
+		if (input.files && input.files[0]) {
+			var reader = new FileReader();
+			
+			reader.onload = function (e) {
+				$(preview_id).attr('src', e.target.result);
+			}
+			
+			reader.readAsDataURL(input.files[0]);
+		}
+	}
+	function colorImagePreview(id){
+		var preview_id = $("#"+$(id).attr('data-preview'));
+		// var img_fileinput_setting = {
+		// 	showUpload: false,
+		// 	showPreview: true,
+		// 	browseLabel: LANG.file_browse_label,
+		// 	removeLabel: LANG.remove,
+		// 	previewSettings: {
+		// 	image: { 
+		// 		width: 'auto', height: 'auto', 'max-width': '100%', 'max-height': '100%' },
+		// 	},
+		// };
+		// $(id).fileinput(img_fileinput_setting);
+		// console.log(img_fileinput_setting);
+		readURL(id,preview_id);
+		// console.log(preview_id);
+	}
 	/**
 	*  Modal -  Colors Adding
 	* 
@@ -930,7 +962,7 @@
 					size_idtext = $("#btnSize_"+sizeId).html();
 					html += "<div class='col-md-12' id='sizeRow_"+rowSize+"'> ";
 					html += "<br> ";
-					html +="<div class='col-md-9'><input type='file' name='color_image[]' class='form-control color-image' accept='image/*' id='sizeImage_"+$("#color_idc option:selected").val()+"'></div>";
+					html +="<div class='col-md-2'><img id='sizeImagePreview_"+$("#color_idc option:selected").val()+"' width='80px' height='50px'></div><div class='col-md-7'><input type='file' name='color_image[]' class='form-control color-image' data-preview='sizeImagePreview_"+$("#color_idc option:selected").val()+"' onchange='colorImagePreview(this);' accept='image/*' id='sizeImage_"+$("#color_idc option:selected").val()+"'></div>";
 					html += "<div class=' col-md-1'><button tab-index=-1 onclick='removeSize("+rowSize+")' class='btn btn-sm btn-danger'>X</button></div>";
 					html += "</div>"
 					for (i = 0  ; i < obj.length; i++) {
@@ -1106,7 +1138,7 @@
       countSize = 0;
       $("#sizeArea").empty();
       $("#sizeArea_ext").empty();
-      var fieldsArr = ["supplier_id", "brand_id",  "name","upload_image","unit_price","ref_description","sku","chooseSize"];
+      var fieldsArr = ["supplier_id", "brand_id",  "name","upload_image","color_image","unit_price","ref_description","sku","chooseSize"];
      //  var notIncludeArr = ["single_dpp", "single_dpp_inc_tax", "single_dsp", "single_dsp_inc_tax", "profit_percent","upload_image"];
       var ignoreArr = ["supplier_id", "brand_id", "category_id", "name", "unit_price","custom_price","single_dpp", "single_dpp_inc_tax", "single_dsp", "single_dsp_inc_tax", "profit_percent","upload_image","refference_id"];
 
@@ -1143,6 +1175,7 @@
       });
 
       $(".fileinput-remove").click();
+      $("input[name=file]").val(null);
 	 
      //  $("#name").focus(); 
       if(objPNC[pncRow] == undefined)
@@ -1155,19 +1188,21 @@
          $("#name").val(arrName[1]);
          $("#name_id").val(arrName[0]); 
       }
-      
+      $("#sizeArea").empty();
        updateRefference();
     }
     /**
     * ClearAll Ends Here
     *
     **/
-    function removeThisRow(row)
-    {
-      $("#product_row_"+row).remove();
-      pncRow--;
-      picRow--;
-      // reffCount--;
+    function removeThisRow(row){
+		$("#product_row_"+row).remove();
+		if ($("#product_row_"+row).find($("input[name='file[]']"))) {
+			$("input[name='file[]']").remove();
+		}
+		pncRow--;
+		picRow--;
+		// reffCount--;
     }
     var row =1;var lastBG = " padding: 10px; ";var pncRow = 0;
     function addAnotherSize()
@@ -1271,7 +1306,9 @@
 
       var tempHTML = html;
       picRow = row;
+	 var ind = 0;
       $(".sizeQty").each(function() {
+		//  console.log($("#sizeImage_"+$(this).attr("data-color"))[ind]);
           if ($.trim($(this).val()) > "0"){ 
             html = tempHTML;
 
@@ -1285,9 +1322,9 @@
 
 		// console.log($(this).attr("data-color"),$("#sizeImage_"+$(this).attr("data-color")),$("#sizeImage_"+$(this).attr("data-color"))[0].files);
 
-            if((($("#sizeImage_"+$(this).attr("data-color"))[0]!= undefined)&&($("#sizeImage_"+$(this).attr("data-color"))[0].files==undefined)) || $(".file-preview-image").attr("src")!=undefined)
+            if((($("#sizeImage_"+$(this).attr("data-color"))[0] != undefined)&&($("#sizeImage_"+$(this).attr("data-color"))[0].files ==undefined)) || $(".file-preview-image").attr("src") != undefined)
             {
-			  if($(".file-preview-image").attr("src")!=undefined)
+			if($(".file-preview-image").attr("src")!=undefined)
 			{
 				var file = $("#upload_image").clone();
 				file.attr("name","file[]");
@@ -1297,39 +1334,19 @@
 				var file = ""; 
 				html += ' <div class="col-md-1"><img src="{{url("img/default.png")}}" width="86px" height="48px" /> <span class="hide" id="file_'+picRow+'"></span></div>';
 			}
-            }else
+            }else if($("#sizeImage_"+$(this).attr("data-color"))[0] != undefined && $("#sizeImage_"+$(this).attr("data-color"))[0].files)
             {
 			var src = null;
+			var old_file = $("#sizeImage_"+$(this).attr("data-color"));
 			var file = $("#sizeImage_"+$(this).attr("data-color")).clone();
 			// var reader = new FileReader();
-
-			var reader = new FileReader();
-			
-			reader.onload = function (e) {
-				$('#'+row+'_image_'+picRow).attr('src', e.target.result);
-				// console.log(e.target.result);
-				// src = e.target.result;
-			}
-			reader.readAsDataURL($("#sizeImage_"+$(this).attr("data-color"))[0].files[0]);
-
 			file.attr("name","file[]");
-			html += ' <div class="col-md-1"><img src="'+src+'" width="86px" height="48px" id="'+row+'_image_'+picRow+'"/> <span class="hide" id="'+row+'_file_'+picRow+'"></span></div>';
+			html += ' <div class="col-md-1"><img src="'+$("#sizeImagePreview_"+$(this).attr("data-color")).attr("src")+'" width="86px" height="48px" id="'+row+'_image_'+picRow+'" /> </div>';
 
-			// reader.onload = function (e) {
-			// 	src = e.target.result;
-			// 	console.log(e.target);
-			// }
-
-			// reader.addEventListener('load', reader);
-			// src= reader.readAsText($("#sizeImage_"+$(this).attr("data-color"))[0].files[0]);
-			
-			// reader.readAsDataURL($("#sizeImage_"+$(this).attr("data-color"))[0].files);
-			
-			
-		
-			// console.log(reader.readAsDataURL($("#sizeImage_"+$(this).attr("data-color"))[0].files[0]));
-
-            }
+            }else{
+			var file = "";
+			html += ' <div class="col-md-1"><img src="{{url("img/default.png")}}" width="86px" height="48px" /> <span class="hide" id="file_'+picRow+'"></span></div>';
+		}
           //   if($(".file-preview-image").attr("src")==undefined)
           //   {
           //     var file = ""; 
@@ -1348,8 +1365,10 @@
           //     $("#bulk_product_home").append(html);
               $("#bulk_product_home").prepend(html);
               $("#"+row+"_file_"+picRow).append(file);
+		    $("#sizeArea").html('.');
           } 
           picRow++;
+		ind++;
       }); 
       row++;
       IsAnother = 0;
