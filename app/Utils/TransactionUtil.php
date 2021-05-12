@@ -521,7 +521,7 @@ class TransactionUtil extends Util
                     //Generate reference number
                     $payment_ref_no = $this->generateReferenceNumber($prefix_type, $ref_count, $business_id);
                     // dd($payment);
-                    if (isset($payment['method']) && $payment['method'] == 'cash') {
+                    if ( $payment['method'] == 'cash') {
 
                         $payment_data = [
                             'amount' => $payment_amount,
@@ -549,7 +549,7 @@ class TransactionUtil extends Util
                         $payments_formatted[] = new TransactionPayment($payment_data);
                         $cash = false;
                     }
-                    if (isset($payment['method']) && $payment['method'] == 'card') {
+                    if ( $payment['method'] == 'card') {
                         $payment_data = [
                             'amount' => $payment_amount,
                             'method' => 'card',
@@ -576,16 +576,16 @@ class TransactionUtil extends Util
                         $payments_formatted[] = new TransactionPayment($payment_data);
                         $card = false;
                     }
-                    if (isset($payment['method']) && $payment['method'] == 'custom_pay_1') {
+                    if ( $payment['method'] == 'custom_pay_1') {
                         $payment_data['transaction_no'] = $payment['transaction_no_1'];
-                    } elseif (isset($payment['method']) && $payment['method'] == 'custom_pay_2') {
+                    } elseif ( $payment['method'] == 'custom_pay_2') {
                         $payment_data['transaction_no'] = $payment['transaction_no_2'];
-                    } elseif (isset($payment['method']) && $payment['method'] == 'custom_pay_3') {
+                    } elseif ( $payment['method'] == 'custom_pay_3') {
                         $payment_data['transaction_no'] = $payment['transaction_no_3'];
                     }
                     $payment_data['is_convert'] = 'no';
 
-                    if (isset($payment['method']) && $payment['method'] == "gift_card") {
+                    if ( $payment['method'] == "gift_card") {
                         $getGiftCard = $payment['gift_card'];
                         $attributes = ['name' => $getGiftCard, 'barcode' => $getGiftCard];
                         $objGiftCards = GiftCard::where(function ($query) use ($attributes) {
@@ -637,7 +637,7 @@ class TransactionUtil extends Util
                             }
                         })->update($dataUpdate);
                         $payment_data['is_convert'] = 'gift_card';
-                    } else if (isset($payment['method']) && $payment['method'] == "coupon") {
+                    } else if ( $payment['method'] == "coupon") {
                         $getCoupon = $payment['coupon'];
                         $attributes = ['name' => $getCoupon, 'barcode' => $getCoupon];
                         $objCoupon = Coupon::where(function ($query) use ($attributes) {
@@ -698,7 +698,7 @@ class TransactionUtil extends Util
                             'method' => 'coupon'
                         ];
                         // dd($new_coupon);
-                    } else if (isset($payment['method']) && $payment['method'] == "bonus_points"){
+                    } else if ( $payment['method'] == "bonus_points"){
                         $objContact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
 
                         $leftAmount = $payment_amount - ($transaction->final_total - $totalAmountByRows);
