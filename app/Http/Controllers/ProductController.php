@@ -1161,8 +1161,10 @@ class ProductController extends Controller
             // dd($this->productUtil->num_uf($request->input('unit_price')));
             // dd($unit);
             $variation->sub_sku = $product->sku;
-            $variation->dpp_inc_tax = $this->productUtil->num_uf($request->input('unit_price'));
-            $variation->sell_price_inc_tax = $this->productUtil->num_uf($request->input('custom_price'));
+            if($request->allow_price_qty){
+                $variation->dpp_inc_tax = $this->productUtil->num_uf($request->input('unit_price'));
+                $variation->sell_price_inc_tax = $this->productUtil->num_uf($request->input('custom_price'));
+            }
             $variation->save();
 
             $location = 1;
@@ -1172,7 +1174,7 @@ class ProductController extends Controller
             session()->put('location_id', $location);
             $purchase_line = VariationLocationDetails::where('product_id', '=', $request->input('product_id'))->where('location_id', $request->input('location_id'))->first();
 
-            if ($request->input('new_quantity')) {
+            if ($request->input('new_quantity') && $request->allow_price_qty) {
                 $purchase_line->qty_available = $request->input('quantity') + $request->input('new_quantity');
                 $purchase_line->printing_qty = $request->input('new_quantity');
                 $purchase_line->product_updated_at = Carbon::now();
@@ -1435,8 +1437,10 @@ class ProductController extends Controller
                 // dd($this->productUtil->num_uf($request->input('unit_price')));
                 // dd($unit);
                 // $variation->sub_sku = $product[$i]->sku;
-                $variation->dpp_inc_tax = $this->productUtil->num_uf($request->input('unit_price'));
-                $variation->sell_price_inc_tax = $this->productUtil->num_uf($request->input('custom_price'));
+                if($request->allow_price_qty){
+                    $variation->dpp_inc_tax = $this->productUtil->num_uf($request->input('unit_price'));
+                    $variation->sell_price_inc_tax = $this->productUtil->num_uf($request->input('custom_price'));
+                }
                 $variation->save();
 
                 $location = 1;
@@ -1446,7 +1450,7 @@ class ProductController extends Controller
                 session()->put('location_id', $location);
                 $purchase_line = VariationLocationDetails::where('product_id', '=', $product[$i]->id)->where('location_id', $request->input('location_id'))->first();
 
-                if ($request->input('new_quantity')) {
+                if ($request->input('new_quantity') && $request->allow_price_qty) {
                     $purchase_line->qty_available = $request->input('quantity') + $request->input('new_quantity');
                     $purchase_line->printing_qty = $request->input('new_quantity');
                     $purchase_line->product_updated_at = Carbon::now();
@@ -1458,7 +1462,7 @@ class ProductController extends Controller
 
                 $message = count($product).' Products Updated Successfully. ';
                 // Adding Product In Purchase Line
-                if ($request->input('new_quantity') && $purchase_line->location_id != 1) {
+                if (($request->input('new_quantity') && $purchase_line->location_id != 1) && $request->allow_price_qty) {
                     $location_transfer_detail = new LocationTransferDetail();
                     $location_transfer_detail->variation_id = $purchase_line->variation_id;
                     $location_transfer_detail->product_id = $purchase_line->product_id;

@@ -125,19 +125,19 @@
           </select>
         </div>
       </div>
-      <div class="row" style="margin-top: 20px">
+      <div class="row">
         <div class="col-sm-4">
+          <label>
+            Product Image:
+          </label>
           @if ($product->image != null)
-          <img src="{{asset('uploads/img/'.$product->image)}}" class="img-thumbnail img-responsive" style="width:200px"
+          <img src="{{asset('uploads/img/'.$product->image)}}" class="img-thumbnail img-responsive" style="width:200px;height:200px"
             id="img-previewer" name="image">
           @else
-          <img src="{{asset('img/default.png')}}" class="img-thumbnail img-responsive" style="width:200px"
+          <img src="{{asset('img/default.png')}}" class="img-thumbnail img-responsive" style="width:200px;height:200px"
             id="img-previewer" name="image">
           @endif
           <div class="form-group">
-            <label>
-              Product Image:
-            </label>
             <input type="file" name="file[]" id="img-input" value="{{$product->image}}">
             <small>
               <span class="help-block">
@@ -160,33 +160,27 @@
         $ut = new \App\Utils\ProductUtil();
         // dd();
         @endphp
-        <div class="col-sm-4" style="margin-top: 30px">
+        <div class="col-sm-4" >
           <label>Unit Price * </label>
           <input name="unit_price" required="true" type="text" class="req form-control col-12"
             value="{{$ut->num_f($product->variations()->first()->dpp_inc_tax)}}" id="unit_price"
             onchange="changeUnitPrice(this);">
         </div>
-        <div class="col-sm-4" style="margin-top: 30px">
+        <div class="col-sm-4" >
           <label>Sale Price * </label>
           <input name="custom_price" required="true" type="text" class="req form-control col-12"
             value="{{$ut->num_f($product->variations()->first()->sell_price_inc_tax)}}" id="sale_price"
             onchange="DittoThis(this,'profit_percent')">
         </div>
-        <div class="col-sm-4" style="margin-top: 30px">
+        <div class="col-sm-4" >
           <label>Barcode</label>
           <input required="true" type="text" class=" form-control col-12" value="{{$product->sku}}" id="sku" name="sku">
         </div>
-        <div class="col-sm-4" style="margin-top: 30px">
+        <div class="col-sm-4" >
           <label>Description</label>
           <input type="text" class=" form-control col-12" value="{{$product->description}}" id="description"
             name="description">
         </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-4"></div>
-        
-      </div>
-      <div class="row">
         <div class="col-sm-4">
           {{-- <input name="custom_price" required="true" type="text" class="req form-control col-12" value="{{$product->color()->first()->name}}"
           id="unit_price" onchange="DittoThis(this,'single_dsp')"> --}}
@@ -225,8 +219,6 @@
             </optgroup>
           </select>
         </div>
-      </div>
-      <div class="row">
         <div class="col-sm-4">
           <label>Color *</label>
             <select name="color" id="color_id" class="select2 form-control">
@@ -244,20 +236,27 @@
               </optgroup>
             </select>
         </div>
-        <div class="col-sm-6">
-          <button type="submit" class="btn btn-success col-12 fa-2x" style="width:150px;padding:10px;font-size:20px;margin-top: 20px;"
+        <div class="col-sm-4">
+          <label>Update Price and Quantity</label>
+          <br>
+          <input type="checkbox" value="1" name="allow_price_qty"> Yes
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 text-center">
+          <button type="submit" class="btn btn-success col-12 fa-2x" style="width:150px;padding:5px;font-size:20px;margin-top: 10px;"
             id="btnSubmit">
             <i class="fa fa-save"></i>
             Edit
           </button>
           <button class="btn btn-success col-12 fa-2x" onclick="updateAll(this);"
-            style="width:150px;padding:10px;font-size:20px;margin-top: 20px;" type="button">
+            style="width:150px;padding:5px;font-size:20px;margin-top: 10px;" type="button">
             <i class="fa fa-globe"></i>
             Update All
           </button>
         </div>
       </div>
-      <div class="row" style="margin-top: 30px">
+      <div class="row" >
         <div class="col-sm-12">
           <input type="hidden" name="submit_type" id="submit_type">
           <div class="text-center row">
@@ -323,7 +322,7 @@
               @endif
             </div>
           </div>
-          <div class="col-12 mt-10">
+          <div class="col-12">
             @if(!empty($business_locations))
             &nbsp;
             {{-- @dd(session()->get('location_id')) --}}
@@ -423,7 +422,7 @@
         <button type="button" class="close" data-dismiss="modal" id="btnClose">&times;</button>
         <h4 class="modal-title">Choose Size</h4>
       </div>
-      <div class="row" style="margin: 10px;">
+      <div class="row">
         <div class="col-sm-12">
           @foreach($sizes as $id => $objSize)
           <div class="col-sm-4">
