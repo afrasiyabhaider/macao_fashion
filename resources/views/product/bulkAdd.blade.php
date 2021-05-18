@@ -278,7 +278,7 @@
 							<span>
 								<button type="button" class="btn btn-primary btn-lg" data-toggle="modal"
 									data-target="#myModal"
-									onclick="$('#btnClose').focus();console.log('done');"><i
+									onclick="$('#btnClose').focus();// console.log('done');"><i
 										class="fa fa-plus-circle"></i> Choose Size</button>
 
 							</span>
@@ -460,7 +460,10 @@
 	@include('sale_pos.partials.product_list_box')
 	</div> --}}
 	{{-- </div> --}}
+	{{-- <img class='hide' id="color-image-preview" width='80px' height='50px'> --}}
+	<div id="color-image-div" class="hidden">
 
+	</div>
 	<div class="hide">
 		@component('components.widget', ['class' => 'box-primary'])
 		<div class="row">
@@ -775,7 +778,7 @@
 		var arrName = objPNC[pncRow].split("@");
 		$("#name_id").val(arrName[0]);
 		$("#name").val(arrName[1]);
-		//console.log("Arr Name : "+arrName);
+		//// console.log("Arr Name : "+arrName);
 		   $("#unit_price").focus();
 		// $("#refference_id").focus();
 
@@ -821,14 +824,14 @@
      // });
      function changeUnitPrice(obj)
      {
-		//  console.log(obj.value);
+		//  // console.log(obj.value);
         if(obj.value < 1)
         {
           alert("Please Enter Positve Value");
 		  return(false);
         }
         $("#single_dpp").val(obj.value).trigger("change");
-        // console.log($("#single_dpp").val());
+        // // console.log($("#single_dpp").val());
      }
      function setColorWithSize(row)
      {  
@@ -851,9 +854,9 @@
 	$("#chooseSize_ext").change(function(){
 		var chooseSizeRadio = $("select[name='chooseSize_ext']").val();
 		var colorValue = $("select#color_idc_ext").val();
-		// console.log(chooseSizeRadio);
+		// // console.log(chooseSizeRadio);
 		if(chooseSizeRadio){
-			// console.log($("input[name='chooseSize']:checked").val());
+			// // console.log($("input[name='chooseSize']:checked").val());
 			sizeId = chooseSizeRadio;
 			name = sizeId;
 		}else{
@@ -871,7 +874,7 @@
 			success:function(data){
 				if(data.success)
 				{ 
-					// console.log(data);
+					// // console.log(data);
 					var obj = data.msg;
 					size_idtext = $("#btnSize_"+sizeId).html();
 					
@@ -907,7 +910,7 @@
 	 * preview Image for color 
 	 **/
 	function readURL(input,preview_id) {
-		console.log(input.files);
+		// console.log(input.files);
 		if (input.files && input.files[0]) {
 			var reader = new FileReader();
 			
@@ -919,6 +922,15 @@
 		}
 	}
 	function colorImagePreview(id){
+		var preview_class = $("."+$(id).attr('data-preview'));
+		var preview_Image_id = $("#color-image-preview");
+		var preview_InnerImage = $("#"+$(id).attr('data-preview')+'_inner');
+		
+		var image = '<img id="'+$(id).attr('data-preview')+'" width="80px" height="80px">';
+		var file = $(id).clone();
+		var file_id = file.attr('id',$(id).attr('data-preview')+'_file');
+		$("#color-image-div").append(image);
+		$("#color-image-div").append(file);
 		var preview_id = $("#"+$(id).attr('data-preview'));
 		// var img_fileinput_setting = {
 		// 	showUpload: false,
@@ -931,9 +943,10 @@
 		// 	},
 		// };
 		// $(id).fileinput(img_fileinput_setting);
-		// console.log(img_fileinput_setting);
+		// // console.log(img_fileinput_setting);
 		readURL(id,preview_id);
-		// console.log(preview_id);
+		readURL(id,preview_InnerImage);
+		// // console.log(preview_id);
 	}
 	/**
 	*  Modal -  Colors Adding
@@ -942,7 +955,7 @@
 	$("#color_idc").change(function(){
 		var chooseSizeRadio = $("input[name='chooseSize']").is(':checked')
 		if(chooseSizeRadio){
-			// console.log($("input[name='chooseSize']:checked").val());
+			// // console.log($("input[name='chooseSize']:checked").val());
 			sizeId = $("input[name='chooseSize']:checked").val();
 			name = sizeId;
 		}else{
@@ -962,7 +975,7 @@
 					size_idtext = $("#btnSize_"+sizeId).html();
 					html += "<div class='col-md-12' id='sizeRow_"+rowSize+"'> ";
 					html += "<br> ";
-					html +="<div class='col-md-2'><img id='sizeImagePreview_"+$("#color_idc option:selected").val()+"' width='80px' height='50px'></div><div class='col-md-7'><input type='file' name='color_image[]' class='form-control color-image' data-preview='sizeImagePreview_"+$("#color_idc option:selected").val()+"' onchange='colorImagePreview(this);' accept='image/*' id='sizeImage_"+$("#color_idc option:selected").val()+"'></div>";
+					html +="<div class='col-md-2'><img id='sizeImagePreview_"+$("#color_idc option:selected").val()+"_inner' width='80px' height='50px'></div><div class='col-md-7'><input type='file' name='color_image[]' class='form-control color-image' data-preview='sizeImagePreview_"+$("#color_idc option:selected").val()+"' onchange='colorImagePreview(this);' accept='image/*'></div>";
 					html += "<div class=' col-md-1'><button tab-index=-1 onclick='removeSize("+rowSize+")' class='btn btn-sm btn-danger'>X</button></div>";
 					html += "</div>"
 					for (i = 0  ; i < obj.length; i++) {
@@ -1052,12 +1065,12 @@
            url:'/sizes/getSupplierDetails/'+name, 
            success:function(data){
             $("#temp_reff").val(data); 
-		//   console.log("Supp-Reff-Count : "+reffCount);
-		//   console.log("Supp-Data : "+data);
+		//   // console.log("Supp-Reff-Count : "+reffCount);
+		//   // console.log("Supp-Data : "+data);
             var n = reffCount;
             var result = (pad+n).slice(-pad.length);
-          //   console.log('Refference-N : '+n);
-          //   console.log('Refference-Result : '+result);
+          //   // console.log('Refference-N : '+n);
+          //   // console.log('Refference-Result : '+result);
             $("#refference_id").val(data+result );
             //
                 
@@ -1072,7 +1085,7 @@
      { 
 		var n = reffCount;
           var result = (pad+n).slice(-pad.length);
-		// console.log("Refference Upadte: "+result);
+		// // console.log("Refference Upadte: "+result);
 		$("#refference").val($("#temp_reff").val()+result);
      }
 
@@ -1250,7 +1263,7 @@
 
 
       $(".opt").each(function() { 
-     //    console.log($(this).attr("id"));
+     //    // console.log($(this).attr("id"));
 		// if(fieldsArr.includes($(this).attr("id")))
 		// {
 			if (($(this).attr('id') == "sku") && $(this).val() != undefined) {
@@ -1259,11 +1272,11 @@
 			if (($(this).attr('id') == "ref_description") && $(this).val() != undefined) {
 				html += ' <div class="col-md-'+size+' hide"><input class="custom-form-control" name="ref_description[]" type="text" value="'+$(this).val()+'"> </div>';
 			}
-			// console.log($(this).attr('id'));
+			// // console.log($(this).attr('id'));
 		// }
 	 });
       $(".req").each(function() { 
-     //    console.log($(this).attr("id"));
+     //    // console.log($(this).attr("id"));
         if(fieldsArr.includes($(this).attr("id")))
         {
           if($(this).attr("type") == undefined)
@@ -1287,7 +1300,7 @@
 				html += ' <div class="col-md-'+size+'"><input title="'+$(this).attr("id")+'" name="'+$(this).attr("id")+'[]" type="'+$(this).attr("type")+'" class="custom-form-control" value="'+$(this).val()+'"/></div>';
 
 			}
-		//    console.log($(this).attr("id"));
+		//    // console.log($(this).attr("id"));
           }
            
         }else
@@ -1308,7 +1321,7 @@
       picRow = row;
 	 var ind = 0;
       $(".sizeQty").each(function() {
-		//  console.log($("#sizeImage_"+$(this).attr("data-color"))[ind]);
+		//  // console.log($("#sizeImage_"+$(this).attr("data-color"))[ind]);
           if ($.trim($(this).val()) > "0"){ 
             html = tempHTML;
 
@@ -1320,8 +1333,10 @@
 		
             html += '<div class="col-md-'+size+'"><input type="hidden" name="size_id[]" value="'+$(this).val()+'"><select title="Sub Size" class="custom-form-control" name="sub_size_id[]"><option value="'+$(this).attr("data-size-sub")+'">'+$(this).attr("data-size-sub-name")+'</option></select></div>'; 
 
-		// console.log($(this).attr("data-color"),$("#sizeImage_"+$(this).attr("data-color")),$("#sizeImage_"+$(this).attr("data-color"))[0].files);
+		// // console.log($(this).attr("data-color"),$("#sizeImage_"+$(this).attr("data-color")),$("#sizeImage_"+$(this).attr("data-color"))[0].files);
 
+		// // console.log($(this).attr("data-color"),$("#sizeImage_"+$(this).attr("data-color")));
+		// console.log($(".sizeImagePreview_"+$(this).attr("data-color")));
             if((($("#sizeImage_"+$(this).attr("data-color"))[0] != undefined)&&($("#sizeImage_"+$(this).attr("data-color"))[0].files ==undefined)) || $(".file-preview-image").attr("src") != undefined)
             {
 			if($(".file-preview-image").attr("src")!=undefined)
@@ -1334,19 +1349,22 @@
 				var file = ""; 
 				html += ' <div class="col-md-1"><img src="{{url("img/default.png")}}" width="86px" height="48px" /> <span class="hide" id="file_'+picRow+'"></span></div>';
 			}
-            }else if($("#sizeImage_"+$(this).attr("data-color"))[0] != undefined && $("#sizeImage_"+$(this).attr("data-color"))[0].files)
+            }else if($("#sizeImagePreview_"+$(this).attr("data-color")).attr("src") != undefined)
             {
+			  
 			var src = null;
-			var old_file = $("#sizeImage_"+$(this).attr("data-color"));
-			var file = $("#sizeImage_"+$(this).attr("data-color")).clone();
+			var old_file = $("#sizeImagePreview_"+$(this).attr("data-color")+"_file");
+			var file = $("#sizeImagePreview_"+$(this).attr("data-color")+'_file').clone();
 			// var reader = new FileReader();
 			file.attr("name","file[]");
-			html += ' <div class="col-md-1"><img src="'+$("#sizeImagePreview_"+$(this).attr("data-color")).attr("src")+'" width="86px" height="48px" id="'+row+'_image_'+picRow+'" /> </div>';
+			// html += ' <div class="col-md-1"><img src="'+$("#color-image-preview").attr("src")+'" width="86px" height="48px" id="'+row+'_image_'+picRow+'" /> </div>';
+			html += ' <div class="col-md-1"><img src="'+$("#sizeImagePreview_"+$(this).attr("data-color")).attr("src")+'"width="86px" height="48px" id="'+row+'_image_'+picRow+'"/><span class="hide" id="'+row+'_file_'+picRow+'"></span></div>';
 
             }else{
 			var file = "";
 			html += ' <div class="col-md-1"><img src="{{url("img/default.png")}}" width="86px" height="48px" /> <span class="hide" id="file_'+picRow+'"></span></div>';
 		}
+		// // console.log("File",file);
           //   if($(".file-preview-image").attr("src")==undefined)
           //   {
           //     var file = ""; 
@@ -1413,8 +1431,8 @@
 				$('#suggestion_page_loader').fadeOut(700);
 				return false;
 			}
-			// console.log("Category Id : " + category_id);
-			// console.log("Supplier Id : " + supplier_id);
+			// // console.log("Category Id : " + category_id);
+			// // console.log("Supplier Id : " + supplier_id);
 			$.ajax({
 				method: 'GET',
 				url: url,
@@ -1426,7 +1444,7 @@
 				},
 				dataType: 'html',
 				success: function(result) {
-					// console.log(result);
+					// // console.log(result);
 					$('div#product_list_body').append(result);
 					$('#suggestion_page_loader').fadeOut(700);
 				},
@@ -1475,7 +1493,7 @@
         }
     });
 	function pos_product_row(variation_id) {
-		// console.log(variation_id);
+		// // console.log(variation_id);
 		//Get item addition method
 		var item_addtn_method = 0;
 		var add_via_ajax = true;
@@ -1486,7 +1504,7 @@
 		}
 
 		if (add_via_ajax) {
-			// console.log("Variation ID : "+variation_id);
+			// // console.log("Variation ID : "+variation_id);
 			$.ajax({
 				method: 'GET',
 				// SellPosController @ line 2484
@@ -1502,11 +1520,11 @@
 				dataType: 'json',
 				success: function(result) {
 					if (result != 'null') {
-						// console.log(result.category);
+						// // console.log(result.category);
 						$("#supplier_id").val(result.supplier.id).change();
 						if (result.category != null) {
-							// console.log('Cat Id : '+result.category.id);
-							// console.log('Sub-Cat Id : '+result.sub_category.id);
+							// // console.log('Cat Id : '+result.category.id);
+							// // console.log('Sub-Cat Id : '+result.sub_category.id);
 							$("#category_id").val(result.category.id).change();
 							$("#sub_category_id").val(result.sub_category.id).change();	
 							toastr.info('Please select Sub-Category manually.');
