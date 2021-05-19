@@ -239,21 +239,27 @@
         <div class="col-sm-4">
           <label>Update Price and Quantity</label>
           <br>
-          <input type="checkbox" value="1" name="allow_price_qty"> Yes
+          <input type="checkbox" value="1" checked name="allow_price_qty"> Yes
         </div>
       </div>
       <div class="row">
         <div class="col-sm-12 text-center">
-          <button type="submit" class="btn btn-success col-12 fa-2x" style="width:150px;padding:5px;font-size:20px;margin-top: 10px;"
+          <button type="submit" class="btn btn-info col-12 fa-2x" style="width:150px;padding:5px;font-size:20px;margin-top: 10px;"
             id="btnSubmit">
             <i class="fa fa-save"></i>
-            Edit
+            Edit This
           </button>
-          <button class="btn btn-success col-12 fa-2x" onclick="updateAll(this);"
+          <button class="btn btn-success col-12 fa-2x" onclick="updateColor(this);"
+            style="width:150px;padding:5px;font-size:20px;margin-top: 10px;" type="button">
+            <i class="fa fa-color-picker"></i>
+            Update Color
+          </button>
+          <button class="btn btn-warning col-12 fa-2x" onclick="updateAll(this);"
             style="width:150px;padding:5px;font-size:20px;margin-top: 10px;" type="button">
             <i class="fa fa-globe"></i>
             Update All
           </button>
+          
         </div>
       </div>
       <div class="row" >
@@ -509,6 +515,12 @@
       var form = $("#product_update_form");
       event.preventDefault();
       form.attr('action','{{url("products/update-all")}}');
+      form.submit();
+    }
+    function updateColor(e) {
+      var form = $("#product_update_form");
+      event.preventDefault();
+      form.attr('action','{{url("products/update-color")}}');
       form.submit();
     }
 

@@ -77,6 +77,7 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::get('/products', 'ProductController@index');
     Route::post('/products/bulkUpdate', 'ProductController@bulkUpdate');
     Route::post('/products/update-all', 'ProductController@updateAll');
+    Route::post('/products/update-color', 'ProductController@updateColor');
     Route::get('/products/addUpdatedDate', 'ProductController@addDateinNull');
     Route::get('/products/addinlocation', 'ProductController@addProductZeroQtyInLocation');
     // Route::get('/products/addinlocation/{barcode}/{location}', 'ProductController@addProductZeroQtyInLocation');
