@@ -62,7 +62,7 @@
             $loc = $product->variation_location_details()->first()->location_id;
           }
     @endphp
-  <input type="hidden" name="location_id" id="location_id" value="{{$loc}}" id="product_id">
+  <input type="hidden" name="location_id" id="location_id" value="{{$loc}}">
   <div class="row">
     <div class="col-sm-8">
       <h3 class="text-muted">
@@ -258,6 +258,11 @@
             style="width:150px;padding:5px;font-size:20px;margin-top: 10px;" type="button">
             <i class="fa fa-globe"></i>
             Update All
+          </button>
+          <button class="btn btn-danger col-12 fa-2x"  onclick="addColor(this);"
+            style="width:150px;padding:5px;font-size:20px;margin-top: 10px;" type="button">
+            <i class="fa fa-plus"></i>
+            Add Color
           </button>
           
         </div>
@@ -511,6 +516,14 @@
 // 	  }
     });
 
+    function addColor(e) {
+      var id = $("#product_id").val();
+      event.preventDefault();
+      // form.attr('action','{{url("products/update-all")}}');
+      // form.submit();
+      var url = "{{ url('/products/addColor/') }}/"+id;
+      window.location = url;
+    }
     function updateAll(e) {
       var form = $("#product_update_form");
       event.preventDefault();

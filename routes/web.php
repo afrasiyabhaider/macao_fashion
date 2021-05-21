@@ -117,6 +117,7 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::post('/products/save_quick_product', 'ProductController@saveQuickProduct');
     Route::post('/products/save_quick_product_only', 'ProductController@saveQuickProductOnly');
     Route::get('/products/bulk_add', 'ProductController@bulkAdd');
+    Route::get('/products/addColor/{id}', 'ProductController@addColor');
     Route::get('/products/updateProductId', 'ProductController@updateProductId');
     Route::get('/products/getProductId', 'ProductController@getProductId');
     Route::post('/products/bulk_add_store', 'ProductController@bulkAddStore');
