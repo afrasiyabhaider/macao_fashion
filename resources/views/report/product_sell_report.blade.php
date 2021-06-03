@@ -100,6 +100,7 @@
                                 <thead>
                                     <tr>
                                         <th>Image</th>
+                                        <th>Action</th>
                                         <th>@lang('sale.product')</th>
                                         {{-- <th>Purchase Date</th> --}}
                                         <th>Reffernce</th>
@@ -114,7 +115,7 @@
                                 </thead>
                                 <tfoot>
                                     <tr class="bg-gray font-17 footer-total text-center">
-                                        <td colspan="4"><strong>@lang('sale.total'):</strong></td>
+                                        <td colspan="5"><strong>@lang('sale.total'):</strong></td>
                                         <td id="footer_total_grouped_sold"></td>
                                         <td></td>
                                         <td><span class="display_currency" id="footer_grouped_subtotal" data-currency_symbol="true"></span>
@@ -179,6 +180,7 @@
     aria-labelledby="gridSystemModalLabel">
 </div>
 <div class="modal fade" id="view_product_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
+<div class="modal fade" id="view_product_color_detail" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel"></div>
 @endsection
 
 @section('javascript')

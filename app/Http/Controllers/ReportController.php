@@ -4133,6 +4133,11 @@ class ReportController extends Controller
                         return '-';
                     }
                 })
+                ->addColumn('detail',function($row){
+                    $start_date = request()->get('start_date');
+                    $end_date = request()->get('end_date');
+                    return '<a id="color-detail-modal" href="'.url("/product/color-detail/".$row->product_name.'/'.$start_date.'/'.$end_date).'" data-product-name="'.$row->product_name.'" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
+                })
                 ->addColumn('sale_percentage', function ($row) {
                     if ($row->refference && ($row->total_qty_sold > 0 || $row->current_stock > 0)) {
                         $sum = $row->total_qty_sold + $row->current_stock;
@@ -4160,7 +4165,7 @@ class ReportController extends Controller
                         }
                     }
                 ])
-                ->rawColumns(['image', 'total_sold', 'current_stock', 'subtotal', 'total_qty_sold'])
+                ->rawColumns(['image', 'total_sold', 'current_stock', 'subtotal', 'total_qty_sold','detail'])
                 ->make(true);
         }
     }

@@ -451,6 +451,19 @@ $(document).ready(function() {
             },
         });
     });
+    $(document).on('click', 'a#color-detail-modal', function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: $(this).attr('href'),
+            dataType: 'html',
+            success: function(result) {
+                $('#view_product_modal')
+                    .html(result)
+                    .modal('show');
+                __currency_convert_recursively($('#view_product_modal'));
+            },
+        });
+    });
     var img_fileinput_setting = {
         showUpload: false,
         showPreview: true,

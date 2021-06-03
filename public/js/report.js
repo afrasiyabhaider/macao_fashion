@@ -1433,6 +1433,13 @@ $(document).ready(function() {
                 searchable: false,
                 orderable: false
             },
+
+            {
+                data: 'detail',
+                name: 'detail',
+                searchable: false,
+                orderable: false
+            },
             {
                 data: 'product_name',
                 name: 'p.name'
