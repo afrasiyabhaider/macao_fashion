@@ -1994,7 +1994,7 @@ class ProductController extends Controller
                     $child = $connection->table('childcategories')->where('name', $current_product[0]['sub_category_name'])->first();
                     $child_id = $child->id;
                     $subcat_id = $child->subcategory_id;
-                    $cat_id = $connection->table('subcategories')->where('id',$subcat_id)->category_id;
+                    $cat_id = $connection->table('subcategories')->where('id',$subcat_id)->first()->category_id;
                 }
                 $size = [];
                 $color = [];
