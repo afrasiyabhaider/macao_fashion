@@ -3049,7 +3049,9 @@ class ProductController extends Controller
 
         $product = Product::where('business_id', $business_id)
             ->where('id', $id)
-            ->with(['color', 'brand', 'supplier', 'unit', 'category', 'sub_category', 'product_tax', 'variations', 'variations.product_variation', 'variations.group_prices','name'])
+            ->with([
+                'color', 'brand', 'supplier', 'unit', 'category', 'sub_category', 'product_tax', 'variations', 'variations.product_variation', 'variations.group_prices'
+            ])
             ->first();
 
         $price_groups = SellingPriceGroup::where('business_id', $business_id)->pluck('name', 'id');
