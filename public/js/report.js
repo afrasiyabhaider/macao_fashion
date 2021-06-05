@@ -2194,3 +2194,7 @@ function show_child_payments(rowData) {
 
     return div;
 }
+$('#myTabs a').click(function(e) {
+    e.preventDefault()
+    $(this).tab('show')
+})

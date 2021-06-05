@@ -3145,12 +3145,12 @@ class ProductController extends Controller
                 )
                 ->orderBy('total_qty_sold', 'DESC');
 
+                $history_group = $group_query->get();
+                $current_group = $group_query;
                 if (!empty($from_date) && !empty($to_date)) {
-                    $group_query->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
+                    $current_group = $group_query->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
                 }
-                $group_query = $group_query->get();
-
-
+                $current_group = $current_group->get();
 
         $query = TransactionSellLine::join(
                 'transactions as t',
@@ -3209,11 +3209,13 @@ class ProductController extends Controller
             // ->orderBy('p.name', 'ASC')
             // ->orderBy('t.invoice_no','DESC')
             ->groupBy('transaction_sell_lines.id');
+            $history_detail = $query->get();
+            $current_detail = $query;
             if (!empty($from_date) && !empty($to_date)) {
-                $query->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
+                $current_detail = $current_detail->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
             }
-            $query = $query->get();
-        return view('product.view-product-color-detail',compact('query','group_query'));
+            $current_detail = $current_detail->get();
+        return view('product.view-product-color-detail',compact('current_group','history_group','current_detail','history_detail'));
         // dd($query);
     }
     /**
