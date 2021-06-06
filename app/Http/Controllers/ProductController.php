@@ -3084,7 +3084,7 @@ class ProductController extends Controller
      * View Color Detail of Product 
      * 
      **/
-    public function viewColorDetail($name,$from_date , $to_date)
+    public function viewColorDetail($name,$from_date=null, $to_date=null)
     {
         $business_id = request()->session()->get('user.business_id');
         $location_id = request()->get('location_id', null);

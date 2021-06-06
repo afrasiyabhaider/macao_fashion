@@ -96,7 +96,7 @@
                         {!! Form::select('unit', $units, null, ['placeholder' => __('messages.all'), 'class' => 'form-control select2', 'style' => 'width:100%']); !!}
                     </div>
                 </div> --}}
-            <div class="row" id="location_filter">
+            {{-- <div class="row" id="location_filter">
                 <div class="form-group col-md-3">
                     {!! Form::label('from_date', ' From Date:') !!}
                     <input type="date" name="product_list_from_date" value="{{date('Y-m-d')}}"
@@ -106,6 +106,14 @@
                     {!! Form::label('to_date', ' To Date:') !!}
                     <input type="date" name="product_list_to_date" id="product_list_to_date" value=""
                         class="form-control">
+                </div>
+            </div> --}}
+            <div class="col-md-3">
+                <div class="form-group">
+            
+                    {!! Form::label('product_sr_date_filter', __('report.date_range') . ':') !!}
+                    {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' =>
+                    'form-control', 'id' => 'product_sr_date_filter', 'readonly']); !!}
                 </div>
             </div>
             {!! Form::close() !!}
@@ -215,6 +223,10 @@
     @endcomponent
     <div class="modal fade" id="view_product_modal" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
     </div>
+    <div class="modal fade view_register" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+    </div>
+    <div class="modal fade" id="view_product_color_detail" tabindex="-1" role="dialog"
+        aria-labelledby="gridSystemModalLabel"></div>
 </section>
 <!-- /.content -->
 
@@ -222,6 +234,7 @@
 
 @section('javascript')
 {{-- <script src="{{ asset('js/product.js?v=' . $asset_v) }}"></script> --}}
+<script src="{{ asset('js/product.js?v=' . $asset_v) }}"></script>
 <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
 <script>
     $(document).on('shown.bs.modal', 'div.view_product_modal, div.view_modal', function(){

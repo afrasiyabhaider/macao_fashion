@@ -1223,9 +1223,9 @@ class ReportController extends Controller
                 $query->where('p.supplier_id', $request->input('supplier_id'));
             }
 
-            $from_date = request()->get('from_date', null);
+            $from_date = request()->get('start_date', null);
 
-            $to_date = request()->get('to_date', null);
+            $to_date = request()->get('end_date', null);
             // dd($to_date);
             // if($to_date == 'no'){
             //     $to_date = Carbon::now();
@@ -1590,9 +1590,9 @@ class ReportController extends Controller
                 $query->where('p.supplier_id', $request->input('supplier_id'));
             }
 
-            $from_date = request()->get('from_date', null);
+            $from_date = request()->get('start_date', null);
 
-            $to_date = request()->get('to_date', null);
+            $to_date = request()->get('end_date', null);
             // dd($to_date);
             // if($to_date == 'no'){
             //     $to_date = Carbon::now();
@@ -1681,6 +1681,11 @@ class ReportController extends Controller
                         return '<div style="display: flex;"><img src="' . $product->image_url . '" alt="Product image" class="product-thumbnail-small" data-href="data-href="{{url("/products/view/".$row->product()->first()->id)}}"></div>';
                         // return '<div style="display: flex;"><img src="' . $product->image_url . '" alt="Product image" class="product-thumbnail-small" data-href="{{action(ProductController@view, [$row->product()->first()->id])}}"></div>';
                     }
+                })
+                ->addColumn('detail', function ($row) {
+                    $start_date = request()->get('start_date','null');
+                    $end_date = request()->get('end_date','null');
+                    return '<a id="color-detail-modal" href="' . url("/product/color-detail/" . $row->product . '/' . $start_date . '/' . $end_date) . '" data-product-name="' . $row->product . '" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
                 })
                 // ->addColumn('sale_percent', function ($row) {
                 //     $quantity_sold =  (float) $row->total_sold;
@@ -1771,7 +1776,7 @@ class ReportController extends Controller
                     }
                 ])
                 ->removeColumn('id')
-                ->rawColumns(['mass_delete', 'printing_qty', 'unit_price', 'total_transfered', 'location_name', 'total_sold', 'total_adjusted', 'stock', 'actions', 'image'])
+                ->rawColumns(['mass_delete', 'printing_qty', 'unit_price', 'total_transfered', 'location_name', 'total_sold', 'total_adjusted', 'stock', 'actions', 'image','detail'])
                 ->make(true);
         }
 

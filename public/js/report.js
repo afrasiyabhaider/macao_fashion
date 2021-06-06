@@ -101,18 +101,32 @@ $(document).ready(function() {
     });
 
     //Stock report table
+
     stock_report_table = $('#stock_report_table').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
             url: '/reports/stock-report',
             data: function(d) {
+                var start = '';
+                var end = '';
+                if ($('#product_sr_date_filter').val()) {
+                    start = $('input#product_sr_date_filter')
+                        .data('daterangepicker')
+                        .startDate.format('YYYY-MM-DD');
+                    end = $('input#product_sr_date_filter')
+                        .data('daterangepicker')
+                        .endDate.format('YYYY-MM-DD');
+                }
+                d.start_date = start;
+                d.end_date = end;
+
                 d.location_id = $('#location_id').val();
                 d.category_id = $('#category_id').val();
                 d.sub_category_id = $('#sub_category_id').val();
                 d.supplier_id = $('#suppliers').val();
-                d.from_date = $('#product_list_from_date').val();
-                d.to_date = $('#product_list_to_date').val();
+                // d.from_date = $('#product_list_from_date').val();
+                // d.to_date = $('#product_list_to_date').val();
                 d.unit_id = $('#unit').val();
             },
         },
@@ -241,12 +255,25 @@ $(document).ready(function() {
         ajax: {
             url: '/reports/grouped-stock-report',
             data: function(d) {
+                var start = '';
+                var end = '';
+                if ($('#product_sr_date_filter').val()) {
+                    start = $('input#product_sr_date_filter')
+                        .data('daterangepicker')
+                        .startDate.format('YYYY-MM-DD');
+                    end = $('input#product_sr_date_filter')
+                        .data('daterangepicker')
+                        .endDate.format('YYYY-MM-DD');
+                }
+                d.start_date = start;
+                d.end_date = end;
+
                 d.location_id = $('#location_id').val();
                 d.category_id = $('#category_id').val();
                 d.sub_category_id = $('#sub_category_id').val();
                 d.supplier_id = $('#suppliers').val();
-                d.from_date = $('#product_list_from_date').val();
-                d.to_date = $('#product_list_to_date').val();
+                // d.from_date = $('#product_list_from_date').val();
+                // d.to_date = $('#product_list_to_date').val();
                 d.unit_id = $('#unit').val();
             },
         },
@@ -269,6 +296,11 @@ $(document).ready(function() {
             {
                 data: 'product',
                 name: 'p.name'
+            },
+            {
+                data: 'detail',
+                orderable: false,
+                searchable: false
             },
             {
                 data: 'refference',
@@ -403,7 +435,7 @@ $(document).ready(function() {
         }
     });
     $(
-        '#stock_report_filter_form #location_id, #stock_report_filter_form #category_id, #stock_report_filter_form #sub_category_id, #stock_report_filter_form #brand,#stock_report_filter_form #suppliers, #stock_report_filter_form #unit,#stock_report_filter_form #view_stock_filter,#product_list_to_date, #product_list_from_date'
+        '#stock_report_filter_form #location_id, #stock_report_filter_form #category_id, #stock_report_filter_form #sub_category_id, #stock_report_filter_form #brand,#stock_report_filter_form #suppliers, #stock_report_filter_form #unit,#stock_report_filter_form #view_stock_filter,#product_list_to_date, #product_list_from_date#product_sr_date_filter'
     ).change(function() {
         stock_report_table.ajax.reload();
         grouped_stock_report_table.ajax.reload();
@@ -1148,11 +1180,15 @@ $(document).ready(function() {
             );
             product_sell_report.ajax.reload();
             product_sell_grouped_report.ajax.reload();
+            grouped_stock_report_table.ajax.reload();
+            stock_report_table.ajax.reload();
         });
         $('#product_sr_date_filter').on('cancel.daterangepicker', function(ev, picker) {
             $('#product_sr_date_filter').val('');
             product_sell_report.ajax.reload();
             product_sell_grouped_report.ajax.reload();
+            grouped_stock_report_table.ajax.reload();
+            stock_report_table.ajax.reload();
         });
         $('#product_sr_date_filter').data('daterangepicker').setStartDate(moment());
         $('#product_sr_date_filter').data('daterangepicker').setEndDate(moment());
@@ -1178,11 +1214,15 @@ $(document).ready(function() {
             );
             product_sell_report.ajax.reload();
             product_sell_grouped_report.ajax.reload();
+            grouped_stock_report_table.ajax.reload();
+            stock_report_table.ajax.reload();
         });
         $('#product_purchase_date_filter').on('cancel.daterangepicker', function(ev, picker) {
             $('#product_purchase_date_filter').val('');
             product_sell_report.ajax.reload();
             product_sell_grouped_report.ajax.reload();
+            grouped_stock_report_table.ajax.reload();
+            stock_report_table.ajax.reload();
         });
         $('#product_purchase_date_filter').data('daterangepicker').setStartDate();
         $('#product_purchase_date_filter').data('daterangepicker').setEndDate();
@@ -1222,12 +1262,12 @@ $(document).ready(function() {
                         .data('daterangepicker')
                         .endDate.format('YYYY-MM-DD');
                 }
+                d.start_date = start;
+                d.end_date = end;
 
                 d.purchase_start_date = purchase_start;
                 d.purchase_end_date = purchase_end;
 
-                d.start_date = start;
-                d.end_date = end;
 
                 d.variation_id = $('#variation_id').val();
                 d.supplier_id = $('select#supplier_id').val();

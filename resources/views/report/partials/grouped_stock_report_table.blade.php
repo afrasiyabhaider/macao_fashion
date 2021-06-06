@@ -7,6 +7,7 @@
                     </th>
                     <th>Image</th>
                     <th>@lang('business.product')</th>
+                    <th>Color Detail</th>
                     <th>Refference</th>
                     <th>Location Name</th>
                     {{-- <th>Actions</th> --}}
@@ -20,7 +21,7 @@
           </thead>
           <tfoot>
                <tr class="bg-gray font-17 text-center footer-total">
-                    <td colspan="6"><strong>@lang('sale.total'):</strong></td>
+                    <td colspan="7"><strong>@lang('sale.total'):</strong></td>
                     <td id="footer_group_total_stock"></td>
                     <td></td>
                </tr>
