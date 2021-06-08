@@ -3,7 +3,7 @@
           <div class="modal-header">
                <button type="button" class="close no-print" data-dismiss="modal" aria-label="Close"><span
                          aria-hidden="true">&times;</span></button>
-               <h4 class="modal-title" id="modalTitle">{{$current_group[0]->product_name}}</h4>
+               <h4 class="modal-title" id="modalTitle">{{$current_detail[0]->product_name}}</h4>
           </div>
           <div class="modal-body">
                <div class="row">
@@ -19,8 +19,8 @@
                                    <li>
                                         <a href="#color_history" data-toggle="tab" aria-expanded="true">
                                              <i class="fa fa-calendar" aria-hidden="true"></i>
-                                             Color History Report 
-                                             
+                                             Color History Report
+
                                         </a>
                                    </li>
                               </ul>
@@ -41,23 +41,23 @@
                                                                  <th>Current Stock</th>
                                                             </tr>
                                                             @foreach($current_group as $item)
-                                                                 <tr>
-                                                                      <td>
-                                                                           {{ $loop->iteration }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ $item->product_name }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ $item->color }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ (int)$item->total_qty_sold }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ (int)$item->current_stock }}
-                                                                      </td>
-                                                                 </tr>
+                                                            <tr>
+                                                                 <td>
+                                                                      {{ $loop->iteration }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->product_name }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->color }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ (int)$item->total_qty_sold }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ (int)$item->current_stock }}
+                                                                 </td>
+                                                            </tr>
                                                             @endforeach
                                                        </table>
                                                   </div>
@@ -79,26 +79,26 @@
                                                                  <th>Current Stock</th>
                                                             </tr>
                                                             @foreach($current_detail as $item)
-                                                                 <tr>
-                                                                      <td>
-                                                                           {{ $loop->iteration }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ $item->product_name }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ $item->color }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ $item->transaction_date }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ (int)$item->sell_qty }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ (int)$item->current_stock }}
-                                                                      </td>
-                                                                 </tr>
+                                                            <tr>
+                                                                 <td>
+                                                                      {{ $loop->iteration }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->product_name }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->color }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->product_date }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ (int)$item->sell_qty }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ (int)$item->current_stock }}
+                                                                 </td>
+                                                            </tr>
                                                             @endforeach
                                                        </table>
                                                   </div>
@@ -121,23 +121,23 @@
                                                                  <th>Current Stock</th>
                                                             </tr>
                                                             @foreach($history_group as $item)
-                                                                 <tr>
-                                                                      <td>
-                                                                           {{ $loop->iteration }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ $item->product_name }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ $item->color }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ (int)$item->total_qty_sold }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ (int)$item->current_stock }}
-                                                                      </td>
-                                                                 </tr>
+                                                            <tr>
+                                                                 <td>
+                                                                      {{ $loop->iteration }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->product_name }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->color }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ (int)$item->total_qty_sold }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ (int)$item->current_stock }}
+                                                                 </td>
+                                                            </tr>
                                                             @endforeach
                                                        </table>
                                                   </div>
@@ -159,26 +159,26 @@
                                                                  <th>Current Stock</th>
                                                             </tr>
                                                             @foreach($history_detail as $item)
-                                                                 <tr>
-                                                                      <td>
-                                                                           {{ $loop->iteration }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ $item->product_name }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ $item->color }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ $item->transaction_date }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ (int)$item->sell_qty }}
-                                                                      </td>
-                                                                      <td>
-                                                                           {{ (int)$item->current_stock }}
-                                                                      </td>
-                                                                 </tr>
+                                                            <tr>
+                                                                 <td>
+                                                                      {{ $loop->iteration }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->product_name }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->color }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->transaction_date }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ (int)$item->sell_qty }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ (int)$item->current_stock }}
+                                                                 </td>
+                                                            </tr>
                                                             @endforeach
                                                        </table>
                                                   </div>

@@ -1664,7 +1664,8 @@ class ReportController extends Controller
                 'vld.updated_at',
                 // 'vld.qty_available as current_stock'
                 DB::raw('SUM(vld.qty_available) as current_stock')
-            )->groupBy('p.name')
+            )
+            ->groupBy('p.name')
                 ->orderBy('vld.product_updated_at', 'DESC');
             // dd($products->first());
             // dd($products->first()->product()->first()->image_url);
@@ -1685,7 +1686,7 @@ class ReportController extends Controller
                 ->addColumn('detail', function ($row) {
                     $start_date = request()->get('start_date','null');
                     $end_date = request()->get('end_date','null');
-                    return '<a id="color-detail-modal" href="' . url("/product/color-detail/" . $row->product . '/' . $start_date . '/' . $end_date) . '" data-product-name="' . $row->product . '" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
+                    return '<a id="color-detail-modal" href="' . url("/product/color-detail-stock/" . $row->product . '/' . $start_date . '/' . $end_date) . '" data-product-name="' . $row->product . '" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
                 })
                 // ->addColumn('sale_percent', function ($row) {
                 //     $quantity_sold =  (float) $row->total_sold;
@@ -4144,17 +4145,16 @@ class ReportController extends Controller
                     return '<a id="color-detail-modal" href="'.url("/product/color-detail/".$row->product_name.'/'.$start_date.'/'.$end_date).'" data-product-name="'.$row->product_name.'" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
                 })
                 ->addColumn('sale_percentage', function ($row) {
-                    if ($row->refference && ($row->total_qty_sold > 0 || $row->current_stock > 0)) {
+                    if ($row->refference && ($row->total_qty_sold > 0 || $row->current_stock > 0)){
                         $sum = $row->total_qty_sold + $row->current_stock;
-                        if ($sum) {
+                        if ($sum){
                             $percentage = ($row->total_qty_sold * 100) / $sum;
-
                             return (int)$percentage . ' %';
                         } else {
 
                             return '0 %';
                         }
-                    } else {
+                    }else{
                         return '-';
                     }
                 })
