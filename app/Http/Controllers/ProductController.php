@@ -1412,7 +1412,9 @@ class ProductController extends Controller
                 }
                 $size = Size::find($request->input('size'));
                 // $product->name = $request->input('product_name');
-                $product[$i]->image = $product_image;
+
+                // $product[$i]->image = $product_image;
+
                 // if ($request->input('supplier_id') == 0) {
                 //     $product->supplier_id = $request->input('supplier');
                 // } else {
@@ -1424,7 +1426,9 @@ class ProductController extends Controller
                     $product[$i]->sub_category_id = $request->input('sub_category');
                 }
                 $product[$i]->refference = $request->input('refference');
-                $product[$i]->color_id = $request->input('color');
+
+                // $product[$i]->color_id = $request->input('color');
+
                 // $product[$i]->size_id = $size->parent_id;
                 // $product[$i]->sub_size_id = $request->input('size');
                 // $product[$i]->sku = $request->input('sku');
@@ -1676,12 +1680,13 @@ class ProductController extends Controller
             'quantity' => 'required',
             'size' => ['required', Rule::notIn(0)],
         ]);
-
+        $message = null;
         try {
             DB::beginTransaction();
-            $product_id = Product::where('color_id', $request->input('color'))->first();
+            $product_id = Product::where('color_id', $request->input('color'))->where('name', $request->input('product_name'))->first();
             $product = Product::where('color_id', $request->input('color'))->where('name', $request->input('product_name'))->get();
             // dd($product);
+            // dd($request->input());
 
             for($i = 0;$i<count($product);$i++){
                 $product_image = $product[$i]->image;
@@ -1705,6 +1710,7 @@ class ProductController extends Controller
                     $product[$i]->sub_category_id = $request->input('sub_category');
                 }
                 $product[$i]->refference = $request->input('refference');
+                
                 $product[$i]->color_id = $request->input('color');
                 // $product[$i]->size_id = $size->parent_id;
                 // $product[$i]->sub_size_id = $request->input('size');
@@ -1713,6 +1719,7 @@ class ProductController extends Controller
                 $product[$i]->product_updated_at = Carbon::now();
 
                 $product[$i]->save();
+                dd($product[$i]);
 
                 $variation = Variation::where('product_id', '=', $product[$i]->id)->first();
                 // $unit = str_replace($request->input('unit_price'),'.',',');
@@ -1763,8 +1770,8 @@ class ProductController extends Controller
                 }
 
                 DB::commit();
+                $this->update_on_website($product_id->name);
             }
-            $this->update_on_website($product_id->name);
             $output = [
                 'success' => 1,
                 'msg' => $message
@@ -4531,7 +4538,9 @@ class ProductController extends Controller
                 }
                 $product_details = array();
                 $product_details['supplier_id'] = $objInputs['supplier_id'][$i];
-                $product_details['brand_id'] = $objInputs['brand_id'][$i];
+                // dd($objInputs);
+                $product_details['brand_id'] = isset($objInputs['brand_id'][$i]) ? $objInputs['brand_id'][$i] : null;
+                // $product_details['brand_id'] = $objInputs['brand_id'][$i];
                 $product_details['category_id'] = $objInputs['category_id'][$i];
                 $product_details['name'] = $objInputs['name'][$i];
                 $product_details['color_id'] = $objInputs['color_id'][$i];
@@ -4656,7 +4665,7 @@ class ProductController extends Controller
                 'success' => 0,
                 'msg' => __("messages.something_went_wrong") .  "Line:" . $e->getLine() . "Message:" . $e->getMessage()
             ];
-            dd($e);
+            dd($output);
             return redirect('products/bulk_add')->with('status', $output);
         }
 
