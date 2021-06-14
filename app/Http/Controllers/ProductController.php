@@ -4670,8 +4670,8 @@ class ProductController extends Controller
         }
 
 
-        return redirect()->back()->with('status', $output);
-        // return redirect('products/bulk_add')->with('status', $output);
+        // return redirect()->back()->with('status', $output);
+        return redirect('products/bulk_add')->with('status', $output);
     }
 
     public function viewBulkPackage($id)
