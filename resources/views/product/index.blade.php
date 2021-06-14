@@ -185,7 +185,7 @@
                     [20, 50, 70, 100,150, 300, 500, 1000, 'All'],
                 ],
                 columnDefs: [ {
-                    "targets": [0, 1, 3],
+                    "targets": [0, 1, 2,4],
                     "orderable": false,
                     "searchable": false
                 } ],
