@@ -135,6 +135,12 @@
                     <a href="#psr_detailed_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-list"
                             aria-hidden="true"></i> @lang('lang_v1.detailed')</a>
                 </li>
+                <li>
+                    <a href="#psr_color_tab" data-toggle="tab" aria-expanded="true">
+                        <i class="fa fa-list" aria-hidden="true"></i>
+                        Color Report
+                    </a>
+                </li>
 
 
             </ul>
