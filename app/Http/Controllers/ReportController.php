@@ -1283,6 +1283,7 @@ class ReportController extends Controller
                 'p.description as description',
                 'p.type',
                 'p.refference',
+                'p.updated_at as product_updated',
                 'colors.name as color_name',
                 'suppliers.name as supplier_name',
                 'categories.name as category_name',
@@ -1299,7 +1300,8 @@ class ReportController extends Controller
                 // 'vld.qty_available as current_stock'
                 DB::raw('SUM(vld.qty_available) as current_stock')
             )->groupBy('variations.id')
-                ->orderBy('vld.product_updated_at', 'DESC');
+            ->orderBy('product_updated', 'DESC');
+            // ->orderBy('vld.product_updated_at', 'DESC');
             // dd($products->first());
             // dd($products->first()->product()->first()->image_url);
 

@@ -1719,7 +1719,7 @@ class ProductController extends Controller
                 $product[$i]->product_updated_at = Carbon::now();
 
                 $product[$i]->save();
-                dd($product[$i]);
+                // dd($product[$i]);
 
                 $variation = Variation::where('product_id', '=', $product[$i]->id)->first();
                 // $unit = str_replace($request->input('unit_price'),'.',',');

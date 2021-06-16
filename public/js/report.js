@@ -234,6 +234,10 @@ $(document).ready(function() {
                 data: 'product_date',
                 name: 'vld.product_updated_at'
             },
+            {
+                data: 'product_updated',
+                name: 'product_updated'
+            },
 
             // { data: 'updated_at', name: 'updated_at' },
             // { data: 'total_adjusted', name: 'total_adjusted', searchable: false },

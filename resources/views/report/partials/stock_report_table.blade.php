@@ -31,12 +31,13 @@
                 <th>Total Transfered</th>
                 <th>Supplier</th>
                 <th>Transfered On</th>
+                <th>Updated At</th>
                 {{-- <th>@lang('lang_v1.total_unit_adjusted')</th> --}}
             </tr>
         </thead>
         <tfoot>
             <tr class="bg-gray font-17 text-center footer-total">
-                <td colspan="16"><strong>@lang('sale.total'):</strong></td>
+                <td colspan="17"><strong>@lang('sale.total'):</strong></td>
                 <td id="footer_total_stock"></td>
                 <td id="footer_total_sold"></td>
                 <td id="footer_total_transfered"></td>
