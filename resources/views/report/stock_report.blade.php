@@ -137,7 +137,7 @@
                 </li>
                 <li>
                     <a href="#psr_color_tab" data-toggle="tab" aria-expanded="true">
-                        <i class="fa fa-list" aria-hidden="true"></i>
+                        <i class="fa fa-check" aria-hidden="true"></i>
                         Color Report
                     </a>
                 </li>
