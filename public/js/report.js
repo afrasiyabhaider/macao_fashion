@@ -135,7 +135,7 @@ $(document).ready(function() {
             [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, -1],
             [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, 'All'],
         ],
-        aaSorting: [2, 'asc'],
+        aaSorting: [6, 'asc'],
         columns: [{
                 data: 'DT_Row_Index',
                 searchable: false,
