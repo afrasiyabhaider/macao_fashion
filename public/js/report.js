@@ -235,8 +235,8 @@ $(document).ready(function() {
                 name: 'vld.product_updated_at'
             },
             {
-                data: 'product_updated',
-                name: 'product_updated'
+                data: 'product_date',
+                name: 'product_date'
             },
 
             // { data: 'updated_at', name: 'updated_at' },
