@@ -149,6 +149,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             @include('report.partials.grouped_stock_report_table')
+                            
                         </div>
                     </div>
                 </div>
@@ -222,7 +223,13 @@
                         </div>
                     </div>
                 </div>
-
+                <div class="tab-pane active" id="psr_color_tab">
+                    <div class="row">
+                        <div class="col-md-12">
+                            @include('report.partials.color_report_table')
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
