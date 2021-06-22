@@ -223,7 +223,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane active" id="psr_color_tab">
+                <div class="tab-pane" id="psr_color_tab">
                     <div class="row">
                         <div class="col-md-12">
                             @include('report.partials.color_report_table')
