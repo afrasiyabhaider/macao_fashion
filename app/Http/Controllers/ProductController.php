@@ -3722,7 +3722,7 @@ class ProductController extends Controller
                 $qtys = $s_products->combine($selected_products_qty);
 
                 $print_qtys = $selected_products_qty;
-                $product = collect($product)->sortBy('name');
+                $product = collect($product)->sortBy('ColorName')->sortBy('name');
                 // ->sortBy('ColorName');
                 // $product = collect($product)->sortBy('refference')->sortBy('ColorName');
                 // dd($product->sortBy('refference')->sortBy('ColorName'));
