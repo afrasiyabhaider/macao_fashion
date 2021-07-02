@@ -1475,7 +1475,11 @@ $(document).ready(function() {
                 sum_table_col($('#product_sell_report_table'), 'row_subtotal')
             );
             $('#footer_total_sold').html(__sum_stock($('#product_sell_report_table'), 'sell_qty'));
-            $('#footer_total_before_discount').html(sum_table_col($('#product_sell_report_table'), 'original_amount'));
+
+            $('#footer_total_before_discount').text(
+                sum_table_col($('#product_sell_report_table'), 'original_amount')
+            );
+            // $('#footer_total_before_discount').html(sum_table_col($('#product_sell_report_table'), 'original_amount'));
             // $('#footer_tax').html(__sum_stock($('#product_sell_report_table'), 'tax', 'left'));
             __currency_convert_recursively($('#product_sell_report_table'));
         },
