@@ -154,17 +154,25 @@
                                 </thead>
                                 <tfoot>
                                     <tr class="bg-gray font-17 footer-total text-center">
-                                        <td colspan="5">
+                                        <td colspan="4">
                                             <strong>@lang('sale.total'):</strong>
                                         </td>
                                         {{-- <td></td>
                                         <td></td>
                                         <td id="footer_tax"></td>
                                         <td></td> --}}
-                                        <td id="footer_total_sold"></td>
-                                        <td colspan="5"></td>
+                                        <td>
+                                            <span id="footer_total_sold" >    
+                                        </td>
+                                        <td colspan="2"></td>
+                                        <td>
+                                            <span class="display_currency" id="footer_total_before_discount" data-currency_symbol="true">
+
+                                        </td>
+                                        <td></td>
+                                        {{-- <td colspan=""></td> --}}
                                         <td><span class="display_currency" id="footer_subtotal" data-currency_symbol ="true"></span></td>
-                                        <td colspan="4"></td>
+                                        <td colspan="6"></td>
                                     </tr>
                                 </tfoot>
                             </table>

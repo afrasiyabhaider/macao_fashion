@@ -3732,8 +3732,7 @@ class ProductController extends Controller
 
                 // dd($qtys,$s_products,$selected_products_qty,$print_qtys,$product->pluck('id'));
 
-                return view('product.massBulkPrint')
-                    ->with(compact('product', 'print_qtys', 'location'));
+                return view('product.massBulkPrint')->with(compact('product', 'print_qtys', 'location'));
             }
 
             $output = [
