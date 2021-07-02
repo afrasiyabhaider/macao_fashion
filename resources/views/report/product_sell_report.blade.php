@@ -166,7 +166,7 @@
                                         </td>
                                         <td colspan="3"></td>
                                         <td>
-                                            <span class="display_currency" id="footer_total_before_discount" data-currency_symbol="true">
+                                            <span class="display_currency" id="footer_total_before_discount" data-currency_symbol="true"></span>
 
                                         </td>
                                         <td></td>
