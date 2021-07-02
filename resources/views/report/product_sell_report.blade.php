@@ -166,10 +166,10 @@
                                         </td>
                                         <td colspan="3"></td>
                                         <td>
-                                            <span class="display_currency" id="footer_total_before_discount" data-currency_symbol="true"></span>
+                                            <span class="display_currency"  id="footer_total_before_discount" data-currency_symbol="true"></span>
 
                                         </td>
-                                        <td></td>
+                                        <td colspan="2"></td>
                                         {{-- <td colspan=""></td> --}}
                                         <td><span class="display_currency" id="footer_subtotal" data-currency_symbol ="true"></span></td>
                                         <td colspan="6"></td>
