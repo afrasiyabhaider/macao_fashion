@@ -4239,7 +4239,7 @@ class ReportController extends Controller
                 })
                 ->editColumn('original_amount', function ($row) {
                     if ($row->original_amount) {
-                        return '<span class="display_currency" data-currency_symbol = true>' . $row->original_amount . '</span>';
+                        return '<span class="original_amount display_currency" data-currency_symbol = true>' . $row->original_amount . '</span>';
                     } else {
                         return '-';
                     }
