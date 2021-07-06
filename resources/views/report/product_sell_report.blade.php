@@ -150,6 +150,7 @@
                                         {{-- <th>@lang('sale.customer_name')</th> --}}
                                         <th>@lang('sale.invoice_no')</th>
                                         {{-- <th>@lang('sale.tax')</th> --}}
+                                        {{-- 16 --}}
                                     </tr>
                                 </thead>
                                 <tfoot>
@@ -172,7 +173,7 @@
                                         <td colspan="2"></td>
                                         {{-- <td colspan=""></td> --}}
                                         <td><span class="display_currency" id="footer_subtotal" data-currency_symbol ="true"></span></td>
-                                        <td colspan="6"></td>
+                                        <td colspan="4"></td>
                                     </tr>
                                 </tfoot>
                             </table>
