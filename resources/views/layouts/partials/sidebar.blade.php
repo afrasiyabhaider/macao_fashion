@@ -714,11 +714,11 @@
           aria-hidden="true"></i></i>@lang('report.expense_report')</a></li>
     @endcan
 
-    {{-- @can('register_report.view')
+    @can('register_report.view')
     <li class="{{ $request->segment(2) == 'register-report' ? 'active' : '' }}"><a
         href="{{action('ReportController@getRegisterReport')}}"><i
           class="fa fa-briefcase"></i>@lang('report.register_report')</a></li>
-    @endcan --}}
+    @endcan
 
     @can('sales_representative.view')
     <li class="{{ $request->segment(2) == 'sales-representative-report' ? 'active' : '' }}"><a

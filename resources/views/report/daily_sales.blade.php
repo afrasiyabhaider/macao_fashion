@@ -40,25 +40,27 @@
      <div class="row">
           <div class="col-md-12">
                @component('components.widget', ['class' => 'box-primary'])
-               <h4>Total Cash: <span class="display_currency total_cash" data-currency_symbol="false"></span> €
-               </h4>
-               <h4>Total Card: <span class="display_currency total_card" data-currency_symbol="false"></span> €
-               </h4>
-               <h4>Total Coupon: <span class="display_currency total_coupon" data-currency_symbol="false"></span> €
-               </h4>
-               <h4>Total Gift Card: <span class="display_currency total_gift_card" data-currency_symbol="false"></span>
-                    €</h4>
-               {{-- 
-                                   <h4>Total Discount: <span class="display_currency" data-currency_symbol="false"
-                                        id="total_discount"></span> € 
-                                   </h4>
-                                   <h4>Total Items: <span class="display_currency" data-currency_symbol="false" id="total_items"></span> 
-                              --}}
-               </h4>
-               <h4>Total Invoices: <span class="display_currency total_invoices" data-currency_symbol="false"></span>
-               </h4>
-               <h4>Total Amount: <span class="display_currency " data-currency_symbol="false" id="total_amount_top"></span> €
-               </h4>
+               @can('view_purchase_price')
+                    <h4>Total Cash: <span class="display_currency total_cash" data-currency_symbol="false"></span> €
+                    </h4>
+                    <h4>Total Card: <span class="display_currency total_card" data-currency_symbol="false"></span> €
+                    </h4>
+                    <h4>Total Coupon: <span class="display_currency total_coupon" data-currency_symbol="false"></span> €
+                    </h4>
+                    <h4>Total Gift Card: <span class="display_currency total_gift_card" data-currency_symbol="false"></span>
+                         €</h4>
+                    {{-- 
+                                        <h4>Total Discount: <span class="display_currency" data-currency_symbol="false"
+                                             id="total_discount"></span> € 
+                                        </h4>
+                                        <h4>Total Items: <span class="display_currency" data-currency_symbol="false" id="total_items"></span> 
+                                   --}}
+                    </h4>
+                    <h4>Total Invoices: <span class="display_currency total_invoices" data-currency_symbol="false"></span>
+                    </h4>
+                    <h4>Total Amount: <span class="display_currency " data-currency_symbol="false" id="total_amount_top"></span> €
+                    </h4>
+               @endcan
 
                <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="daily_sale_report_table">

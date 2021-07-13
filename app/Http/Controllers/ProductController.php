@@ -3231,10 +3231,10 @@ class ProductController extends Controller
      * View Color Detail of Product Stock Report
      * 
      **/
-    public function viewColorDetailStock($name,$from_date=null, $to_date=null)
+    public function viewColorDetailStock($name,$from_date=null, $to_date=null,$location_id=0)
     {
         $business_id = request()->session()->get('user.business_id');
-        $location_id = request()->get('location_id', null);
+        // $location_id = request()->get('location_id', null);
 
         $vld_str = '';
         if (!empty($location_id)) {
@@ -3255,8 +3255,12 @@ class ProductController extends Controller
         ->join('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
             ->where('p.business_id', $business_id)
             ->where('p.name', $name)
-            ->whereIn('p.type', ['single', 'variable'])
-        ->select(
+            ->whereIn('p.type', ['single', 'variable']);
+            // dd($location_id);
+        if($location_id){
+            $group_query = $group_query->where('vld.location_id',$location_id);
+        }
+        $group_query = $group_query->select(
             // DB::raw("(SELECT SUM(quantity) FROM transaction_sell_lines LEFT JOIN transactions ON transaction_sell_lines.transaction_id=transactions.id WHERE transactions.status='final'  AND
             //     transaction_sell_lines.product_id=products.id) as total_sold"),
 
@@ -3323,8 +3327,11 @@ class ProductController extends Controller
             ->join('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
             ->where('p.business_id', $business_id)
             ->where('p.name', $name)
-            ->whereIn('p.type', ['single', 'variable'])
-            ->select(
+            ->whereIn('p.type', ['single', 'variable']);
+        if($location_id){
+            $query = $query->where('vld.location_id',$location_id);
+        }
+        $query = $query->select(
                 // DB::raw("(SELECT SUM(quantity) FROM transaction_sell_lines LEFT JOIN transactions ON transaction_sell_lines.transaction_id=transactions.id WHERE transactions.status='final' AND
                 //     transaction_sell_lines.product_id=products.id) as total_sold"),
 
