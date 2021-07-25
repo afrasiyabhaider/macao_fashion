@@ -3088,6 +3088,172 @@ class ProductController extends Controller
         ));
     }
     /**
+     * View Product Detail with Sales 
+     * 
+     **/
+    /**
+     * Shows product purchase report
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function viewProductDetailWithSale($id)
+    {
+        if (!auth()->user()->can('purchase_n_sell_report.view') && !auth()->user()->can('product.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+        $business_id = request()->session()->get('user.business_id');
+        // $business_id = $request->session()->get('user.business_id');
+        // $variation_id = $request->get('variation_id', null);
+
+        // $location_id = $request->get('location_id', null);
+
+        $vld_str = '';
+        // if (!empty($location_id)) {
+        //     $vld_str = "AND vld.location_id=$location_id";
+        // }
+
+        $query = TransactionSellLine::join(
+            'transactions as t',
+            'transaction_sell_lines.transaction_id',
+            '=',
+            't.id'
+        )
+            ->join(
+                'variations as v',
+                'transaction_sell_lines.variation_id',
+                '=',
+                'v.id'
+            )
+            ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
+            ->join('contacts as c', 't.contact_id', '=', 'c.id')
+            ->join('products as p', 'pv.product_id', '=', 'p.id')
+            // ->join('variation_location_details as vlds', 'pv.product_id', '=', 'vlds.product_id')
+            // ->join('suppliers as s', 's.id','=','p.supplier_id')
+            ->leftjoin('tax_rates', 'transaction_sell_lines.tax_id', '=', 'tax_rates.id')
+            ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
+            ->where('t.business_id', $business_id)
+            ->where('p.id', $id)
+            ->where('t.type', 'sell')
+            ->where('t.status', 'final')
+            ->select(
+                'p.id as product_id',
+                'p.name as product_name',
+                'p.image as image',
+                'p.supplier_id as supplier_id',
+                // 's.name as supplier',
+                'p.refference as refference',
+                'p.type as product_type',
+                'p.sku as barcode',
+                'pv.name as product_variation',
+                'v.name as variation_name',
+                'c.name as customer',
+                't.id as transaction_id',
+                't.invoice_no',
+                't.transaction_date as transaction_date',
+                'transaction_sell_lines.unit_price_before_discount as unit_price',
+                'transaction_sell_lines.unit_price_inc_tax as unit_sale_price',
+                'p.product_updated_at as product_updated_at',
+                'transaction_sell_lines.original_amount as original_amount',
+                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                DB::raw('(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as sell_qty'),
+                DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_id = p.id) as total_sold"),
+                'transaction_sell_lines.line_discount_type as discount_type',
+                'transaction_sell_lines.line_discount_amount as discount_amount',
+                'transaction_sell_lines.item_tax',
+                'tax_rates.name as tax',
+                'u.short_name as unit',
+                DB::raw('((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
+            )
+            ->orderBy('p.name', 'ASC')
+            // ->orderBy('t.invoice_no','DESC')
+            ->groupBy('transaction_sell_lines.id');
+        // dd($query->first());
+        // if (!empty($variation_id)) {
+        //     $query->where('transaction_sell_lines.variation_id', $variation_id);
+        // }
+
+        // $start_date = $request->get('start_date');
+        // $end_date = $request->get('end_date');
+        // if (!empty($start_date) && !empty($end_date)) {
+        //     $query->whereBetween(DB::raw('date(transaction_date)'), [$start_date, $end_date]);
+        // }
+
+        // $purchase_start_date = $request->get('purchase_start_date');
+        // $purchase_end_date = $request->get('purchase_end_date');
+
+        // if (!empty($purchase_start_date) && !empty($purchase_end_date)) {
+        //     $query->whereBetween(DB::raw('date(product_updated_at)'), [$purchase_start_date, $purchase_end_date]);
+        // }
+
+        // $permitted_locations = auth()->user()->permitted_locations();
+        // if ($permitted_locations != 'all') {
+        //     $query->whereIn('t.location_id', $permitted_locations);
+        // }
+
+        // $location_id = $request->get('location_id', null);
+        // if (!empty($location_id)) {
+        //     $query->where('t.location_id', $location_id);
+        // }
+
+        // $customer_id = $request->get('customer_id', null);
+        // if (!empty($customer_id)) {
+        //     $query->where('t.contact_id', $customer_id);
+        // }
+
+        // $supplier_id = $request->get('supplier_id', null);
+        // if (!empty($supplier_id)) {
+        //     $query->where('p.supplier_id', $supplier_id);
+        // }
+
+        $query = $query->get();
+
+        // $business_locations = BusinessLocation::forDropdown($business_id);
+        // $customers = Contact::customersDropdown($business_id);
+        // $suppliers = Supplier::forDropdown($business_id);
+
+        // return view('report.product_sell_report')
+        // ->with(compact('business_locations', 'customers', 'suppliers'));
+
+        // if (!auth()->user()->can('product.view')) {
+        //     abort(403, 'Unauthorized action.');
+        // }
+
+
+        $product = Product::where('business_id', $business_id)
+            ->where('id', $id)
+            ->with([
+                'color', 'brand', 'supplier', 'unit', 'category', 'sub_category', 'product_tax', 'variations', 'variations.product_variation', 'variations.group_prices'
+            ])
+            ->first();
+
+        $price_groups = SellingPriceGroup::where('business_id', $business_id)->pluck('name', 'id');
+
+        $allowed_group_prices = [];
+        foreach ($price_groups as $key => $value) {
+            if (auth()->user()->can('selling_price_group.' . $key)) {
+                $allowed_group_prices[$key] = $value;
+            }
+        }
+
+        $group_price_details = [];
+
+        foreach ($product->variations as $variation) {
+            foreach ($variation->group_prices as $group_price) {
+                $group_price_details[$variation->id][$group_price->price_group_id] = $group_price->price_inc_tax;
+            }
+        }
+
+        $rack_details = $this->productUtil->getRackDetails($business_id, $id, true);
+
+        return view('product.view-detailWithSale-modal')->with(compact(
+            'product',
+            'rack_details',
+            'allowed_group_prices',
+            'group_price_details',
+            'query'
+        ));
+    }
+    /**
      * View Color Detail of Product 
      * 
      **/
