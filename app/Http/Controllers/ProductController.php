@@ -3164,7 +3164,7 @@ class ProductController extends Controller
                 'u.short_name as unit',
                 DB::raw('((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
             )
-            ->orderBy('p.name', 'ASC')
+            ->orderBy('transaction_date', 'DESC')
             // ->orderBy('t.invoice_no','DESC')
             ->groupBy('transaction_sell_lines.id');
         // dd($query->first());

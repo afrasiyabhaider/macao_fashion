@@ -1777,7 +1777,8 @@ class ReportController extends Controller
                 ->setRowAttr([
                     'data-href' => function ($row) {
                         if (auth()->user()->can("product.view")) {
-                            return  action('ProductController@view', [$row->product()->first()->id]);
+                            return  action('ProductController@viewProductDetailWithSale', [$row->product()->first()->id]);
+                            // return  action('ProductController@view', [$row->product()->first()->id]);
                         } else {
                             return '';
                         }
