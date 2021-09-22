@@ -402,7 +402,7 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
 
     /***
      *  Data Migrating Routes
-     * 
+     *
      ***/
 
     Route::get('location-transfer-details/data', 'DataMigrationController@location_transfer_detail_data');
@@ -428,7 +428,7 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
 
     /**
      * Site Images for banners
-     *  
+     *
      **/
     Route::get('website/banner/images', 'SiteImageController@create');
     Route::get('website/page/images', 'SiteImageController@create_page');
@@ -474,10 +474,9 @@ Route::get('force-logout', function () {
     dd("Logged Out");
 });
 
-
 /**
  *  WebSite Routes Starts from here
- * 
+ *
  */
 
 // Route::get('/', 'HomeController@index')->name('site.home');
@@ -505,15 +504,15 @@ Route::group(['prefix' => 'cart'], function () {
     Route::get('/empty', 'website\CartController@emptyCart');
 });
 /**
- * Contact Us 
- * 
+ * Contact Us
+ *
  **/
 Route::get('/contact-us', 'website\SiteController@contactUs');
 Route::post('/contact-us', 'website\SiteController@sendMail');
 
 /**
  * Viva Payments
- *  
+ *
  **/
 Route::get('checkout', function ()
 {

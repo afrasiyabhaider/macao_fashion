@@ -267,7 +267,7 @@ class ProductController extends Controller
                 })
                 ->editColumn('type', '@lang("lang_v1." . $type)')
                 ->editColumn('purchase_price', function ($row) {
-                    if (auth()->user()->getRoleNameAttribute() != 'Admin' && auth()->user()->getRoleNameAttribute() != 'admin lalouviere' && auth()->user()->getRoleNameAttribute() != '	
+                    if (auth()->user()->getRoleNameAttribute() != 'Admin' && auth()->user()->getRoleNameAttribute() != 'admin lalouviere' && auth()->user()->getRoleNameAttribute() != '
                     ADMIN DOUAIRE' && auth()->user()->getRoleNameAttribute() != 'ADMIN BELLE ILE') {
                         return '-';
                     } else {
@@ -512,7 +512,7 @@ class ProductController extends Controller
                 ->editColumn('type', '@lang("lang_v1." . $type)')
                 ->editColumn('purchase_price', function ($row) {
 
-                    if (auth()->user()->getRoleNameAttribute() != 'Admin' && auth()->user()->getRoleNameAttribute() != 'admin lalouviere' && auth()->user()->getRoleNameAttribute() != '	
+                    if (auth()->user()->getRoleNameAttribute() != 'Admin' && auth()->user()->getRoleNameAttribute() != 'admin lalouviere' && auth()->user()->getRoleNameAttribute() != '
                     ADMIN DOUAIRE' && auth()->user()->getRoleNameAttribute() != 'ADMIN BELLE ILE') {
                         return '-';
                     } else {
@@ -1710,7 +1710,7 @@ class ProductController extends Controller
                     $product[$i]->sub_category_id = $request->input('sub_category');
                 }
                 $product[$i]->refference = $request->input('refference');
-                
+
                 $product[$i]->color_id = $request->input('color');
                 // $product[$i]->size_id = $size->parent_id;
                 // $product[$i]->sub_size_id = $request->input('size');
@@ -1938,13 +1938,13 @@ class ProductController extends Controller
         return redirect('products')->with('status', $output);
     }
     /**
-     * Update Products on website 
-     * 
+     * Update Products on website
+     *
      **/
     public function update_on_website($product_name)
     {
         try {
-            
+
             $products = WebsiteProducts::join('products as p', 'p.refference', '=', 'website_products.refference')
                 ->where('p.name',$product_name)
                 ->join('variation_location_details as vld', 'vld.product_id', '=', 'p.id')
@@ -2782,7 +2782,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Loads quick add product modal. 
+     * Loads quick add product modal.
      *
      * @return \Illuminate\Http\Response
      */
@@ -3088,8 +3088,8 @@ class ProductController extends Controller
         ));
     }
     /**
-     * View Product Detail with Sales 
-     * 
+     * View Product Detail with Sales
+     *
      **/
     /**
      * Shows product purchase report
@@ -3254,8 +3254,8 @@ class ProductController extends Controller
         ));
     }
     /**
-     * View Color Detail of Product 
-     * 
+     * View Color Detail of Product
+     *
      **/
     public function viewColorDetail($name,$from_date=null, $to_date=null)
     {
@@ -3395,7 +3395,7 @@ class ProductController extends Controller
     }
     /**
      * View Color Detail of Product Stock Report
-     * 
+     *
      **/
     public function viewColorDetailStock($name,$from_date=null, $to_date=null,$location_id=0)
     {
@@ -3430,17 +3430,17 @@ class ProductController extends Controller
             // DB::raw("(SELECT SUM(quantity) FROM transaction_sell_lines LEFT JOIN transactions ON transaction_sell_lines.transaction_id=transactions.id WHERE transactions.status='final'  AND
             //     transaction_sell_lines.product_id=products.id) as total_sold"),
 
-            DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
+            DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions
                         JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
-                        WHERE transactions.status='final' AND transactions.type='sell' 
+                        WHERE transactions.status='final' AND transactions.type='sell'
                         AND TSL.variation_id=variations.id) as total_qty_sold"),
-            DB::raw("(SELECT SUM(IF(transactions.type='sell_transfer', TSL.quantity, 0) ) FROM transactions 
+            DB::raw("(SELECT SUM(IF(transactions.type='sell_transfer', TSL.quantity, 0) ) FROM transactions
                         JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
-                        WHERE transactions.status='final' AND transactions.type='sell_transfer' 
+                        WHERE transactions.status='final' AND transactions.type='sell_transfer'
                         AND (TSL.variation_id=variations.id)) as total_transfered"),
-            DB::raw("(SELECT SUM(IF(transactions.type='stock_adjustment', SAL.quantity, 0) ) FROM transactions 
+            DB::raw("(SELECT SUM(IF(transactions.type='stock_adjustment', SAL.quantity, 0) ) FROM transactions
                         JOIN stock_adjustment_lines AS SAL ON transactions.id=SAL.transaction_id
-                        WHERE transactions.status='received' AND transactions.type='stock_adjustment' 
+                        WHERE transactions.status='received' AND transactions.type='stock_adjustment'
                         AND (SAL.variation_id=variations.id)) as total_adjusted"),
             DB::raw("SUM(vld.qty_available) as stock"),
             'variations.sub_sku as sku',
@@ -3501,17 +3501,17 @@ class ProductController extends Controller
                 // DB::raw("(SELECT SUM(quantity) FROM transaction_sell_lines LEFT JOIN transactions ON transaction_sell_lines.transaction_id=transactions.id WHERE transactions.status='final' AND
                 //     transaction_sell_lines.product_id=products.id) as total_sold"),
 
-                DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
+                DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions
                         JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
-                        WHERE transactions.status='final' AND transactions.type='sell'  
+                        WHERE transactions.status='final' AND transactions.type='sell'
                         AND TSL.variation_id=variations.id) as sell_qty"),
-                DB::raw("(SELECT SUM(IF(transactions.type='sell_transfer', TSL.quantity, 0) ) FROM transactions 
+                DB::raw("(SELECT SUM(IF(transactions.type='sell_transfer', TSL.quantity, 0) ) FROM transactions
                         JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
-                        WHERE transactions.status='final' AND transactions.type='sell_transfer'  
+                        WHERE transactions.status='final' AND transactions.type='sell_transfer'
                         AND (TSL.variation_id=variations.id)) as total_transfered"),
-                DB::raw("(SELECT SUM(IF(transactions.type='stock_adjustment', SAL.quantity, 0) ) FROM transactions 
+                DB::raw("(SELECT SUM(IF(transactions.type='stock_adjustment', SAL.quantity, 0) ) FROM transactions
                         JOIN stock_adjustment_lines AS SAL ON transactions.id=SAL.transaction_id
-                        WHERE transactions.status='received' AND transactions.type='stock_adjustment'  
+                        WHERE transactions.status='received' AND transactions.type='stock_adjustment'
                         AND (SAL.variation_id=variations.id)) as total_adjusted"),
                 DB::raw("SUM(vld.qty_available) as stock"),
                 'variations.sub_sku as sku',
@@ -4066,7 +4066,7 @@ class ProductController extends Controller
 
                         /**
                          * ---------------IMPORTANT------------------
-                         * 
+                         *
                          * If Uncommented below 'if()' and other comments of location
                          * Id then product will not be save as 0 qty
                          *
@@ -4080,11 +4080,11 @@ class ProductController extends Controller
                             $oldPurchaseLine = VariationLocationDetails::where("location_id", $user_location_id)->where("variation_id", $objPurchaseLine->variation_id)->where("product_id", $productId)->update(['location_id' => $business_location_id]);
                         } elseif (!empty($objOldPurchaseLine)) {
                             // dd($arr,$location_id);
-                            // PL with new bussiness location id 
+                            // PL with new bussiness location id
                             $objNewPurchaseLine = $objOldPurchaseLine;
                             $qtyForPurchaseLine = $productQty;
                             // $qtyForPurchaseLine = $productQty + $objNewPurchaseLine->quantity;
-                            // PL with exisiting  location id 
+                            // PL with exisiting  location id
                             $objOldPurchaseLine = PurchaseLine::join('transactions as t', 't.id', '=', 'purchase_lines.transaction_id')->where("purchase_lines.product_id", $productId)->first();
                             // ->where("t.location_id", $user_location_id)
 
@@ -4094,7 +4094,7 @@ class ProductController extends Controller
                             $oldPurchaseLine = PurchaseLine::where("transaction_id", $objOldPurchaseLine->transaction_id)->where("product_id", $objOldPurchaseLine->product_id)->where("variation_id", $objOldPurchaseLine->variation_id)->update(['quantity' => $LeftQty]); //Update OLD ONE AND THEN NEW ONE
                             $oldPurchaseLine = PurchaseLine::where("transaction_id", $objNewPurchaseLine->transaction_id)->where("product_id", $objNewPurchaseLine->product_id)->where("variation_id", $objNewPurchaseLine->variation_id)->update(['quantity' => $qtyForPurchaseLine]);
 
-                            //Update Variation_location_details Qty Remaining 
+                            //Update Variation_location_details Qty Remaining
                             $old_qty_of_product = VariationLocationDetails::where("location_id", $user_location_id)->where("variation_id", $objOldPurchaseLine->variation_id)->where("product_id", $objOldPurchaseLine->product_id);
 
                             // $new_transfer_Qty = $old_qty_of_product->first()->qty_available + $productQty;
@@ -4108,7 +4108,12 @@ class ProductController extends Controller
                             // Commented below for checking
                             $after_transfer = VariationLocationDetails::where("location_id", $business_location_id)->where("variation_id", $objNewPurchaseLine->variation_id)->where("product_id", $objNewPurchaseLine->product_id);
 
-                            $before_transfer_qty = VariationLocationDetails::where("location_id", $business_location_id)->where("variation_id", $objNewPurchaseLine->variation_id)->where("product_id", $objNewPurchaseLine->product_id)->first()->qty_available;
+                            // dd($objNewPurchaseLine,$objNewPurchaseLine->product_id);
+
+                            $before_transfer_qty = VariationLocationDetails::where("location_id", $business_location_id)->where("variation_id", $objNewPurchaseLine->variation_id)->where("product_id", $objNewPurchaseLine->product_id)->first();
+                            if($before_transfer_qty){
+                                $before_transfer_qty = $before_transfer_qty->qty_available;
+                            }
 
                             $new_qty = $before_transfer_qty + $productQty;
 
@@ -4129,7 +4134,7 @@ class ProductController extends Controller
                         $location_transfer_detail->product_variation_id = $objOldPurchaseLine->variation_id;
 
                         $location_transfer_detail->quantity = (float)$qtyForPurchaseLine;
-                        
+
                         $location_transfer_detail->transfered_on = Carbon::now();
 
                         $location_transfer_detail->save();
@@ -4286,13 +4291,13 @@ class ProductController extends Controller
                             $objOldPurchaseLine = $purchase_line;
                         }
                         $purchase_line->quantity = $qtyForPurchaseLine;
-                        // dd($purchase_line); 
+                        // dd($purchase_line);
                         // dd("Hello");
                         $purchase_line->save();
                         //Adjust stock over selling if found
                         // $this->productUtil->adjustStockOverSelling($transaction);
 
-                        //adjust it 
+                        //adjust it
                         if ($isPurchaseLineExist) {
                             $oldPurchaseLine = PurchaseLine::where("id", $objOrignalPurchaseLine->id)->update(['quantity' => $LeftQty]);
                             $oldPurchaseLine = PurchaseLine::where("transaction_id", $objOldPurchaseLine->transaction_id)->where("product_id", $product->id)->update(['quantity' => $qtyForPurchaseLine]);
@@ -4302,12 +4307,12 @@ class ProductController extends Controller
                             $oldPurchaseLine = PurchaseLine::where("transaction_id", $objOldPurchaseLine->transaction_id)->where("product_id", $product->id)->update(['quantity' => $qtyForPurchaseLine]);
                         }
                         // dd($business_location_id,$LeftQty,$purchase_line,$qty_remaining,$qtyForPurchaseLine);
-                        //Update Variation_location_details Qty Remaining 
+                        //Update Variation_location_details Qty Remaining
                         // dd("Hello");
                         // dd($LeftQty);
                         /**
-                         * Qty for Location is Updating here 
-                         * 
+                         * Qty for Location is Updating here
+                         *
                          **/
                         $oldPurchaseLine = VariationLocationDetails::where("location_id", $user_location_id)->where("variation_id", $objOrignalPurchaseLine->variation_id)->where("product_id", $product->id)->update(['qty_available' => $LeftQty]);
 
@@ -4456,7 +4461,7 @@ class ProductController extends Controller
         $brands = Brands::where('business_id', $business_id)->pluck('name', 'id');
         /**
          *Getting Names of products
-         *  
+         *
          **/
         $ProductNameCategory = ProductNameCategory::where('business_id', $business_id)->pluck('name', 'id', 'row_no');
         $pnc = array();
@@ -4541,8 +4546,8 @@ class ProductController extends Controller
             ->with(compact('categories', 'suppliers', 'noRefferenceProducts', 'brands', 'refferenceCount', 'pnc', 'suppliers', 'sizes', 'sub_sizes', 'colors', 'units', 'taxes', 'barcode_types', 'default_profit_percent', 'tax_attributes', 'barcode_default', 'business_locations', 'duplicate_product', 'sub_categories', 'rack_details', 'selling_price_group_count', 'module_form_parts','dd_sizes'));
     }
     /**
-     * Add Color by Product Id 
-     * 
+     * Add Color by Product Id
+     *
      **/
     public function addColor($id)
     {
@@ -4580,7 +4585,7 @@ class ProductController extends Controller
         $brands = Brands::where('business_id', $business_id)->pluck('name', 'id');
         /**
          *Getting Names of products
-         *  
+         *
          **/
         $ProductNameCategory = ProductNameCategory::where('business_id', $business_id)->pluck('name', 'id', 'row_no');
         $pnc = array();
@@ -4811,7 +4816,7 @@ class ProductController extends Controller
                 // $product_racks = $request->get('product_racks', null);
                 // if (!empty($product_racks)) {
                 //     $this->productUtil->addRackDetails($business_id, $product->id, $product_racks);
-                // } 
+                // }
                 if ($cRef != $tRef) {
                     $tempReff++;
                     $tRef = $cRef;
@@ -4869,7 +4874,7 @@ class ProductController extends Controller
         ));
     }
     /**
-     *  Add Product in VLD (Variation Location Detail) for specific location 
+     *  Add Product in VLD (Variation Location Detail) for specific location
      *  from specific product's barcode
      *
      * */
@@ -4912,7 +4917,7 @@ class ProductController extends Controller
     }
     /**
      *  Add Date on Null in VLD
-     * 
+     *
      **/
     public function addDateinNull()
     {
@@ -4929,8 +4934,8 @@ class ProductController extends Controller
         dd($count . ' product\'s updated at date is saved into VLD');
     }
     /**
-     * Show on Top Of POS 
-     * 
+     * Show on Top Of POS
+     *
      **/
     public function showPos(Request $request){
         // dd($request);
@@ -4964,8 +4969,8 @@ class ProductController extends Controller
         return redirect()->back()->with('status', $output);
     }
     /**
-     * Show on Bottom Of POS 
-     * 
+     * Show on Bottom Of POS
+     *
      **/
     public function showBottomPos(Request $request){
         // dd($request);
