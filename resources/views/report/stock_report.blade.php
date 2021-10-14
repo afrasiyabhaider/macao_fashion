@@ -110,7 +110,7 @@
             </div> --}}
             <div class="col-md-3">
                 <div class="form-group">
-            
+
                     {!! Form::label('product_sr_date_filter', __('report.date_range') . ':') !!}
                     {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' =>
                     'form-control', 'id' => 'product_sr_date_filter', 'readonly']); !!}
@@ -149,7 +149,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             @include('report.partials.grouped_stock_report_table')
-                            
+
                         </div>
                     </div>
                 </div>
@@ -259,8 +259,8 @@
         //         var i = 0;
         //         $('.row-select:checked').each(function () {
         //             selected_rows[i++] = $(this).val();
-        //         }); 
-                
+        //         });
+
         //         if(selected_rows.length > 0){
         //             $('input#selected_products_bulkPrint').val(selected_rows);
         //             // swal({
@@ -276,7 +276,7 @@
         //         // } else{
         //         //     $('input#selected_products_bulkPrint').val('');
         //         //     swal('@lang("lang_v1.no_row_selected")');
-        //         }    
+        //         }
         //     });
 
             /**
@@ -296,7 +296,7 @@
                     // console.log(selected_rows);
                     // console.log(print_qty);
                     // return 0;
-                }); 
+                });
                 if(selected_rows.length > 0){
                     $('input#selected_products_bulkPrint').val(selected_rows);
                     $('input#selected_products_bulkPrint_qty').val(print_qty);
@@ -315,7 +315,7 @@
                 } else{
                     $('input#selected_products_bulkPrint').val('');
                     swal('@lang("lang_v1.no_row_selected")');
-                }    
+                }
             })
 
             // $(document).on('click', '#bulkPrint-selected', function(e){
@@ -330,10 +330,10 @@
             //         // {
             //             selected_rows[i++] = $(this).val()+"@"+selectedQty;
             //             // }
-            //         }); 
+            //         });
             //         // return 0;
             //     // console.log(selected_rows);
-                
+
             //     if(selected_rows.length > 0){
             //         $('input#selected_products_bulkPrint').val(selected_rows);
             //         // swal({
@@ -343,14 +343,14 @@
             //         //     dangerMode: true,
             //         // }).then((willDelete) => {
             //         //     if (willDelete) {
-            //                 $('#unknownDiscountModal').modal('show'); 
+            //                 $('#unknownDiscountModal').modal('show');
             //                 $('form#bulkPrint_form').submit();
             //         //     }
             //         // });
             //     } else{
             //         $('input#selected_products_bulkPrint').val('');
             //         swal('@lang("lang_v1.no_row_selected")');
-            //     }    
+            //     }
             // })
 
             function TransferSelected()
@@ -360,7 +360,7 @@
                 if(transferBussiness == "" || transferBussiness == undefined)
                 {
                     alert("Please Choose Bussiness First to Transfer ");return(false);
-                } 
+                }
                 $("#bussiness_bulkTransfer").val(transferBussiness);
                 $("#current_location").val($("#location_id").val());
                 $('form#bulkTransfer_form').submit();
@@ -382,12 +382,12 @@
                     }
                     // console.log(selectedQty +'    '+$(this).val() +'   '+selectedLocation+'   '+selectedLocationId);
                 });
-                
-                
+
+
                 if(selected_rows.length > 0){
-                    $('#unknownDiscountModal').modal('show'); 
+                    $('#unknownDiscountModal').modal('show');
                     $('input#selected_products_bulkTransfer').val(selected_rows);
-                    
+
                     // swal({
                     //     title: LANG.sure,
                     //     icon: "warning",
@@ -396,14 +396,14 @@
                     // }).then((willDelete) => {
                     //     if (willDelete) {
                     //     // If uncommented it will make issue in product transfer
-                    //         $('#unknownDiscountModal').modal('show'); 
+                    //         $('#unknownDiscountModal').modal('show');
                     //         $('form#bulkTransfer_form').submit();
                     //     }
                     // });
                 } else{
                     $('input#selected_products_bulkTransfer').val('');
                     swal('@lang("lang_v1.no_row_selected")');
-                }    
+                }
             })
             $(document).on('click', '#add_to_website_button', function(e){
                 e.preventDefault();
@@ -419,15 +419,15 @@
                 });
                 // console.log(selected_rows);
                 // return 0;
-                
-                
+
+
                 if(selected_rows.length > 0){
                     $('input#product_id').val(selected_rows);
                     $("form#add_to_website").submit();
                 } else{
                     $('input#product_id').val('');
                     swal('@lang("lang_v1.no_row_selected")');
-                }    
+                }
             })
             $(document).on('click', '#show_pos_button', function(e){
                 e.preventDefault();
@@ -443,15 +443,15 @@
                 });
                 // console.log(selected_rows);
                 // return 0;
-                
-                
+
+
                 if(selected_rows.length > 0){
                     $('input#product_id').val(selected_rows);
                     $("form#show_pos").submit();
                 } else{
                     $('input#product_id').val('');
                     swal('@lang("lang_v1.no_row_selected")');
-                }    
+                }
             })
             $(document).on('click', '#show_bottom_pos_button', function(e){
                 e.preventDefault();
@@ -467,15 +467,15 @@
                 });
                 // console.log(selected_rows);
                 // return 0;
-                
-                
+
+
                 if(selected_rows.length > 0){
                     $('input#product_id').val(selected_rows);
                     $("form#show_bottom_pos").submit();
                 } else{
                     $('input#product_id').val('');
                     swal('@lang("lang_v1.no_row_selected")');
-                }    
+                }
             })
 </script>
 @endsection
