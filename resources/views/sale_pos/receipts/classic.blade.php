@@ -196,7 +196,7 @@
 <div class="row">
 	<div class="col-xs-12">
 		<br />
-		<table class="table table-responsive table-bordered" style="padding: 0">
+		<table class="table table-responsive table-bordered table-condensed" style="padding: 0">
 			<thead>
 				<tr>
 					<th>Sr</th>
@@ -282,7 +282,7 @@
 
 		<table class="table table-condensed  ">
 			<thead>
-				<th style="width: 40%">M.P</th>
+				<th style="width: 50%">M.P</th>
 				{{-- <th>Amount</th> --}}
 				<!--<th>Date</th>-->
 				@if(!empty($receipt_details->payments))
@@ -300,9 +300,12 @@
 				{{-- </tr> --}}
 				@else
 				{{-- <tr> --}}
-				<td>{{$payment['method']}}</td>
+					<td>
+						{{$payment['method']}}
+						<br>
+					</td>
 				{{-- <td>{{$payment['amount']}}</td> --}}
-				<!--<td>{{$payment['date']}}</td>-->
+				{{-- <!--<td>{{$payment['date']}}</td>--> --}}
 				{{-- </tr> --}}
 				@endif
 
@@ -355,7 +358,7 @@
 			<table class="table table-condensed">
 				<tbody>
 					<tr>
-						<th style="width:40%">
+						<th style="width:45%">
 							{!! $receipt_details->subtotal_label !!}
 						</th>
 						<td>
@@ -387,17 +390,17 @@
 							(-) {{$receipt_details->discounted_amount}}
 						</td>
 					</tr>
-					@endif
-					@if ($receipt_details->discount_mode == "fixed")
+					{{-- @if ($receipt_details->discount_mode == "fixed") --}}
 						<tr>
 							<th>
 								Mode
 							</th>
 
-							<td>
+							<td class="text-uppercase">
 								{{ $receipt_details->discount_mode }}
 							</td>
 						</tr>   
+					{{-- @endif --}}
 					@endif
 
 					<!-- Tax -->
