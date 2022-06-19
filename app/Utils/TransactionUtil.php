@@ -1229,7 +1229,7 @@ class TransactionUtil extends Util
                         if ($value['method'] == 'cash') {
                             $output['payments'][] =
                                 [
-                                    'method' => trans("lang_v1.cash") . ($value['is_return'] == 1 ? ' (' . trans("lang_v1.change_return") . ')(-)' : ''),
+                                    'method' => trans("lang_v1.cash") . (($value['is_return'] == 1 && $value['amount'] > 0) ? ' (' . trans("lang_v1.change_return") . ')(-)' : ''),
                                     'amount' => $this->num_f($value['amount'], $show_currency, $business_details),
                                     'method_name' => $value['method'],
                                     'date' => $this->format_date($value['paid_on'], false, $business_details)
