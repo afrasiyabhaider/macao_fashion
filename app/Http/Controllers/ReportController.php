@@ -4394,7 +4394,7 @@ class ReportController extends Controller
             return Datatables::of($query)
                 ->editColumn('refference', function ($row) {
                     if ($row->refference) {
-                        return $refference;
+                        return $row->refference;
                     }else{
                         return '<span>-</span>';
                     }
