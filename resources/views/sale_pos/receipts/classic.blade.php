@@ -377,7 +377,7 @@
 
 					<!-- Discount -->
 
-					@if( !empty($receipt_details->discount) )
+					@if( !empty($receipt_details->discounted_amount) )
 					<tr>
 						<th>
 							{!! $receipt_details->discount_label !!}
