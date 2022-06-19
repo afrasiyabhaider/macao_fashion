@@ -397,7 +397,7 @@
 							</th>
 
 							<td class="text-uppercase">
-								{{ $receipt_details->discount_mode }}
+								{{ ($receipt_details->discount_mode = 'fixed' )? 'Unknown' : $receipt_details->discount_mode  }}
 							</td>
 						</tr>   
 					{{-- @endif --}}
