@@ -388,7 +388,7 @@
 						</td>
 					</tr>
 					@endif
-					@if ($receipt_details->discount_type == "fixed")
+					@if ($receipt_details->discount_mode == "fixed")
 						<tr>
 							<th>
 								Mode
