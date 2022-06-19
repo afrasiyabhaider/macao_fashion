@@ -4199,7 +4199,7 @@ class ReportController extends Controller
                     return Carbon::parse($row->product_updated_at)->format('d-M-Y H:i');
                 })
                 ->addColumn('size', function ($row) {
-                    return $row->product()->first()->sub_size()->first()['name'];
+                    return $row->product()->first()->sub_size()->first()['name'] ? $row->product()->first()->sub_size()->first()['name'] : '-' ;
                 })
                 ->editColumn('invoice_no', function ($row) {
                     return '<a data-href="' . action('SellController@show', [$row->transaction_id])
