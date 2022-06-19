@@ -29,7 +29,7 @@
 			{{-- Barcode --}}
 			<p>
 				<img class="center-block margin-top"
-					src="data:image/png;base64,{{DNS1D::getBarcodePNG($receipt_details->invoice_no, 'C128', 2,40,array(55, 55, 55), false)}}">
+					src="data:image/png;base64,{{DNS1D::getBarcodePNG($receipt_details->invoice_no, 'C128', 3,40,array(55, 55, 55), false)}}">
 			</p>
 			@php
 			$barcodeArr = str_split($receipt_details->invoice_no, 1);
@@ -123,8 +123,11 @@
 
 			<span class="pull-center text-center col-xs-12 col-md-12">
 				<b>{{$receipt_details->date_label}}</b>
-				{{date("d/m/Y  H:i:s",strtotime($receipt_details->invoice_date))}} <span>
-					| <b>Operator : </b> {{$receipt_details->user}}
+				{{date("d/m/Y  H:i:s",strtotime($receipt_details->invoice_date))}} 
+				
+				<br>
+				<span>
+					<b>Operator : </b> {{$receipt_details->user}}
 				</span>
 
 				@if(!empty($receipt_details->serial_no_label) || !empty($receipt_details->repair_serial_no))
@@ -193,13 +196,13 @@
 <div class="row">
 	<div class="col-xs-12">
 		<br />
-		<table class="table table-responsive table-bordered">
+		<table class="table table-responsive table-bordered" style="padding: 0">
 			<thead>
 				<tr>
 					<th>Sr</th>
 					<th>{{$receipt_details->table_product_label}}</th>
 					<th>Qty</th>
-					<th>Orig Price</th>
+					<th>PDO</th>
 					<th>Disc%</th>
 					<th>Price</th>
 					{{-- <th>Disc</th> --}}
@@ -279,14 +282,16 @@
 
 		<table class="table table-condensed  ">
 			<thead>
-				<th style="width: 40%">Mode</th>
+				<th style="width: 40%">M.P</th>
 				{{-- <th>Amount</th> --}}
 				<!--<th>Date</th>-->
 				@if(!empty($receipt_details->payments))
 				@foreach($receipt_details->payments as $payment)
 				@if($payment['method_name'] == 'gift_card' || $payment['method'] == 'coupon')
 				{{-- <tr> --}}
-				<td>{{$payment['method']}} <br />
+				<td>
+					{{$payment['method']}} 
+					<br />
 					<img class="center-block margin-top"
 						src="data:image/png;base64,{{DNS1D::getBarcodePNG($payment['barcode'], 'C128', 2,40,array(55, 55, 55), true)}}">
 				</td>
@@ -371,6 +376,7 @@
 					@endif
 
 					<!-- Discount -->
+
 					@if( !empty($receipt_details->discount) )
 					<tr>
 						<th>
@@ -378,18 +384,20 @@
 						</th>
 
 						<td>
-							(-) {{$receipt_details->discount}}
+							(-) {{$receipt_details->discounted_amount}}
 						</td>
 					</tr>
-					<tr>
-						<th>
-							Disc Mode
-						</th>
+					@endif
+					@if ($receipt_details->discount_type == "fixed")
+						<tr>
+							<th>
+								Mode
+							</th>
 
-						<td>
-							Unknown
-						</td>
-					</tr>
+							<td>
+								{{ $receipt_details->discount_mode }}
+							</td>
+						</tr>   
 					@endif
 
 					<!-- Tax -->

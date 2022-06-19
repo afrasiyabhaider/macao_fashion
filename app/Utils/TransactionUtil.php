@@ -1098,8 +1098,10 @@ class TransactionUtil extends Util
         $output['subtotal_unformatted'] = ($transaction->total_before_tax != 0) ? $transaction->total_before_tax : 0;
 
         //Discount
+        $output['discounted_amount'] = $transaction->total_before_tax - $transaction->final_total;
         $output['line_discount_label'] = $invoice_layout->discount_label;
         $output['discount_label'] = $invoice_layout->discount_label;
+        $output['discount_mode'] = $transaction->discount_type;
         $output['discount_label'] .= ($transaction->discount_type == 'percentage') ? $transaction->discount_amount . '% :' : '';
         // $output['discount_label'] .= ($transaction->discount_type == 'percentage') ? ' (' . $transaction->discount_amount . '%) :' : '';
 
