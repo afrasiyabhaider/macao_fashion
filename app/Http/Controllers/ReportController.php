@@ -4392,6 +4392,13 @@ class ReportController extends Controller
             }
 
             return Datatables::of($query)
+                ->editColumn('refference', function ($row) {
+                    if ($row->refference) {
+                        return $refference;
+                    }else{
+                        return '<span>-</span>';
+                    }
+                })
                 ->editColumn('product_name', function ($row) {
                     $product_name = $row->product_name;
                     if ($row->product_type == 'variable') {
