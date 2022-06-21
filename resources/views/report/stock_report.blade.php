@@ -28,17 +28,18 @@
                             {{-- @endif --}}
                             @endforeach
                             {{-- {{dd(collect($newBusiness_locations))}} --}}
-                            {{-- <select name="category_id" id="transferBusiness" class="form-control select2" style="width:100%">
+                            {{-- <select name="category_id" id="transferBusiness" class="form-control select2"
+                                style="width:100%">
                                 <optgroup>
                                     <option value="all">{{__('lang_v1.all')}}</option>
-                            @foreach ($business_locations as $key=>$item)
-                            @if ($key != 1 && $item != "Main Shop")
-                            <option value="{{$key}}">
-                                {{$item}}
-                            </option>
-                            @endif
-                            @endforeach
-                            </optgroup>
+                                    @foreach ($business_locations as $key=>$item)
+                                    @if ($key != 1 && $item != "Main Shop")
+                                    <option value="{{$key}}">
+                                        {{$item}}
+                                    </option>
+                                    @endif
+                                    @endforeach
+                                </optgroup>
                             </select> --}}
                             {!! Form::select('category_id', collect($newBusiness_locations), null, ['class' =>
                             'form-control select2', 'style' => 'width:100%', 'id' => 'transferBussiness', 'placeholder'
@@ -91,11 +92,12 @@
                 </div>
             </div>
             {{-- <div class="col-md-3">
-                    <div class="form-group">
-                        {!! Form::label('unit',__('product.unit') . ':') !!}
-                        {!! Form::select('unit', $units, null, ['placeholder' => __('messages.all'), 'class' => 'form-control select2', 'style' => 'width:100%']); !!}
-                    </div>
-                </div> --}}
+                <div class="form-group">
+                    {!! Form::label('unit',__('product.unit') . ':') !!}
+                    {!! Form::select('unit', $units, null, ['placeholder' => __('messages.all'), 'class' =>
+                    'form-control select2', 'style' => 'width:100%']); !!}
+                </div>
+            </div> --}}
             {{-- <div class="row" id="location_filter">
                 <div class="form-group col-md-3">
                     {!! Form::label('from_date', ' From Date:') !!}
@@ -156,8 +158,8 @@
                 <div class="tab-pane" id="psr_detailed_tab">
                     <div class="row" style="margin-bottom: 20px">
                         <div class="col-12">
-                            <form action="{{action('ProductController@showPos')}}" method="post" class="ml-5" style="margin-left: 20px"
-                                id="show_pos">
+                            <form action="{{action('ProductController@showPos')}}" method="post" class="ml-5"
+                                style="margin-left: 20px" id="show_pos">
                                 @csrf
                                 <input type="hidden" name="product_id" id="product_id">
                                 <button type="submit" class="btn btn-danger pull-left" id="show_pos_button">
@@ -165,8 +167,8 @@
                                     Show Top in POS
                                 </button>
                             </form>
-                            <form action="{{action('ProductController@showBottomPos')}}" method="post" class="ml-5" style="margin-left: 20px"
-                                id="show_bottom_pos">
+                            <form action="{{action('ProductController@showBottomPos')}}" method="post" class="ml-5"
+                                style="margin-left: 20px" id="show_bottom_pos">
                                 @csrf
                                 <input type="hidden" name="product_id" id="product_id">
                                 <button type="submit" class="btn btn-warning pull-left" id="show_bottom_pos_button">
@@ -176,8 +178,9 @@
                             </form>
                             {!! Form::open(['url' => action('ProductController@massBulkPrint'), 'method' => 'post', 'id'
                             =>
-                            'bulkPrint_form' ]) !!}
-                            {{-- {!! Form::submit('Print Selected', array('class' => 'btn btn-md btn-warning', 'id' => 'bulkPrint-selected')) !!} --}}
+                            'bulkPrint_form','target'=>"_blank" ]) !!}
+                            {{-- {!! Form::submit('Print Selected', array('class' => 'btn btn-md btn-warning', 'id' =>
+                            'bulkPrint-selected')) !!} --}}
                             {!! Form::hidden('selected_products_bulkPrint', null, ['id' =>
                             'selected_products_bulkPrint']); !!}
                             {!! Form::hidden('selected_products_bulkPrint_qty', null, ['id' =>
@@ -208,7 +211,8 @@
                             'selected_products_qty_bulkTransfer']); !!}
                             {!! Form::hidden('bussiness_bulkTransfer', null, ['id' => 'bussiness_bulkTransfer']); !!}
                             {!! Form::hidden('current_location', null, ['id' => 'current_location']); !!}
-                            {{-- {!! Form::submit(' Transfer Selected', array('class' => 'btn btn-warning', 'id' => 'bulkTransfer-selected')) !!} --}}
+                            {{-- {!! Form::submit(' Transfer Selected', array('class' => 'btn btn-warning', 'id' =>
+                            'bulkTransfer-selected')) !!} --}}
                             <button type="submit" class="btn btn-warning" id="bulkTransfer-selected">
                                 <i class="fa fa-random"></i>
                                 Transfer Selected
@@ -253,31 +257,6 @@
     $(document).on('shown.bs.modal', 'div.view_product_modal, div.view_modal', function(){
             __currency_convert_recursively($(this));
         });
-        // $(document).on('click', '#bulkPrint-selected', function(e){
-        //         e.preventDefault();
-        //         var selected_rows = [];
-        //         var i = 0;
-        //         $('.row-select:checked').each(function () {
-        //             selected_rows[i++] = $(this).val();
-        //         });
-
-        //         if(selected_rows.length > 0){
-        //             $('input#selected_products_bulkPrint').val(selected_rows);
-        //             // swal({
-        //             //     title: LANG.sure,
-        //             //     icon: "warning",
-        //             //     buttons: true,
-        //             //     dangerMode: true,
-        //             // }).then((willDelete) => {
-        //             //     if (willDelete) {
-        //                     $('form#bulkPrint_form').submit();
-        //         //         }
-        //         //     });
-        //         // } else{
-        //         //     $('input#selected_products_bulkPrint').val('');
-        //         //     swal('@lang("lang_v1.no_row_selected")');
-        //         }
-        //     });
 
             /**
             * Desired Qty of Barcodes
@@ -302,56 +281,13 @@
                     $('input#selected_products_bulkPrint_qty').val(print_qty);
                     $('input#printing_location_id').val($("#location_id").val());
                     $("#location_id").val(1);
-                    // swal({
-                    //     title: LANG.sure,
-                    //     icon: "warning",
-                    //     buttons: true,
-                    //     dangerMode: true,
-                    // }).then((willDelete) => {
-                    //     if (willDelete) {
-                            $('form#bulkPrint_form').submit();
-                    //     }
-                    // });
+
+                    $('form#bulkPrint_form').submit();
                 } else{
                     $('input#selected_products_bulkPrint').val('');
                     swal('@lang("lang_v1.no_row_selected")');
                 }
             })
-
-            // $(document).on('click', '#bulkPrint-selected', function(e){
-            //     e.preventDefault();
-            //     var selected_rows = [];
-            //     var selected_rows_qty = [];
-            //     var i = 0;
-            //     $('.row-select:checked').each(function () {
-            //         var selectedQty = $("#qty_"+$(this).val()).val();
-            //         // var selectedMaxQty = $("#qty_"+$(this).val()).attr('max');
-            //         // if(parseInt(selectedQty) <= parseInt(selectedMaxQty))
-            //         // {
-            //             selected_rows[i++] = $(this).val()+"@"+selectedQty;
-            //             // }
-            //         });
-            //         // return 0;
-            //     // console.log(selected_rows);
-
-            //     if(selected_rows.length > 0){
-            //         $('input#selected_products_bulkPrint').val(selected_rows);
-            //         // swal({
-            //         //     title: LANG.sure,
-            //         //     icon: "warning",
-            //         //     buttons: true,
-            //         //     dangerMode: true,
-            //         // }).then((willDelete) => {
-            //         //     if (willDelete) {
-            //                 $('#unknownDiscountModal').modal('show');
-            //                 $('form#bulkPrint_form').submit();
-            //         //     }
-            //         // });
-            //     } else{
-            //         $('input#selected_products_bulkPrint').val('');
-            //         swal('@lang("lang_v1.no_row_selected")');
-            //     }
-            // })
 
             function TransferSelected()
             {
@@ -380,26 +316,12 @@
                     {
                         selected_rows[i++] = $(this).val()+"@"+selectedQty+"@"+selectedMaxQty+"@"+selectedLocationId;
                     }
-                    // console.log(selectedQty +'    '+$(this).val() +'   '+selectedLocation+'   '+selectedLocationId);
                 });
 
 
                 if(selected_rows.length > 0){
                     $('#unknownDiscountModal').modal('show');
                     $('input#selected_products_bulkTransfer').val(selected_rows);
-
-                    // swal({
-                    //     title: LANG.sure,
-                    //     icon: "warning",
-                    //     buttons: true,
-                    //     dangerMode: true,
-                    // }).then((willDelete) => {
-                    //     if (willDelete) {
-                    //     // If uncommented it will make issue in product transfer
-                    //         $('#unknownDiscountModal').modal('show');
-                    //         $('form#bulkTransfer_form').submit();
-                    //     }
-                    // });
                 } else{
                     $('input#selected_products_bulkTransfer').val('');
                     swal('@lang("lang_v1.no_row_selected")');
@@ -441,9 +363,6 @@
                         selected_rows[i++] = $(this).val();
                     }
                 });
-                // console.log(selected_rows);
-                // return 0;
-
 
                 if(selected_rows.length > 0){
                     $('input#product_id').val(selected_rows);
