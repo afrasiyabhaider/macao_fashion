@@ -111,7 +111,7 @@
             <div class="col-md-3">
                 <div class="form-group">
 
-                    {!! Form::label('product_sr_date_filter', __('report.date_range') . ':') !!}
+                    {!! Form::label('product_sr_date_filter', 'Purchase Date:') !!}
                     {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' =>
                     'form-control', 'id' => 'product_sr_date_filter', 'readonly']); !!}
                 </div>

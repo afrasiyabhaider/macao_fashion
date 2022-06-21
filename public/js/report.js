@@ -1312,8 +1312,8 @@ $(document).ready(function() {
             grouped_stock_report_table.ajax.reload();
             stock_report_table.ajax.reload();
         });
-        $('#product_sr_date_filter').data('daterangepicker').setStartDate(financial_year.start);
-        $('#product_sr_date_filter').data('daterangepicker').setEndDate(financial_year.end);
+        $('#product_sr_date_filter').data('daterangepicker').setStartDate(moment().subtract(10, 'years'));
+        $('#product_sr_date_filter').data('daterangepicker').setEndDate(moment());
         // $('#product_sr_date_filter').data('daterangepicker').setStartDate(moment());
         // $('#product_sr_date_filter').data('daterangepicker').setEndDate(moment());
     }
@@ -1348,8 +1348,8 @@ $(document).ready(function() {
             grouped_stock_report_table.ajax.reload();
             stock_report_table.ajax.reload();
         });
-        $('#product_purchase_date_filter').data('daterangepicker').setStartDate();
-        $('#product_purchase_date_filter').data('daterangepicker').setEndDate();
+        $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment().subtract(10, 'years'));
+        $('#product_purchase_date_filter').data('daterangepicker').setEndDate(moment());
     }
 
 
@@ -1382,6 +1382,7 @@ $(document).ready(function() {
                     start = $('input#product_sr_date_filter')
                         .data('daterangepicker')
                         .startDate.format('YYYY-MM-DD');
+                    console.log("START: " + start);
                     end = $('input#product_sr_date_filter')
                         .data('daterangepicker')
                         .endDate.format('YYYY-MM-DD');
