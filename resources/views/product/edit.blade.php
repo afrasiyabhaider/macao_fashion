@@ -131,7 +131,7 @@
             Product Image:
           </label>
           @if ($product->image != null)
-          <img src="{{asset('uploads/img/'.$product->image)}}" class="img-thumbnail img-responsive" style="width:200px;height:200px"
+          <img src="{{asset('uploads/img/'.$product->image)}}" class="img-thumbnail img-responsive" style="width:300px;height:300px"
             id="img-previewer" name="image">
           @else
           <img src="{{asset('img/default.png')}}" class="img-thumbnail img-responsive" style="width:200px;height:200px"
