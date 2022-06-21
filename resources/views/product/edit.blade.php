@@ -267,6 +267,41 @@
           
         </div>
       </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <h3>
+            Color Details <small>All Locations</small>
+          </h3>
+          <table class="table table-border" >
+            <thead>
+              <tr>
+                <th>Color</th>
+                <th>Quantity</th>
+                {{-- <th>Edit</th> --}}
+              </tr>
+            </thead>
+            <tbody id="color_detail">
+              @foreach ($product_qty as $item)
+                <tr>
+                  <td>
+                    {{ $item->color_name }}
+                  </td>
+                  <td>
+                    <span class="quantity-input">
+                       {{ @number_format($item->qty) }}
+                    </span>
+                  </td>
+                  {{-- <td>
+                    <a href="{{ url('products/'. $item->id.'/edit') }}" class="btn btn-info">
+                      <i class="fa fa-pencil"></i>
+                    </a>
+                  </td> --}}
+                </tr>
+              @endforeach
+            </tbody>
+          </table>
+        </div>
+      </div>
       <div class="row" >
         <div class="col-sm-12">
           <input type="hidden" name="submit_type" id="submit_type">
@@ -333,11 +368,11 @@
               @endif
             </div>
           </div>
-          <div class="col-12">
+          <div class="col-12" style="margin-top: 5px">
             @if(!empty($business_locations))
             &nbsp;
             {{-- @dd(session()->get('location_id')) --}}
-              <select class="select2" id="location_id" style="width:45% !important">
+              <select class="select2" id="location_id" style="width:45% !important;float:left">
                 {{-- <option value="all">All Locations</option> --}}
                 @foreach($business_locations as $key=>$noRefference)
                 <option value="{{$key}}"@if (session()->get('location_id') && $key == session()->get('location_id'))
@@ -349,6 +384,7 @@
                 @endforeach
               </select>
               @endif
+              <input type="text" placeholder="search" data-search class="form-control" style="width:45% !important;float:left"/>
           </div>
 
 
@@ -1172,7 +1208,17 @@
             );
         }
     });
+    $('[data-search]').on('keyup', function() {
+      var searchVal = $(this).val();
+      var filterItems = $('[data-filter-item]');
 
+      if ( searchVal != '' ) {
+        filterItems.addClass('hidden');
+        $('[data-filter-item][data-filter-name*="' + searchVal.toLowerCase() + '"]').removeClass('hidden');
+      } else {
+        filterItems.removeClass('hidden');
+      }
+    });
     // Start Here
     $(document).on('click', 'div.product_box', function() {
           //Check if location is not set then show error message.
@@ -1279,6 +1325,20 @@
               $("#qty_id").val(qty);
               $("#location_id").val(result.variation_location_details.location_id);
               $("#sizes_id").val(result.sub_size.id).change();
+              var table = null;
+              $.each(result.product_qty,function(key,value) {
+                table += ` <tr>
+                  <td>
+                    `+value.color_name+`
+                  </td>
+                  <td>
+                    <span >
+                      `+parseInt(value.qty)+`
+                    </span>
+                  </td></tr>`
+              });
+              $("#color_detail").html(table);
+              // $("#color_detail")
               // var product = result.product;
               // var supplier = result.supplier;
               // var price = result.product_price;

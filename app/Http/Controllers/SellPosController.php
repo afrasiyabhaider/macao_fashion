@@ -2817,6 +2817,17 @@ class SellPosController extends Controller
             $unit_price = $ut->num_f($product_prices->dpp_inc_tax);
             $single_dpp = $ut->num_f($product_prices->dpp_inc_tax);
             $sale_price = $ut->num_f($product_prices->sell_price_inc_tax);
+            $product_qty = Product::join('variation_location_details as vld','vld.product_id','products.id')
+                ->join('colors as c','c.id','products.color_id')
+                ->where('products.refference',$product->refference)
+                ->select([
+                    DB::raw('SUM(vld.qty_available) as qty'),
+                    'c.name as color_name',
+                    'products.name as product_name',
+                    'products.id'
+                ])
+                ->groupBy('color_name')
+                ->get();
 
             $data = [
                 'product' => $product,
@@ -2834,6 +2845,7 @@ class SellPosController extends Controller
                 'unit_price' => $unit_price,
                 'single_dpp' => $single_dpp,
                 'sale_price' => $sale_price,
+                'product_qty' => $product_qty,
             ];
         }
         // dd($data);
@@ -2877,6 +2889,18 @@ class SellPosController extends Controller
             $single_dpp = $ut->num_f($product_prices->dpp_inc_tax);
             $sale_price = $ut->num_f($product_prices->sell_price_inc_tax);
 
+            $product_qty = Product::join('variation_location_details as vld','vld.product_id','products.id')
+                ->join('colors as c','c.id','products.color_id')
+                ->where('products.refference',$product->refference)
+                ->select([
+                    DB::raw('SUM(vld.qty_available) as qty'),
+                    'c.name as color_name',
+                    'products.name as product_name',
+                    'products.id'
+                ])
+                ->groupBy('color_name')
+                ->get();
+
             $data = [
                 'product' => $product,
                 'product_name' => $product_name,
@@ -2893,6 +2917,7 @@ class SellPosController extends Controller
                 'unit_price' => $unit_price,
                 'single_dpp' => $single_dpp,
                 'sale_price' => $sale_price,
+                'product_qty' => $product_qty,
             ];
         }
         // dd($data);

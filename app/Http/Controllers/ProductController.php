@@ -792,6 +792,21 @@ class ProductController extends Controller
             return $this->moduleUtil->quotaExpiredResponse('products', $business_id, action('ProductController@index'));
         }
         $product = Product::where('id', '=', $id)->where('business_id', '=', $business_id)->first();
+        // dd($product);
+        $product_qty = Product::join('variation_location_details as vld','vld.product_id','products.id')
+                ->join('colors as c','c.id','products.color_id')
+                ->where('products.refference',$product->refference)
+                ->select([
+                    DB::raw('SUM(vld.qty_available) as qty'),
+                    'c.name as color_name',
+                    'products.name as product_name',
+                    'products.id'
+                ])
+                ->groupBy('color_name')
+                ->get();
+        // $product_qty = VariationLocationDetails::where('product_id',$product->id)->get()->pluck('qty_available');
+        // dd($product_qty);
+                        
 
         // dd($product->image);
         //If brands, category are enabled then send else false.
@@ -887,7 +902,7 @@ class ProductController extends Controller
         // dd($product->color()->get());
         // dd($product);
         return view('product.edit')
-            ->with(compact('product', 'categories', 'suppliers', 'noRefferenceProducts', 'brands', 'refferenceCount', 'pnc', 'suppliers', 'sizes', 'sub_sizes', 'colors', 'units', 'taxes', 'barcode_types', 'default_profit_percent', 'tax_attributes', 'barcode_default', 'business_locations', 'duplicate_product', 'sub_categories', 'rack_details', 'selling_price_group_count', 'module_form_parts'));
+            ->with(compact('product', 'categories', 'suppliers', 'noRefferenceProducts', 'brands', 'refferenceCount', 'pnc', 'suppliers', 'sizes', 'sub_sizes', 'colors', 'units', 'taxes', 'barcode_types', 'default_profit_percent', 'tax_attributes', 'barcode_default', 'business_locations', 'duplicate_product', 'sub_categories', 'rack_details', 'selling_price_group_count', 'module_form_parts','product_qty'));
     }
     public function old_edit($id)
     {

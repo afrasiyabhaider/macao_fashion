@@ -1,12 +1,16 @@
 @forelse($products as $product)
-	<div class="col-md-4 col-xs-4 product_list no-print">
+	@php
+	    $name = strtolower(explode(' ',$product->name)[0]);
+	//     dd($name);
+	@endphp
+	<div class="col-md-4 col-xs-4 product_list no-print" data-filter-item data-filter-name="{{$name}}">
 		<div class="product_box bg-gray" data-toggle="tooltip" data-placement="bottom" data-variation_id="{{$product->variation_id}}" title="{{$product->name}} @if($product->type == 'variable')- {{$product->variation}} @endif {{ '(' . $product->sub_sku . ')'}}">
 			<div class="image-container">
 				<img src="{{$product->image_url}}" alt="" class="img-fluid img-thumbnail" style="width:80%;height: 70px;">
 			</div>
 			<span class="text text-uppercase">
 				<small>
-					<strong class="text-dark">Name : {{$product->name}} </strong> <br>
+					<strong class="text-dark"> {{$product->name}} </strong> <br>
 					@if($product->type == 'variable')
 					- {{$product->variation}}
 					@endif
@@ -22,13 +26,13 @@
 				// }	
                          $color = $product_detail->color()->first(); 
 			@endphp
-			<span class="text-info">Size: {{$size['name']}} </span>
+			<span class="text-info">{{$size['name']}} </span>
+			&nbsp;
+			<span class="text-info">{{$color['name']}} </span>
 			<br>
-			<span class="text-info">Color: {{$color['name']}} </span>
-			<br>
-			<span class="text-success">
-				Barcode: [{{$product->sku}}]
-			</span>
+			{{-- <span class="text-success">
+				[{{$product->sku}}]
+			</span> --}}
 		</div>
 	</div>
 @empty
