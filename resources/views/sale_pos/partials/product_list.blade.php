@@ -3,6 +3,7 @@
 {{-- @dd($product->pluck('name'))
  --}}
 {{-- @dd($products[20]->name, $product->sub_size()->first()) --}}
+{{-- {{ dd($product) }} --}}
 <div class="col-md-3 col-xs-4 product_list no-print">
 	<div class="product_box bg-gray" data-toggle="tooltip" data-placement="bottom"
 		data-variation_id="{{$product->variation_id}}"
@@ -26,7 +27,11 @@
 				@if($product->type == 'variable')
 				- {{$product->variation}}
 				@endif -
-				{{$product->selling_price}} <i class="fa fa-euro"></i>
+				
+				{{-- {{$product->selling_price}}  --}}
+				{{@num_format($product->sell_price) }}
+				
+				<i class="fa fa-euro"></i>
 			</small>
 		</div>
 		<small class="text-success">

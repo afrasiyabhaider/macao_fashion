@@ -45,7 +45,7 @@
 								<b>Change: </b>
 								<br>
 								<h4 class="text-success lead text-bold">
-									<span id="change_text"></span>
+									<span id="change_text" style="font-size:40px"></span>
 								</h4>
 							</div>
 
@@ -118,7 +118,7 @@
 								<br/>
 								<input type="hidden" name="final_total" 
 									id="final_total_input" value=0>
-								<span id="total_payable" class="text-success lead text-bold">0</span>
+								<span id="total_payable" class="text-success lead text-bold" style="font-size:70px">0</span>
 								{{-- @if(empty($edit))
 									<button type="button" class="btn btn-danger btn-flat btn-xs pull-right" id="pos-cancel">@lang('sale.cancel')</button>
 								@else

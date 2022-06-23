@@ -2347,7 +2347,10 @@ class SellPosController extends Controller
             $customer_id = request()->get('customer_id', null);
             $cg = $this->contactUtil->getCustomerGroup($business_id, $customer_id);
             $percent = (empty($cg) || empty($cg->amount)) ? 0 : $cg->amount;
+            // dd($product);
             $product->default_sell_price = $product->sell_price_inc_tax + ($percent * $product->sell_price_inc_tax / 100);
+            
+            // unit_price_before_discount
             // dd($product->default_sell_price);
             // $product->default_sell_price = $product->default_sell_price + ($percent * $product->default_sell_price / 100);
 
@@ -2591,7 +2594,8 @@ class SellPosController extends Controller
             $business_id = $request->session()->get('user.business_id');
 
 
-            $products->leftjoin(
+            $products->join('transaction_sell_lines as tsl','tsl.product_id','=','products.id')
+                ->leftjoin(
                 'variation_location_details AS VLD',
                 function ($join) use ($location_id) {
                     $join->on('variations.id', '=', 'VLD.variation_id');
@@ -2647,13 +2651,17 @@ class SellPosController extends Controller
                 'variations.name as variation',
                 'VLD.qty_available',
                 'VLD.product_updated_at',
-                'variations.default_sell_price as selling_price',
+                'tsl.unit_price_before_discount as unit_price_before_discount',
                 'variations.sub_sku',
+                'variations.default_sell_price',
+                'variations.sell_price_inc_tax as sell_price',
                 'products.sku',
                 'products.image',
                 'products.color_id',
                 'products.sub_size_id',
-                'products.updated_at as created_at'
+                'products.updated_at as created_at',
+                DB::raw("(SELECT purchase_price_inc_tax FROM purchase_lines WHERE 
+                        variation_id=variations.id ORDER BY id DESC LIMIT 1) as last_purchased_price")
             )
                 ->where("p_type", "product")
                 ->where("products.sub_size_id", '!=', 'null')
