@@ -130,7 +130,7 @@
 
 					<tr>
 						<td>
-							<div class="col-sm-6 col-xs-6 col-2px-padding">
+							<div class="col-sm-5 col-xs-5 col-2px-padding">
 
 								<button type="button" class="btn btn-warning btn-sm pull-left cust-pad" onClick="openDiscount();">
 									All Discount
@@ -168,7 +168,7 @@
 								<button type="button" class="btn btn-danger btn-sm pull-left cust-pad" id="pos-delete">@lang('messages.delete')</button>
 								@endif
 							</div>
-							<div class="col-sm-2 col-xs-12 col-2px-padding">
+							<div class="col-sm-3 col-xs-12 col-2px-padding">
 								<button type="button" class="btn btn-info btn-block btn-flat btn-lg bg-maroon btn-lg pull-left pos-express-btn pos-express-finalize" title="@lang('gift.title')"
 									onclick="openGiftCard()">
 									<div class="text-center">
