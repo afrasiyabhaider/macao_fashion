@@ -1312,7 +1312,7 @@ $(document).ready(function() {
             grouped_stock_report_table.ajax.reload();
             stock_report_table.ajax.reload();
         });
-        $('#product_sr_date_filter').data('daterangepicker').setStartDate(moment().subtract(10, 'years'));
+        $('#product_sr_date_filter').data('daterangepicker').setStartDate(moment());
         $('#product_sr_date_filter').data('daterangepicker').setEndDate(moment());
         // $('#product_sr_date_filter').data('daterangepicker').setStartDate(moment());
         // $('#product_sr_date_filter').data('daterangepicker').setEndDate(moment());
