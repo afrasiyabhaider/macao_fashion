@@ -998,9 +998,11 @@
 
 					}
 					$("#sizeArea").append(html);
+					$("#color_idc").val("");
 
 				}else
 				{
+					$("#color_idc").val("");
 					alert(" "+data.msg);
 					$("#amount_"+rowIndex).val(0).change();
 					$("#note_"+rowIndex).val('');
