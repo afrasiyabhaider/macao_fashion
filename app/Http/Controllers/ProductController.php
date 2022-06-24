@@ -3890,11 +3890,13 @@ class ProductController extends Controller
 
                 for ($i = 0; $i < count($selected_products); $i++) {
                     $pro = Product::find($selected_products[$i]);
+                    // dd($pro);
                     $product[] = [
                         'id' => $pro->id,
                         'name' => $pro->name,
                         'type' => $pro->type,
                         'size' => $pro->sub_size()->first()->name,
+                        'supplier_id' => $pro->supplier_id,
                         'refference' => $pro->refference,
                         'ColorName' => $pro->color()->first()->name,
                         'sku' => $pro->sku,
@@ -3911,8 +3913,7 @@ class ProductController extends Controller
                 $qtys = $s_products->combine($selected_products_qty);
 
                 $print_qtys = $selected_products_qty;
-                $product = collect($product);
-                // $product = collect($product)->sortBy('ColorName')->sortBy('name');
+                $product = collect($product)->sortBy('name')->sortBy('supplier_id');
                 // ->sortBy('ColorName');
                 // $product = collect($product)->sortBy('refference')->sortBy('ColorName');
                 // dd($product->sortBy('refference')->sortBy('ColorName'));
