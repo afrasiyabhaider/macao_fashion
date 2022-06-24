@@ -3903,6 +3903,7 @@ class ProductController extends Controller
                         'supplier' => $pro->supplier()->first()->name,
                         'sub_category' => $pro->sub_category()->first()->name,
                         'count' => $selected_products_qty[$i],
+                        'updated_at' => $pro->updated_at,
                     ];
                 }
 
@@ -3910,7 +3911,8 @@ class ProductController extends Controller
                 $qtys = $s_products->combine($selected_products_qty);
 
                 $print_qtys = $selected_products_qty;
-                $product = collect($product)->sortBy('ColorName')->sortBy('name');
+                $product = collect($product);
+                // $product = collect($product)->sortBy('ColorName')->sortBy('name');
                 // ->sortBy('ColorName');
                 // $product = collect($product)->sortBy('refference')->sortBy('ColorName');
                 // dd($product->sortBy('refference')->sortBy('ColorName'));
