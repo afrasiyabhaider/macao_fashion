@@ -4350,6 +4350,7 @@ class ReportController extends Controller
                     't.transaction_date as transaction_date',
                     DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
                     DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference  $vld_str) as current_stock"),
+                    DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference) as all_time_sold"),
                     // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
                     DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
                     DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
@@ -4424,6 +4425,12 @@ class ReportController extends Controller
                 ->editColumn('total_sold', function ($row) {
                     return '<span  class="total_sold" data-currency_symbol=false data-orig-value="' . (int)$row->total_sold . '" data-unit="' . $row->unit . '" >' . (int) $row->total_sold . '</span> ' . $row->unit;
                 })
+                ->editColumn('all_time_sold', function ($row) {
+                    return '<span  class="total_sold" data-currency_symbol=false data-orig-value="' . (int)$row->all_time_sold . '" data-unit="' . $row->unit . '" >' . (int) $row->all_time_sold . '</span> ' . $row->unit;
+                })
+                ->addColumn('all_time_purchased', function ($row) {
+                    return '<span  class="total_sold" data-currency_symbol=false data-orig-value="' . ((int)$row->all_time_sold + (int)$row->current_stock) . '" data-unit="' . $row->unit . '" >' . ((int)$row->all_time_sold + (int)$row->current_stock) . '</span> ' . $row->unit;
+                })
                 ->editColumn('current_stock', function ($row) {
                     if ($row->enable_stock) {
                         return '<span data-is_quantity="true" class="display_currency current_stock" data-currency_symbol=false data-orig-value="' . (float) $row->current_stock . '" data-unit="' . $row->unit . '" >' . (float) $row->current_stock . '</span> ' . $row->unit;
@@ -4463,7 +4470,7 @@ class ReportController extends Controller
                         }
                     }
                 ])
-                ->rawColumns(['image', 'total_sold', 'current_stock', 'subtotal', 'total_qty_sold','detail','refference'])
+                ->rawColumns(['image', 'total_sold', 'current_stock', 'subtotal', 'total_qty_sold','detail','refference','all_time_purchased','all_time_sold'])
                 ->make(true);
         }
     }

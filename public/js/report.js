@@ -102,6 +102,7 @@ $(document).ready(function() {
 
     //Stock report table
 
+
     stock_report_table = $('#stock_report_table').DataTable({
         processing: true,
         serverSide: true,
@@ -136,29 +137,33 @@ $(document).ready(function() {
                 d.unit_id = $('#unit').val();
             },
         },
-        pageLength: 100,
+        pageLength: 300,
         lengthMenu: [
             [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, -1],
             [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, 'All'],
         ],
-        // aaSorting: [6, 'asc'],
+        aaSorting: [21, 'desc'],
         columns: [{
                 data: 'DT_Row_Index',
+                name: 'DT_Row_Index',
                 searchable: false,
                 orderable: false
             },
             {
                 data: 'mass_delete',
+                name: 'mass_delete',
                 orderable: false,
                 searchable: false
             },
             {
                 data: 'printing_qty',
+                name: 'printing_qty',
                 orderable: false,
                 searchable: false
             },
             {
                 data: 'image',
+                name: 'image',
                 orderable: false,
                 searchable: false
             },
@@ -215,7 +220,8 @@ $(document).ready(function() {
                 name: 'p.description'
             },
             {
-                data: 'sale_percent'
+                data: 'sale_percent',
+                name: 'sale_percent'
             },
             {
                 data: 'stock',
@@ -1618,6 +1624,18 @@ $(document).ready(function() {
             {
                 data: 'refference',
                 name: 'p.refference'
+            },
+            {
+                data: 'all_time_sold',
+                name: 'all_time_sold',
+                searchable: false,
+                orderable: false
+            },
+            {
+                data: 'all_time_purchased',
+                name: 'all_time_purchased',
+                searchable: false,
+                orderable: false
             },
             // { data: 'total_sold', searchable: false, orderable: false },
             // { data: 'barcode', name: 'p.sku' },

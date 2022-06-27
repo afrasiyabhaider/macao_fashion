@@ -107,15 +107,19 @@
                                         {{-- <th>Total Sold</th> --}}
                                         {{-- <th>Barcode</th>
                                                             <th>@lang('messages.date')</th> --}}
+                                        <th>All Time Sold</th>
+                                        <th>All Time Purchased</th>
                                         <th>@lang('report.current_stock')</th>
-                                        <th>@lang('report.total_unit_sold')</th>
+                                        <th>
+                                            Unit Sold <small style="color: grey;font-weight:400">Filter</small>
+                                        </th>
                                         <th>Sale Percentage</th>
                                         <th>@lang('sale.total')</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
                                     <tr class="bg-gray font-17 footer-total text-center">
-                                        <td colspan="5"><strong>@lang('sale.total'):</strong></td>
+                                        <td colspan="7"><strong>@lang('sale.total'):</strong></td>
                                         <td id="footer_total_grouped_sold"></td>
                                         <td></td>
                                         <td><span class="display_currency" id="footer_grouped_subtotal" data-currency_symbol="true"></span>
