@@ -103,17 +103,17 @@
                                         <th>Action</th>
                                         <th>@lang('sale.product')</th>
                                         {{-- <th>Purchase Date</th> --}}
-                                        <th>Reffernce</th>
+                                        <th>Ref</th>
                                         {{-- <th>Total Sold</th> --}}
                                         {{-- <th>Barcode</th>
                                                             <th>@lang('messages.date')</th> --}}
-                                        <th>All Time Sold</th>
-                                        <th>All Time Purchased</th>
+                                        <th>A.T Sold</th>
+                                        <th>A.T Purchased</th>
                                         <th>@lang('report.current_stock')</th>
                                         <th>
-                                            Unit Sold <small style="color: grey;font-weight:400">Filter</small>
+                                            U Sold <small style="color: grey;font-weight:400">Filter</small>
                                         </th>
-                                        <th>Sale Percentage</th>
+                                        <th>Sale %</th>
                                         <th>@lang('sale.total')</th>
                                     </tr>
                                 </thead>
