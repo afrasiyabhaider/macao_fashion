@@ -115,7 +115,7 @@
 
                     {!! Form::label('product_sr_date_filter', 'Purchase Date:') !!}
                     {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' =>
-                    'form-control', 'id' => 'product_sr_date_filter', 'readonly']); !!}
+                    'form-control', 'id' => 'product_purchase_date_filter', 'readonly']); !!}
                 </div>
             </div>
             {!! Form::close() !!}
