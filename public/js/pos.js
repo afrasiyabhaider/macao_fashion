@@ -677,7 +677,7 @@ $(document).ready(function() {
             c.change();
         });
         if ($('select#discount_type_modal').val() == 'percentage') {
-            console.log(c);
+            // console.log(c);
             c.html($('input#discount_amount_modal').val() + '%');
             c.html(__read_number($('input#discount_amount_modal')) + '%');
         } else {
