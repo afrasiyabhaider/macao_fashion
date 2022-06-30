@@ -674,12 +674,12 @@ $(document).ready(function() {
             } else {
                 // c.val(0);
             }
-            // c.change();
+            c.change();
         });
         if ($('select#discount_type_modal').val() == 'percentage') {
-            // console.log(c);
+            console.log(c);
             c.html($('input#discount_amount_modal').val() + '%');
-            // c.html(__read_number($('input#discount_amount_modal')) + '%');
+            c.html(__read_number($('input#discount_amount_modal')) + '%');
         } else {
             __write_number(
                 $('input#discount_amount'),
