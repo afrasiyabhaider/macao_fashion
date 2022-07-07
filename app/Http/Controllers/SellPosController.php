@@ -2582,7 +2582,7 @@ class SellPosController extends Controller
                     ->join('variations', 'products.id', '=', 'variations.product_id')
                     ->orWhere('variations.sell_price_inc_tax', 'LIKE', "%{$search_txt}%");
             } else {
-                $products = Product::join(
+                $products = Product::leftjoin(
                     'variations',
                     'products.id',
                     '=',
@@ -2594,7 +2594,7 @@ class SellPosController extends Controller
             $business_id = $request->session()->get('user.business_id');
 
 
-            $products->join('transaction_sell_lines as tsl','tsl.product_id','=','products.id')
+            $products->leftjoin('transaction_sell_lines as tsl','tsl.product_id','=','products.id')
                 ->leftjoin(
                 'variation_location_details AS VLD',
                 function ($join) use ($location_id) {
