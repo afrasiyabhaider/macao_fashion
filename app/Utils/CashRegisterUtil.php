@@ -293,10 +293,42 @@ class CashRegisterUtil extends Util
      *
      * @return array
      */
-    public function getRegisterTransactionDetails($user_id, $open_time, $close_time)
+    public function getRegisterTransactionDetails($user_id, $open_time, $close_time,$id=null)
     {
         $location_id = request()->session()->get('user.business_location_id');
+        if($id){
+            $register_transaction_ids = CashRegisterTransaction::where('cash_register_id',$id)->pluck('transaction_id')->toArray();
+            $product_details = Transaction::whereIn('transactions.id', $register_transaction_ids)
+                ->where('transactions.type', 'sell')
+                ->where('transactions.status', 'final')
+                ->join('transaction_sell_lines AS TSL', 'transactions.id', '=', 'TSL.transaction_id')
+                ->join('products AS P', 'TSL.product_id', '=', 'P.id')
+                ->leftjoin('brands AS B', 'P.brand_id', '=', 'B.id')
+                ->groupBy('B.id')
+                ->select(
+                    'B.name as brand_name',
+                    DB::raw('SUM(TSL.quantity) as total_quantity'),
+                    DB::raw('SUM(TSL.unit_price_inc_tax*TSL.quantity) as total_amount'),
+                    DB::raw('SUM(transactions.final_total) as final_total')
+                )
+                ->orderByRaw('CASE WHEN brand_name IS NULL THEN 2 ELSE 1 END, brand_name')
+                ->get();
+
+        $transaction_details = Transaction::whereIn('transactions.id', $register_transaction_ids)
+                ->where('transactions.type', 'sell')
+                ->where('transactions.status', 'final')
+                ->select(
+                    DB::raw('SUM(tax_amount) as total_tax'),
+                    DB::raw('SUM(IF(discount_type = "percentage", total_before_tax*discount_amount/100, discount_amount)) as total_discount')
+                )
+                ->first();
+        
+        return ['product_details' => $product_details,
+                'transaction_details' => $transaction_details
+            ];
+        }
         $product_details = Transaction::where('transactions.location_id', $location_id)
+                ->whereBetween('transaction_date', [$open_time, $close_time])
                 ->whereBetween('transaction_date', [$open_time, $close_time])
                 ->where('transactions.type', 'sell')
                 ->where('transactions.status', 'final')
@@ -335,7 +367,7 @@ class CashRegisterUtil extends Util
      *
      * @return obj
      */
-    public function getCurrentCashRegister($user_id)
+    public function getCurrentCashRegister($user_id,$id=null)
     {
         $location_id = request()->session()->get('user.business_location_id');
         $register =  CashRegister::where('location_id', $location_id)
