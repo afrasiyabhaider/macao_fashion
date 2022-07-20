@@ -111,17 +111,17 @@ $(document).ready(function() {
             data: function(d) {
                 var start = '';
                 var end = '';
-                if ($('#product_sr_date_filter').val()) {
-                    // start = $('input#product_sr_date_filter')
+                if ($('#product_purchase_date_filter').val()) {
+                    // start = $('input#product_purchase_date_filter')
                     //     .data('daterangepicker')
                     //     .moment().subtract(10, 'years').format('YYYY-MM-DD');
-                    // end = $('input#product_sr_date_filter')
+                    // end = $('input#product_purchase_date_filter')
                     //     .data('daterangepicker')
                     //     .endDate.format('YYYY-MM-DD');
-                    start = $('input#product_sr_date_filter')
+                    start = $('input#product_purchase_date_filter')
                         .data('daterangepicker')
                         .startDate.format('YYYY-MM-DD');
-                    end = $('input#product_sr_date_filter')
+                    end = $('input#product_purchase_date_filter')
                         .data('daterangepicker')
                         .endDate.format('YYYY-MM-DD');
                 }
@@ -275,11 +275,11 @@ $(document).ready(function() {
             data: function(d) {
                 var start = '';
                 var end = '';
-                if ($('#product_sr_date_filter').val()) {
-                    start = $('input#product_sr_date_filter')
+                if ($('#product_purchase_date_filter').val()) {
+                    start = $('input#product_purchase_date_filter')
                         .data('daterangepicker')
                         .startDate.format('YYYY-MM-DD');
-                    end = $('input#product_sr_date_filter')
+                    end = $('input#product_purchase_date_filter')
                         .data('daterangepicker')
                         .endDate.format('YYYY-MM-DD');
                 }
