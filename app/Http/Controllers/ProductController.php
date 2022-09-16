@@ -3300,6 +3300,7 @@ class ProductController extends Controller
             ->join('products as p', 'pv.product_id', '=', 'p.id')
             // ->join('suppliers as s', 'p.supplier_id', '=', 's.id')
             ->join('colors as c', 'p.color_id', '=', 'c.id')
+            ->join('sizes', 'p.size_id', '=', 'sizes.id')
             ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
             ->where('t.business_id', $business_id)
             ->where('t.type', 'sell')
@@ -3314,32 +3315,36 @@ class ProductController extends Controller
                 'p.supplier_id as supplier',
                 'p.enable_stock',
                 'c.name as color',
+                'sizes.name as size',
                 'p.type as product_type',
                 'pv.name as product_variation',
                 'v.name as variation_name',
                 't.id as transaction_id',
                 't.transaction_date as transaction_date',
                 DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
-                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference $vld_str) as current_stock"),
-                // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference $vld_str GROUP BY p.color_id) as current_stock"),
+                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
                 DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
                 DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
                 DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
                 // 'p.product_updated_at as product_updated_at',
                 'u.short_name as unit',
                 DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
-            )
+            );
             // ->groupBy('v.id')
-            ->orderBy('total_qty_sold', 'DESC')
-            ->groupBy('color');
+            
             // ->groupBy('transaction_sell_lines.product_refference');
 
-                $current_group = $group_query;
-                $history_group = $group_query->get();
-                if (!empty($from_date) && !empty($to_date)) {
-                    $current_group = $current_group->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
-                }
-                $current_group = $current_group->get();
+            $current_group = $group_query;
+            $history_group = $group_query->get();
+            if (!empty($from_date) && !empty($to_date)) {
+                $current_group = $current_group->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
+            }
+            $current_group = $current_group
+                            ->orderBy('color', 'DESC')
+                            // ->groupBy('color')
+                            ->groupBy('product_id')
+                            ->get();
 
         $query =
         TransactionSellLine::join(
@@ -3385,7 +3390,7 @@ class ProductController extends Controller
                 'transaction_sell_lines.unit_price_inc_tax as unit_sale_price',
                 'p.product_updated_at as product_updated_at',
                 'transaction_sell_lines.original_amount as original_amount',
-                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference $vld_str GROUP BY p.color_id) as current_stock"),
                 DB::raw('(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as sell_qty'),
                 DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_id = p.id) as total_sold"),
                 'transaction_sell_lines.line_discount_type as discount_type',
