@@ -37,6 +37,7 @@
                                                                  <th>#</th>
                                                                  <th>Name</th>
                                                                  <th>Color</th>
+                                                                 <th>Size</th>
                                                                  <th>Quantity Sold</th>
                                                                  <th>Current Stock</th>
                                                             </tr>
@@ -50,6 +51,9 @@
                                                                  </td>
                                                                  <td>
                                                                       {{ $item->color }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->size }}
                                                                  </td>
                                                                  <td>
                                                                       {{ (int)$item->total_qty_sold }}
@@ -74,7 +78,7 @@
                                                                  <th>#</th>
                                                                  <th>Name</th>
                                                                  <th>Color</th>
-                                                                 <th>Selling Date</th>
+                                                                 {{-- <th>Selling Date</th> --}}
                                                                  <th>Quantity Sold</th>
                                                                  <th>Current Stock</th>
                                                             </tr>
@@ -89,9 +93,9 @@
                                                                  <td>
                                                                       {{ $item->color }}
                                                                  </td>
-                                                                 <td>
+                                                                 {{-- <td>
                                                                       {{ $item->product_date }}
-                                                                 </td>
+                                                                 </td> --}}
                                                                  <td>
                                                                       {{ (int)$item->sell_qty }}
                                                                  </td>
