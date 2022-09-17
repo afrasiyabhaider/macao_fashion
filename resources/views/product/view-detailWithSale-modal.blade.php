@@ -160,11 +160,6 @@
                </div>
                @endif
                @endif
-               @if($product->type == 'single')
-               @include('product.partials.single_product_details')
-               @else
-               @include('product.partials.variable_product_details')
-               @endif
                @if ($query)
                    <div class="row">
                     <div class="col-md-12">
@@ -227,6 +222,11 @@
                          </div>
                     </div>
                </div>
+               @endif
+               @if($product->type == 'single')
+               @include('product.partials.single_product_details')
+               @else
+               @include('product.partials.variable_product_details')
                @endif
           </div>
           <div class="modal-footer">
