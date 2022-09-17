@@ -3301,6 +3301,7 @@ class ProductController extends Controller
             // ->join('suppliers as s', 'p.supplier_id', '=', 's.id')
             ->join('colors as c', 'p.color_id', '=', 'c.id')
             ->join('sizes', 'p.size_id', '=', 'sizes.id')
+            ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
             ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
             ->where('t.business_id', $business_id)
             ->where('t.type', 'sell')
@@ -3315,7 +3316,7 @@ class ProductController extends Controller
                 'p.supplier_id as supplier',
                 'p.enable_stock',
                 'c.name as color',
-                'sizes.name as size',
+                'sub_size.name as size',
                 'p.type as product_type',
                 'pv.name as product_variation',
                 'v.name as variation_name',
@@ -3345,7 +3346,7 @@ class ProductController extends Controller
                             // ->groupBy('color')
                             ->groupBy('product_id')
                             ->get();
-
+        // dd($current_group);
         $query =
         TransactionSellLine::join(
             'transactions as t',
@@ -3364,6 +3365,7 @@ class ProductController extends Controller
             ->join('products as p', 'pv.product_id', '=', 'p.id')
         // ->join('variation_location_details as vlds', 'pv.product_id', '=', 'vlds.product_id')
         // ->join('suppliers as s', 's.id','=','p.supplier_id')
+            ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
             ->join('colors as c', 'p.color_id', '=', 'c.id')
             ->leftjoin('tax_rates', 'transaction_sell_lines.tax_id', '=', 'tax_rates.id')
             ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
@@ -3378,6 +3380,7 @@ class ProductController extends Controller
                 'p.supplier_id as supplier_id',
                 // 's.name as supplier',
                 'p.refference as refference',
+                'sub_size.name as size',
                 'p.type as product_type',
                 'p.sku as barcode',
                 'pv.name as product_variation',

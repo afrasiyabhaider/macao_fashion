@@ -69,6 +69,51 @@
                                         </div>
                                         <div class="row">
                                              <div class="col-md-12">
+                                                  <h3>Detailed Color History Report:</h3>
+                                             </div>
+                                             <div class="col-md-12">
+                                                  <div class="table-responsive">
+                                                       <table class="table table-condensed bg-gray">
+                                                            <tr class="bg-info">
+                                                                 <th>#</th>
+                                                                 <th>Name</th>
+                                                                 <th>Color</th>
+                                                                 <th>Size</th>
+                                                                 <th>Selling Date</th>
+                                                                 <th>Quantity Sold</th>
+                                                                 <th>Current Stock</th>
+                                                            </tr>
+                                                            @foreach($history_detail as $item)
+                                                            <tr>
+                                                                 <td>
+                                                                      {{ $loop->iteration }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->product_name }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->color }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->size }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->transaction_date }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ (int)$item->sell_qty }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ (int)$item->current_stock }}
+                                                                 </td>
+                                                            </tr>
+                                                            @endforeach
+                                                       </table>
+                                                  </div>
+                                             </div>
+                                        </div>
+                                        <div class="row hidden">
+                                             <div class="col-md-12">
                                                   <h3>Detailed Color Report:</h3>
                                              </div>
                                              <div class="col-md-12">
@@ -158,6 +203,7 @@
                                                                  <th>#</th>
                                                                  <th>Name</th>
                                                                  <th>Color</th>
+                                                                 <th>Size</th>
                                                                  <th>Selling Date</th>
                                                                  <th>Quantity Sold</th>
                                                                  <th>Current Stock</th>
@@ -172,6 +218,9 @@
                                                                  </td>
                                                                  <td>
                                                                       {{ $item->color }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->size }}
                                                                  </td>
                                                                  <td>
                                                                       {{ $item->transaction_date }}
