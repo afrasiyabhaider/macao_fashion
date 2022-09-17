@@ -93,6 +93,7 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::post('/products/mass-delete', 'ProductController@massDestroy');
     Route::get('/products/view/{id}', 'ProductController@view');
     Route::get('/products/viewDetail/{id}', 'ProductController@viewProductDetailWithSale');
+    Route::get('/products/viewRefDetail/{refference}', 'ProductController@viewProductRefDetailWithSale');
     Route::get('/product/color-detail/{name}/{start_date}/{end_date}', 'ProductController@viewColorDetail');
     Route::get('/product/color-detail-stock/{name}/{start_date}/{end_date}/{location_id}', 'ProductController@viewColorDetailStock');
     Route::get('/products/nothing/{id}', 'ProductController@nothing');
@@ -169,7 +170,7 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::get('/sells/draft-dt', 'SellController@getDraftDatables');
     Route::get('/sells/showThis/{id}', 'SellController@showThis');
     Route::resource('sells', 'SellController');
-
+    // product row
     Route::get('/sells/pos/get_product_row/{variation_id}/{location_id}', 'SellPosController@getProductRow');
     Route::get('/sells/pos/get_bulk_product_detail/{variation_id}', 'SellPosController@getBulkProductDetails');
     Route::get('/sells/pos/get_bulk_product_detail/{variation_id}/{location_id}', 'SellPosController@getBulkProductLocationDetails');

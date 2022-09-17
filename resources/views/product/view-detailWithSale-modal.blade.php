@@ -113,7 +113,7 @@
                     </div>
                     <div class="col-sm-3 col-md-3 invoice-col">
                          <div class="thumbnail">
-                              <img src="{{$product->image_url}}" alt="Product image">
+                              <img src="{{$product->image_url}}" alt="Product image" height="300px" width="200px">
                          </div>
                     </div>
 
@@ -177,6 +177,8 @@
                                         <th>Image</th>
                                         <th>Refference</th>
                                         <th>Name</th>
+                                        <th>Color</th>
+                                        <th>Size</th>
                                         <th>Quantity</th>
                                         <th>Price</th>
                                         <th>Selling Date</th>
@@ -195,6 +197,12 @@
                                         </td>
                                         <td>
                                              {{ $row->product_name }}
+                                        </td>
+                                        <td>
+                                             {{ $row->color }}
+                                        </td>
+                                        <td>
+                                             {{ $row->size }}
                                         </td>
                                         <td>
                                              <span class="sell_qty" data-currency_symbol=false data-orig-value=" {{ (int)$row->sell_qty }}"
