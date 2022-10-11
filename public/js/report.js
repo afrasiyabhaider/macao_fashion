@@ -1626,6 +1626,12 @@ $(document).ready(function() {
                 name: 'p.refference'
             },
             {
+                data: 'fifteen_day_sold',
+                name: 'fifteen_day_sold',
+                searchable: false,
+                orderable: false
+            },
+            {
                 data: 'all_time_sold',
                 name: 'all_time_sold',
                 searchable: false,

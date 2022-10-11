@@ -4351,6 +4351,7 @@ class ReportController extends Controller
                     DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
                     DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference  $vld_str) as current_stock"),
                     DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference) as all_time_sold"),
+                    DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
                     // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
                     DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
                     DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
@@ -4428,6 +4429,9 @@ class ReportController extends Controller
                 ->editColumn('all_time_sold', function ($row) {
                     return '<span  class="total_sold" data-currency_symbol=false data-orig-value="' . (int)$row->all_time_sold . '" data-unit="' . $row->unit . '" >' . (int) $row->all_time_sold . '</span> ' . $row->unit;
                 })
+                ->editColumn('fifteen_day_sold', function ($row) {
+                    return '<span  class="total_sold" data-currency_symbol=false data-orig-value="' . (int)$row->fifteen_day_sold . '" data-unit="' . $row->unit . '" >' . (int) $row->fifteen_day_sold . '</span> ' . $row->unit;
+                })
                 ->addColumn('all_time_purchased', function ($row) {
                     return '<span  class="total_sold" data-currency_symbol=false data-orig-value="' . ((int)$row->all_time_sold + (int)$row->current_stock) . '" data-unit="' . $row->unit . '" >' . ((int)$row->all_time_sold + (int)$row->current_stock) . '</span> ' . $row->unit;
                 })
@@ -4460,17 +4464,17 @@ class ReportController extends Controller
                 ->editColumn('subtotal', function ($row) {
                     return '<span class="display_currency row_subtotal" data-currency_symbol = true data-orig-value="' . $row->subtotal . '">' . $row->subtotal . '</span>';
                 })
-                ->setRowAttr([
-                    'data-href' => function ($row) {
-                        if (auth()->user()->can("product.view")) {
-                            return  action('ProductController@viewProductRefDetailWithSale', [$row->refference]);
-                            // return  action('ProductController@view', [$row->product_id]);
-                        } else {
-                            return '';
-                        }
-                    }
-                ])
-                ->rawColumns(['image', 'total_sold', 'current_stock', 'subtotal', 'total_qty_sold','detail','refference','all_time_purchased','all_time_sold'])
+                // ->setRowAttr([
+                //     'data-href' => function ($row) {
+                //         if (auth()->user()->can("product.view")) {
+                //             return  action('ProductController@viewProductRefDetailWithSale', [$row->refference]);
+                //             // return  action('ProductController@view', [$row->product_id]);
+                //         } else {
+                //             return '';
+                //         }
+                //     }
+                // ])
+                ->rawColumns(['image', 'total_sold', 'current_stock', 'subtotal', 'total_qty_sold','detail','refference','all_time_purchased','all_time_sold','fifteen_day_sold'])
                 ->make(true);
         }
     }

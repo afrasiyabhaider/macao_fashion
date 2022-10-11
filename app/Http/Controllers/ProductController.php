@@ -3451,14 +3451,14 @@ class ProductController extends Controller
         if (!empty($location_id)) {
             $vld_str = "AND vld.location_id=$location_id";
         }
-            $variation_id = request()->get('variation_id', null);
+        $variation_id = request()->get('variation_id', null);
         $group_query =
-        TransactionSellLine::join(
-            'transactions as t',
-            'transaction_sell_lines.transaction_id',
-            '=',
-            't.id'
-        )
+            TransactionSellLine::join(
+                'transactions as t',
+                'transaction_sell_lines.transaction_id',
+                '=',
+                't.id'
+            )
             ->join(
                 'variations as v',
                 'transaction_sell_lines.variation_id',
@@ -3485,6 +3485,7 @@ class ProductController extends Controller
                 'p.sku as barcode',
                 'p.supplier_id as supplier',
                 'p.enable_stock',
+                'c.id as color_id',
                 'c.name as color',
                 'sub_size.name as size',
                 'p.type as product_type',
@@ -3502,28 +3503,81 @@ class ProductController extends Controller
                 'u.short_name as unit',
                 DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
             );
-            // ->groupBy('v.id')
-            
-            // ->groupBy('transaction_sell_lines.product_refference');
-
-            $current_group = $group_query;
-            $history_group = $group_query->get();
-            if (!empty($from_date) && !empty($to_date)) {
-                $current_group = $current_group->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
-            }
-            $current_group = $current_group
-                            ->orderBy('color', 'DESC')
-                            // ->groupBy('color')
-                            ->groupBy('product_id')
-                            ->get();
+        $group_query_color =
+            TransactionSellLine::join(
+                'transactions as t',
+                'transaction_sell_lines.transaction_id',
+                '=',
+                't.id'
+            )
+            ->join(
+                'variations as v',
+                'transaction_sell_lines.variation_id',
+                '=',
+                'v.id'
+            )
+            // ->rightjoin('variation_location_details as vlds', 'v.id', '=', 'vlds.variation_id')
+            ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
+            ->join('products as p', 'pv.product_id', '=', 'p.id')
+            // ->join('suppliers as s', 'p.supplier_id', '=', 's.id')
+            ->join('colors as c', 'p.color_id', '=', 'c.id')
+            // ->join('sizes', 'p.size_id', '=', 'sizes.id')
+            // ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
+            ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
+            ->where('t.business_id', $business_id)
+            ->where('t.type', 'sell')
+            ->where('t.status', 'final')
+            ->where('p.name', $name)
+            ->select(
+                'p.id as product_id',
+                'p.name as product_name',
+                'p.image as image',
+                'p.refference as refference',
+                'p.sku as barcode',
+                'p.supplier_id as supplier',
+                'p.enable_stock',
+                'c.id as color_id',
+                'c.name as color',
+                // 'sub_size.name as size',
+                'p.type as product_type',
+                'pv.name as product_variation',
+                'v.name as variation_name',
+                't.id as transaction_id',
+                't.transaction_date as transaction_date',
+                DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
+                // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference $vld_str GROUP BY p.color_id) as current_stock"),
+                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
+                DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
+                DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
+                // 'p.product_updated_at as product_updated_at',
+                'u.short_name as unit',
+                DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
+            );
+        $current_group = $group_query;
+        $current_group_color = $group_query_color;
+        $history_group = $group_query->get();
+        if (!empty($from_date) && !empty($to_date)) {
+            $current_group = $current_group->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
+            $current_group_color = $current_group_color->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
+        }
+        $current_group = $current_group
+            ->orderBy('color', 'DESC')
+            // ->groupBy('color')
+            ->groupBy('product_id')
+            ->get();
+        $current_group_color = $current_group_color
+            ->orderBy('color', 'DESC')
+            ->groupBy('color_id')
+            ->get();
         // dd($current_group);
         $query =
-        TransactionSellLine::join(
-            'transactions as t',
-            'transaction_sell_lines.transaction_id',
-            '=',
-            't.id'
-        )
+            TransactionSellLine::join(
+                'transactions as t',
+                'transaction_sell_lines.transaction_id',
+                '=',
+                't.id'
+            )
             ->join(
                 'variations as v',
                 'transaction_sell_lines.variation_id',
@@ -3532,9 +3586,9 @@ class ProductController extends Controller
             )
             ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
             // ->join('contacts as c', 't.contact_id', '=', 'c.id')
-            ->join('products as p', 'pv.product_id', '=', 'p.id')
-        // ->join('variation_location_details as vlds', 'pv.product_id', '=', 'vlds.product_id')
-        // ->join('suppliers as s', 's.id','=','p.supplier_id')
+            ->join('products as p', 'transaction_sell_lines.product_id', '=', 'p.id')
+            // ->join('variation_location_details as vlds', 'pv.product_id', '=', 'vlds.product_id')
+            // ->join('suppliers as s', 's.id','=','p.supplier_id')
             ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
             ->join('colors as c', 'p.color_id', '=', 'c.id')
             ->leftjoin('tax_rates', 'transaction_sell_lines.tax_id', '=', 'tax_rates.id')
@@ -3573,17 +3627,26 @@ class ProductController extends Controller
                 'u.short_name as unit',
                 DB::raw('((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
             )
-            ->orderBy('p.name', 'ASC')
-            // ->orderBy('t.invoice_no','DESC')
-            ->groupBy('transaction_sell_lines.id');
-            // ->groupBy('transaction_sell_lines.id');
-            $history_detail = $query->get();
-            $current_detail = $query;
-            if (!empty($from_date) && !empty($to_date)) {
-                $current_detail = $current_detail->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
-            }
-            $current_detail = $current_detail->get();
-        return view('product.view-product-color-detail',compact('current_group','history_group','current_detail','history_detail'));
+            ->orderBy('color', 'DESC')
+        // ->orderBy('transaction_date', 'DESC')
+        // ->orderBy('t.invoice_no','DESC')
+        ->groupBy('t.id');
+        // ->groupBy('transaction_sell_lines.id');
+        $current_detail = $query;
+        $history_detail = $query->get();
+        if (!empty($from_date) && !empty($to_date)) {
+            $current_detail = $current_detail->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
+            // dd($current_detail->get());
+        }
+        $current_detail = $current_detail->orderBy('transaction_date','DESC')
+                            ->get();
+        // $current_detail = $current_detail
+        //                     ->orderBy('transaction_date','DESC')
+        //                     ->groupBy('t.id')
+        //                     ->get();
+                            // ->toSql();
+        // dd($current_detail);
+        return view('product.view-product-color-detail', compact('current_group', 'current_group_color', 'history_group', 'current_detail', 'history_detail', 'from_date', 'to_date'));
         // dd($query);
     }
     /**

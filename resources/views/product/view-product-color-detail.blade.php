@@ -26,9 +26,49 @@
                               </ul>
                               <div class="tab-content">
                                    <div class="tab-pane active" id="color_current">
+                                        <h4 class="modal-title">From: {{$from_date}} - To: {{$to_date}}</h4>
+                                        {{-- current group --}}
                                         <div class="row">
                                              <div class="col-md-12">
                                                   <h3>Groupped Color Report:</h3>
+                                             </div>
+                                             <div class="col-md-12">
+                                                  <div class="table-responsive">
+                                                       <table class="table table-condensed bg-gray">
+                                                            <tr class="bg-green">
+                                                                 <th>#</th>
+                                                                 <th>Name</th>
+                                                                 <th>Color</th>
+                                                                 <th>Quantity Sold</th>
+                                                                 {{-- <th>Current Stock</th> --}}
+                                                            </tr>
+                                                            @foreach($current_group_color as $item)
+                                                            <tr>
+                                                                 <td>
+                                                                      {{ $loop->iteration }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->product_name }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ $item->color }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ (int)$item->total_qty_sold }}
+                                                                 </td>
+                                                                 {{-- <td>
+                                                                      {{ (int)$item->current_stock }}
+                                                                 </td> --}}
+                                                            </tr>
+                                                            @endforeach
+                                                       </table>
+                                                  </div>
+                                             </div>
+                                        </div>
+                                        {{-- current group color --}}
+                                        <div class="row">
+                                             <div class="col-md-12">
+                                                  <h3>Groupped Color Size Report <small>(With Stock)</small>:</h3>
                                              </div>
                                              <div class="col-md-12">
                                                   <div class="table-responsive">
@@ -67,7 +107,7 @@
                                                   </div>
                                              </div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row hidden">
                                              <div class="col-md-12">
                                                   <h3>Detailed Color History Report:</h3>
                                              </div>
@@ -112,7 +152,7 @@
                                                   </div>
                                              </div>
                                         </div>
-                                        <div class="row hidden">
+                                        <div class="row">
                                              <div class="col-md-12">
                                                   <h3>Detailed Color Report:</h3>
                                              </div>
@@ -123,9 +163,9 @@
                                                                  <th>#</th>
                                                                  <th>Name</th>
                                                                  <th>Color</th>
-                                                                 {{-- <th>Selling Date</th> --}}
+                                                                 <th>Selling Date</th>
                                                                  <th>Quantity Sold</th>
-                                                                 <th>Current Stock</th>
+                                                                 {{-- <th>Current Stock</th> --}}
                                                             </tr>
                                                             @foreach($current_detail as $item)
                                                             <tr>
@@ -138,15 +178,15 @@
                                                                  <td>
                                                                       {{ $item->color }}
                                                                  </td>
-                                                                 {{-- <td>
-                                                                      {{ $item->product_date }}
-                                                                 </td> --}}
+                                                                 <td>
+                                                                      {{ $item->transaction_date }}
+                                                                 </td>
                                                                  <td>
                                                                       {{ (int)$item->sell_qty }}
                                                                  </td>
-                                                                 <td>
+                                                                 {{-- <td>
                                                                       {{ (int)$item->current_stock }}
-                                                                 </td>
+                                                                 </td> --}}
                                                             </tr>
                                                             @endforeach
                                                        </table>
@@ -156,6 +196,7 @@
                                    </div>
                                    <div class="tab-pane " id="color_history">
                                         <div class="row">
+                                             <h4 class="modal-title">From: {{$from_date}} - To: {{$to_date}}</h4>
                                              <div class="col-md-12">
                                                   <h3>Groupped History Color Report:</h3>
                                              </div>
