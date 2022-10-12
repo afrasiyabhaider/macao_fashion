@@ -4464,16 +4464,16 @@ class ReportController extends Controller
                 ->editColumn('subtotal', function ($row) {
                     return '<span class="display_currency row_subtotal" data-currency_symbol = true data-orig-value="' . $row->subtotal . '">' . $row->subtotal . '</span>';
                 })
-                // ->setRowAttr([
-                //     'data-href' => function ($row) {
-                //         if (auth()->user()->can("product.view")) {
-                //             return  action('ProductController@viewProductRefDetailWithSale', [$row->refference]);
-                //             // return  action('ProductController@view', [$row->product_id]);
-                //         } else {
-                //             return '';
-                //         }
-                //     }
-                // ])
+                ->setRowAttr([
+                    'data-href' => function ($row) {
+                        if (auth()->user()->can("product.view")) {
+                            return  action('ProductController@viewProductRefDetailWithSale', [$row->refference]);
+                            // return  action('ProductController@view', [$row->product_id]);
+                        } else {
+                            return '';
+                        }
+                    }
+                ])
                 ->rawColumns(['image', 'total_sold', 'current_stock', 'subtotal', 'total_qty_sold','detail','refference','all_time_purchased','all_time_sold','fifteen_day_sold'])
                 ->make(true);
         }
