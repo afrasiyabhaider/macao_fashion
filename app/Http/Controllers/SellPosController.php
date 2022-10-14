@@ -2670,11 +2670,11 @@ class SellPosController extends Controller
                 // ->groupBy('variations.id')
                 ->orderBy('show_pos', 'DESC')
                 // ->orderBy('VLD.product_updated_at', 'DESC')
-                // ->orderBy('products.name', 'asc')
+                ->orderBy('products.name', 'asc')
                 ->latest()
-                ->limit(50)
-                ->get();
-            // ->paginate(50);
+                // ->limit(50)
+                // ->get();
+            ->paginate(50);
 
             // dd($products[2]);
 
