@@ -39,7 +39,9 @@
                                                                  <th>#</th>
                                                                  <th>Name</th>
                                                                  <th>Color</th>
-                                                                 <th>Quantity Sold</th>
+                                                                 {{-- <th>All Time  Sold</th>
+                                                                 <th>15-D  Sold</th> --}}
+                                                                 <th>Quantity Sold <small>(Date Filter)</small> </th>
                                                                  {{-- <th>Current Stock</th> --}}
                                                             </tr>
                                                             @foreach($current_group_color as $item)
@@ -53,6 +55,12 @@
                                                                  <td>
                                                                       {{ $item->color }}
                                                                  </td>
+                                                                 {{-- <td>
+                                                                      {{ (int)$item->all_time_sold }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ (int)$item->fifteen_day_sold }}
+                                                                 </td> --}}
                                                                  <td>
                                                                       {{ (int)$item->total_qty_sold }}
                                                                  </td>
@@ -78,7 +86,9 @@
                                                                  <th>Name</th>
                                                                  <th>Color</th>
                                                                  <th>Size</th>
-                                                                 <th>Quantity Sold</th>
+                                                                 <th>All Time  Sold</th>
+                                                                 <th>15-D  Sold</th>
+                                                                 <th>Quantity Sold <small>(Date Filter)</small></th>
                                                                  <th>Current Stock</th>
                                                             </tr>
                                                             @foreach($current_group as $item)
@@ -94,6 +104,12 @@
                                                                  </td>
                                                                  <td>
                                                                       {{ $item->size }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ (int)$item->all_time_sold }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ (int)$item->fifteen_day_sold }}
                                                                  </td>
                                                                  <td>
                                                                       {{ (int)$item->total_qty_sold }}

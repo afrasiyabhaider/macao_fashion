@@ -1626,16 +1626,21 @@ $(document).ready(function() {
                 name: 'p.refference'
             },
             {
+                data: 'all_time_sold',
+                name: 'all_time_sold',
+                searchable: false,
+                orderable: false
+            },
+            {
                 data: 'fifteen_day_sold',
                 name: 'fifteen_day_sold',
                 searchable: false,
                 orderable: false
             },
             {
-                data: 'all_time_sold',
-                name: 'all_time_sold',
-                searchable: false,
-                orderable: false
+                data: 'total_qty_sold',
+                name: 'total_qty_sold',
+                searchable: false
             },
             {
                 data: 'all_time_purchased',
@@ -1651,11 +1656,6 @@ $(document).ready(function() {
                 name: 'current_stock',
                 searchable: false,
                 orderable: false
-            },
-            {
-                data: 'total_qty_sold',
-                name: 'total_qty_sold',
-                searchable: false
             },
             {
                 data: 'sale_percentage',

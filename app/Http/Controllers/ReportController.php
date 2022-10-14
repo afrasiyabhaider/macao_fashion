@@ -1693,7 +1693,7 @@ class ReportController extends Controller
 
                     $start_date = request()->get('start_date','null');
                     $end_date = request()->get('end_date','null');
-                    return '<a id="color-detail-modal" href="' . url("/product/color-detail-stock/" . $row->product . '/' . $start_date . '/' . $end_date.'/'.$location_id) . '" data-product-name="' . $row->product . '" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
+                    return '<a id="color-detail-modal" href="' . url("/product/color-detail/" . $row->product . '/' . $start_date . '/' . $end_date) . '" data-product-name="' . $row->product . '" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
                 })
                 // ->addColumn('sale_percent', function ($row) {
                 //     $quantity_sold =  (float) $row->total_sold;

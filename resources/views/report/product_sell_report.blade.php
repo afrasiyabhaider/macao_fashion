@@ -107,15 +107,15 @@
                                         {{-- <th>Total Sold</th> --}}
                                         {{-- <th>Barcode</th>
                                                             <th>@lang('messages.date')</th> --}}
-                                        <th>15-D Sold</th>
                                         <th>A.T Sold</th>
-                                        <th>A.T Purchased</th>
-                                        <th>@lang('report.current_stock')</th>
+                                        <th>15-D Sold</th>
                                         <th>
                                             U Sold <small style="color: grey;font-weight:400">Filter</small>
                                         </th>
+                                        <th>A.T Purchased</th>
+                                        <th>@lang('report.current_stock')</th>
                                         <th>Sale %</th>
-                                        <th>@lang('sale.total')</th>
+                                        <th>Sold Price</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
