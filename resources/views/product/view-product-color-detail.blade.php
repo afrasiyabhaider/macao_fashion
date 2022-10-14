@@ -3,7 +3,7 @@
           <div class="modal-header">
                <button type="button" class="close no-print" data-dismiss="modal" aria-label="Close"><span
                          aria-hidden="true">&times;</span></button>
-               <h4 class="modal-title" id="modalTitle">{{$current_detail[0]->product_name}}</h4>
+               <h4 class="modal-title" id="modalTitle">{{$current_group_color[0]->product_name}}</h4>
           </div>
           <div class="modal-body">
                <div class="row">
@@ -39,9 +39,12 @@
                                                                  <th>#</th>
                                                                  <th>Name</th>
                                                                  <th>Color</th>
-                                                                 {{-- <th>All Time  Sold</th>
-                                                                 <th>15-D  Sold</th> --}}
+                                                                 <th>All Time  Sold</th>
+                                                                 <th>15-D  Sold</th>
                                                                  <th>Quantity Sold <small>(Date Filter)</small> </th>
+                                                                 <th>
+                                                                      All Time Purchase
+                                                                 </th>
                                                                  {{-- <th>Current Stock</th> --}}
                                                             </tr>
                                                             @foreach($current_group_color as $item)
@@ -55,14 +58,17 @@
                                                                  <td>
                                                                       {{ $item->color }}
                                                                  </td>
-                                                                 {{-- <td>
+                                                                 <td>
                                                                       {{ (int)$item->all_time_sold }}
                                                                  </td>
                                                                  <td>
                                                                       {{ (int)$item->fifteen_day_sold }}
-                                                                 </td> --}}
+                                                                 </td>
                                                                  <td>
                                                                       {{ (int)$item->total_qty_sold }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ ((int)$item->all_time_sold + (int)$item->current_stock)  }}
                                                                  </td>
                                                                  {{-- <td>
                                                                       {{ (int)$item->current_stock }}
@@ -90,6 +96,9 @@
                                                                  <th>15-D  Sold</th>
                                                                  <th>Quantity Sold <small>(Date Filter)</small></th>
                                                                  <th>Current Stock</th>
+                                                                 <th>
+                                                                      All Time Purchase
+                                                                 </th>
                                                             </tr>
                                                             @foreach($current_group as $item)
                                                             <tr>
@@ -116,6 +125,9 @@
                                                                  </td>
                                                                  <td>
                                                                       {{ (int)$item->current_stock }}
+                                                                 </td>
+                                                                 <td>
+                                                                      {{ ((int)$item->all_time_sold + (int)$item->current_stock)  }}
                                                                  </td>
                                                             </tr>
                                                             @endforeach

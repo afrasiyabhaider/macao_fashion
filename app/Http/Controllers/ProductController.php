@@ -3649,7 +3649,7 @@ class ProductController extends Controller
         //                     ->groupBy('t.id')
         //                     ->get();
                             // ->toSql();
-        // dd($current_detail);
+        // dd($current_group_color);
         return view('product.view-product-color-detail', compact('current_group', 'current_group_color', 'history_group', 'current_detail', 'history_detail', 'from_date', 'to_date'));
         // dd($query);
     }
