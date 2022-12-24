@@ -5632,7 +5632,7 @@ class ReportController extends Controller
                 // )
                 ->where('transactions.business_id', $business_id)
                 ->where('transactions.type', 'sell')
-                ->where('transactions.status', '!=', 'hide')
+              
                 ->select(
                     'transactions.id',
                     // DB::raw('COUNT(transactions.invoice_no) as items'),
@@ -5674,6 +5674,11 @@ class ReportController extends Controller
             // dd($query->first());
             if (!empty($request->get('location_id'))) {
                 $query->where('transactions.location_id', $request->input('location_id'));
+            }
+            // dd($query->first());
+            if (auth()->user()->getRoleNameAttribute() !=='Admin') {
+                // dd(auth()->user()->getRoleNameAttribute() );
+                $query->where('transactions.status', '!=', 'hide');
             }
             // dd($query->get());
             return Datatables::of($query)
