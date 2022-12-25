@@ -1700,7 +1700,12 @@ class ProductController extends Controller
             DB::beginTransaction();
             $product_id = Product::where('color_id', $request->input('color'))->where('name', $request->input('product_name'))->first();
             $product = Product::where('color_id', $request->input('color'))->where('name', $request->input('product_name'))->get();
-            // dd($product);
+            // dd($product, $product_id,$request->input());
+            if (is_null($product_id) && $product->isEmpty() )
+            {
+                $product_id =  Product::where('name', $request->input('product_name'))->first();
+                $product = Product::where('name', $request->input('product_name'))->get();
+            }
             // dd($request->input());
 
             for($i = 0;$i<count($product);$i++){
