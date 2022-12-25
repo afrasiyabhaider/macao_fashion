@@ -5680,6 +5680,12 @@ class ReportController extends Controller
                 // dd(auth()->user()->getRoleNameAttribute() );
                 $query->where('transactions.status', '!=', 'hide');
             }
+            $start_date = $request->get('start_date');
+            $end_date = $request->get('end_date');
+
+            if (!empty($start_date) && !empty($end_date)) {
+                $query->whereBetween(DB::raw('date(transactions.created_at)'), [$start_date, $end_date]);
+            }
             // dd($query->get());
             return Datatables::of($query)
                 ->addColumn('total', function ($row) {

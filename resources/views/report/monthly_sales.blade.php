@@ -15,7 +15,7 @@
      <div class="row">
           <div class="col-md-12">
                @component('components.filters', ['title' => __('report.filters')])
-               {!! Form::open(['url' => action('ReportController@dailySales'), 'method' => 'get', 'id' =>
+               {!! Form::open(['url' => action('ReportController@monthlySales'), 'method' => 'get', 'id' =>
                'monthly_sale_report_filter_form' ]) !!}
                <div class="col-md-4">
                     <div class="form-group">
@@ -25,14 +25,14 @@
                          'placeholder' => 'All Locations']); !!}
                     </div>
                </div>
-               {{-- <div class="col-md-4">
+               <div class="col-md-4">
                     <div class="form-group">
-                         {!! Form::label('daily_sale_sr_date_filter', __('report.date_range') . ':') !!}
+                         {!! Form::label('monthly_sale_sr_date_filter', __('report.date_range') . ':') !!}
                          {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class'
                          =>
-                         'form-control', 'id' => 'daily_sale_sr_date_filter', 'readonly']); !!}
+                         'form-control', 'id' => 'monthly_sale_sr_date_filter', 'readonly']); !!}
                     </div>
-               </div> --}}
+               </div> 
                {!! Form::close() !!}
                @endcomponent
           </div>
@@ -122,6 +122,26 @@
 @section('javascript')
 <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
 <script>
+      if ($('#monthly_sale_sr_date_filter').length == 1) {
+          //date range setting
+          $('input#monthly_sale_sr_date_filter').daterangepicker(dateRangeSettings, function(start, end) {
+               $('input#monthly_sale_sr_date_filter').val(
+                    start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
+               );
+               monthly_sale_report_table.ajax.reload();
+          });
+          $('input#monthly_sale_sr_date_filter').on('apply.daterangepicker', function(ev, picker) {
+               $(this).val(
+                    picker.startDate.format(moment_date_format) +
+                    ' ~ ' +
+                    picker.endDate.format(moment_date_format)
+               );
+          });
+
+          $('input#monthly_sale_sr_date_filter').on('cancel.daterangepicker', function(ev, picker) {
+               $(this).val('');
+          });
+     }
      var buttons = [{
           extend: 'copy',
           text: '<i class="fa fa-files-o" aria-hidden="true"></i> ' + LANG.copy,
@@ -174,11 +194,11 @@
                data: function(d) {
                     start = null;
                     end = null;
-                    if ($('#daily_sale_sr_date_filter').val()) {
-                    start = $('input#daily_sale_sr_date_filter')
+                    if ($('#monthly_sale_sr_date_filter').val()) {
+                    start = $('input#monthly_sale_sr_date_filter')
                     .data('daterangepicker')
                     .startDate.format('YYYY-MM-DD');
-                    end = $('input#daily_sale_sr_date_filter')
+                    end = $('input#monthly_sale_sr_date_filter')
                     .data('daterangepicker')
                     .endDate.format('YYYY-MM-DD');
                     }
