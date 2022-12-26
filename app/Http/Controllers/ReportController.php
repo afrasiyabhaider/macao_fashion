@@ -5676,7 +5676,8 @@ class ReportController extends Controller
                 $query->where('transactions.location_id', $request->input('location_id'));
             }
             // dd($query->first());
-            if (auth()->user()->getRoleNameAttribute() !=='Admin') {
+            // if (auth()->user()->getRoleNameAttribute() !=='Admin') {
+            if (auth()->user()->username !=='superadmin') {
                 // dd(auth()->user()->getRoleNameAttribute() );
                 $query->where('transactions.status', '!=', 'hide');
             }

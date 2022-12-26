@@ -26,7 +26,7 @@
                     </div>
                </div>
                <div class="col-md-4">
-               @if(auth()->user()->getRoleNameAttribute() ==='Admin')
+                    @if(auth()->user()->username ==='superadmin')
                     <div class="form-group">
                          {!! Form::label('monthly_sale_sr_date_filter', __('report.date_range') . ':') !!}
                          {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class'
@@ -34,8 +34,8 @@
                          'form-control', 'id' => 'monthly_sale_sr_date_filter', 'readonly']); !!}
                     </div>
 
-               @endif
-               </div> 
+                    @endif
+               </div>
                {!! Form::close() !!}
                @endcomponent
           </div>
@@ -44,27 +44,27 @@
           <div class="col-md-12">
                @component('components.widget', ['class' => 'box-primary'])
                @can('view_purchase_price')
-                    <h4>Total Cash: <span class="display_currency total_cash" data-currency_symbol="false"></span> €
-                    </h4>
-                    <h4>Total Card: <span class="display_currency total_card" data-currency_symbol="false"></span> €
-                    </h4>
-                    <h4>Total Coupon: <span class="display_currency total_coupon" data-currency_symbol="false"></span> €
-                    </h4>
-                    <h4>Total Gift Card: <span class="display_currency total_gift_card" data-currency_symbol="false" ></span>
-                         €</h4>
-                         {{-- 
+               <h4>Total Cash: <span class="display_currency total_cash" data-currency_symbol="false"></span> €
+               </h4>
+               <h4>Total Card: <span class="display_currency total_card" data-currency_symbol="false"></span> €
+               </h4>
+               <h4>Total Coupon: <span class="display_currency total_coupon" data-currency_symbol="false"></span> €
+               </h4>
+               <h4>Total Gift Card: <span class="display_currency total_gift_card" data-currency_symbol="false"></span>
+                    €</h4>
+               {{--
                               <h4>Total Discount: <span class="display_currency" data-currency_symbol="false"
                                    id="total_discount"></span> € 
                               </h4>
                               <h4>Total Items: <span class="display_currency" data-currency_symbol="false" id="total_items"></span> 
                          --}}
-                         </h4>
-                         <h4>Total Invoices: <span class="display_currency total_invoices" data-currency_symbol="false" ></span>
-                         </h4>
-                         <h4>Total Amount: <span class="display_currency" data-currency_symbol="false" id="total_amount_top"></span> €
-                         </h4>
+               </h4>
+               <h4>Total Invoices: <span class="display_currency total_invoices" data-currency_symbol="false"></span>
+               </h4>
+               <h4>Total Amount: <span class="display_currency" data-currency_symbol="false" id="total_amount_top"></span> €
+               </h4>
                @endcan
-               
+
                <div class="table-responsive">
                     <table class="table table-bordered table-striped" id="monthly_sale_report_table">
                          <thead>
@@ -88,7 +88,7 @@
                               <tr>
                                    <td></td>
                                    <td>
-                                       Total 
+                                        Total
                                    </td>
                                    <td>
                                         <span class="display_currency total_invoices" data-currency_symbol="false">
@@ -97,17 +97,17 @@
                                         <span class="display_currency total_cash" data-currency_symbol="false"></span> €
                                    </td>
                                    <td>
-                                         <span class="display_currency total_card" data-currency_symbol="false"></span> €
+                                        <span class="display_currency total_card" data-currency_symbol="false"></span> €
                                    </td>
                                    <td>
-                                         <span class="display_currency total_gift_card" data-currency_symbol="false"></span>
+                                        <span class="display_currency total_gift_card" data-currency_symbol="false"></span>
                                         €
                                    </td>
                                    <td>
                                         <span class="display_currency total_coupon" data-currency_symbol="false"></span> €
                                    </td>
                                    <td>
-                                         <span class="display_currency" data-currency_symbol="false" id="total_amount"></span> €
+                                        <span class="display_currency" data-currency_symbol="false" id="total_amount"></span> €
                                    </td>
                               </tr>
                          </tfoot>
@@ -125,11 +125,23 @@
 @section('javascript')
 <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
 <script>
-      if ($('#monthly_sale_sr_date_filter').length == 1) {
+     let startDate = moment().year() + '-01-01';
+     let startDate1 = '01/01/' + moment().year();
+     let endDate = moment().add(1, 'years').format('YYYY') + '-01-01';
+     let endDate1 = '01/01/' + moment().add(1, 'years').format('YYYY');
+     let newdateRangeSettings = dateRangeSettings
+     newdateRangeSettings.startDate = startDate1;
+     newdateRangeSettings.endDate = endDate1;
+     $("input#monthly_sale_sr_date_filter").daterangepicker(newdateRangeSettings);
+     $("input#monthly_sale_sr_date_filter").daterangepicker(newdateRangeSettings)
+
+     if ($('#monthly_sale_sr_date_filter').length == 1) {
           //date range setting
           $('input#monthly_sale_sr_date_filter').daterangepicker(dateRangeSettings, function(start, end) {
+               console.log(start, end)
                $('input#monthly_sale_sr_date_filter').val(
                     start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
+                    // startDate + ' ~ ' + endDate
                );
                monthly_sale_report_table.ajax.reload();
           });
@@ -144,50 +156,51 @@
           $('input#monthly_sale_sr_date_filter').on('cancel.daterangepicker', function(ev, picker) {
                $(this).val('');
           });
-     }
+     };
      var buttons = [{
-          extend: 'copy',
-          text: '<i class="fa fa-files-o" aria-hidden="true"></i> ' + LANG.copy,
-          className: 'bg-info',
-          exportOptions: {
-          columns: ':visible',
-          },
-          footer: true,
-          },
-          {
-          extend: 'csv',
-          text: '<i class="fa fa-file-text-o" aria-hidden="true"></i> ' + LANG.export_to_csv,
-          className: 'bg-info',
-          exportOptions: {
-          columns: ':visible',
-          },
-          footer: true,
+               extend: 'copy',
+               text: '<i class="fa fa-files-o" aria-hidden="true"></i> ' + LANG.copy,
+               className: 'bg-info',
+               exportOptions: {
+                    columns: ':visible',
+               },
+               footer: true,
           },
           {
-          extend: 'excel',
-          text: '<i class="fa fa-file-excel-o" aria-hidden="true"></i> ' + LANG.export_to_excel,
-          className: 'bg-info',
-          exportOptions: {
-          columns: ':visible',
-          },
-          footer: true,
-          },
-          {
-          extend: 'print',
-          text: '<i class="fa fa-print" aria-hidden="true"></i> ' + LANG.print,
-          className: 'bg-info',
-          exportOptions: {
-          columns: ':visible',
-          stripHtml: false,
-          },
-          footer: true,
+               extend: 'csv',
+               text: '<i class="fa fa-file-text-o" aria-hidden="true"></i> ' + LANG.export_to_csv,
+               className: 'bg-info',
+               exportOptions: {
+                    columns: ':visible',
+               },
+               footer: true,
           },
           {
-          extend: 'colvis',
-          text: '<i class="fa fa-columns" aria-hidden="true"></i> ' + LANG.col_vis,
-          className: 'bg-info',
+               extend: 'excel',
+               text: '<i class="fa fa-file-excel-o" aria-hidden="true"></i> ' + LANG.export_to_excel,
+               className: 'bg-info',
+               exportOptions: {
+                    columns: ':visible',
+               },
+               footer: true,
+          },
+          {
+               extend: 'print',
+               text: '<i class="fa fa-print" aria-hidden="true"></i> ' + LANG.print,
+               className: 'bg-info',
+               exportOptions: {
+                    columns: ':visible',
+                    stripHtml: false,
+               },
+               footer: true,
+          },
+          {
+               extend: 'colvis',
+               text: '<i class="fa fa-columns" aria-hidden="true"></i> ' + LANG.col_vis,
+               className: 'bg-info',
           },
      ];
+
      //Register report
      monthly_sale_report_table = $('#monthly_sale_report_table').DataTable({
           processing: true,
@@ -195,48 +208,46 @@
           ajax: {
                url: '{{url("/")}}/monthly/sales',
                data: function(d) {
-                    start = null;
-                    end = null;
+                    start = startDate;
+                    end = endDate;
                     if ($('#monthly_sale_sr_date_filter').val()) {
-                    start = $('input#monthly_sale_sr_date_filter')
-                    .data('daterangepicker')
-                    .startDate.format('YYYY-MM-DD');
-                    end = $('input#monthly_sale_sr_date_filter')
-                    .data('daterangepicker')
-                    .endDate.format('YYYY-MM-DD');
+                         start = $('input#monthly_sale_sr_date_filter')
+                              .data('daterangepicker')
+                              .startDate.format('YYYY-MM-DD');
+                         end = $('input#monthly_sale_sr_date_filter')
+                              .data('daterangepicker')
+                              .endDate.format('YYYY-MM-DD');
                     }
                     d.start_date = start;
                     d.end_date = end;
-                    
-                    
+
+
                     d.location_id = $('#location_id').val();
                },
           },
           // columnDefs: [{ targets: [6], orderable: false, searchable: false }],
           dom: '<"row margin-bottom-12"<"col-sm-12"<"pull-left"l><"pull-right margin-left-10"B><"pull-right"fr>>>tip',
           buttons: [{
-                    extend: 'collection',
-                    text: '<i class="fa fa-list" aria-hidden="true"></i> &nbsp;' + LANG.action,
-                    className: 'btn-info',
-                    init: function(api, node, config) {
-                         $(node).removeClass('btn-default');
-                    },
-                    buttons: buttons,
+               extend: 'collection',
+               text: '<i class="fa fa-list" aria-hidden="true"></i> &nbsp;' + LANG.action,
+               className: 'btn-info',
+               init: function(api, node, config) {
+                    $(node).removeClass('btn-default');
                },
-          ],
+               buttons: buttons,
+          }, ],
           pageLength: -1,
           lengthMenu: [
                [20, 50, 70, 100, 300, 500, 1000, -1],
                [20, 50, 70, 100, 300, 500, 1000, 'All'],
           ],
-          columns: [
-               {
-               data: 'location_name',
-               name: 'location_name'
+          columns: [{
+                    data: 'location_name',
+                    name: 'location_name'
                },
                {
-               data: 'date',
-               name: 'date'
+                    data: 'date',
+                    name: 'date'
                },
                // { data: 'status', name: 'status' },
                // {
@@ -244,65 +255,65 @@
                // name: 'items'
                // },
                {
-               data: 'invoices',
-               name: 'invoices'
+                    data: 'invoices',
+                    name: 'invoices'
                },
                {
-               data: 'cash',
-               name: 'cash'
+                    data: 'cash',
+                    name: 'cash'
                },
                {
-               data: 'card',
-               name: 'card'
+                    data: 'card',
+                    name: 'card'
                },
                {
-               data: 'gift_card',
-               name: 'gift_card'
+                    data: 'gift_card',
+                    name: 'gift_card'
                },
                {
-               data: 'coupon',
-               name: 'coupon'
+                    data: 'coupon',
+                    name: 'coupon'
                },
                // {
                // data: 'discount',
                // name: 'discount'
                // },
                {
-               data: 'total',
-               name: 'total'
+                    data: 'total',
+                    name: 'total'
                }
           ],
           fnDrawCallback: function(oSettings) {
                __currency_convert_recursively($('#monthly_sale_report_table'));
                $('#total_amount_top').text(
-               sum_table_col($('#monthly_sale_report_table'), 'total_amount').toFixed(2)
+                    sum_table_col($('#monthly_sale_report_table'), 'total_amount').toFixed(2)
                );
                $('#total_amount').text(
-               sum_table_col($('#monthly_sale_report_table'), 'total_amount').toFixed(2)
+                    sum_table_col($('#monthly_sale_report_table'), 'total_amount').toFixed(2)
                );
                $('.total_cash').text(
-               sum_table_col($('#monthly_sale_report_table'), 'cash_amount').toFixed(2)
+                    sum_table_col($('#monthly_sale_report_table'), 'cash_amount').toFixed(2)
                );
                $('.total_card').text(
-               sum_table_col($('#monthly_sale_report_table'), 'card_amount').toFixed(2)
+                    sum_table_col($('#monthly_sale_report_table'), 'card_amount').toFixed(2)
                );
                $('.total_coupon').text(
-               sum_table_col($('#monthly_sale_report_table'), 'coupon_amount').toFixed(2)
+                    sum_table_col($('#monthly_sale_report_table'), 'coupon_amount').toFixed(2)
                );
                $('.total_gift_card').text(
-               sum_table_col($('#monthly_sale_report_table'), 'giftcard_amount').toFixed(2)
+                    sum_table_col($('#monthly_sale_report_table'), 'giftcard_amount').toFixed(2)
                );
                // $('#total_discount').text(
                // sum_table_col($('#monthly_sale_report_table'), 'discounted_amount')
                // );
                $('.total_invoices').text(
-               sum_table_col($('#monthly_sale_report_table'), 'invoices').toFixed(2)
+                    sum_table_col($('#monthly_sale_report_table'), 'invoices').toFixed(2)
                );
                // $('#total_items').text(
                // sum_table_col($('#monthly_sale_report_table'), 'items')
                // );
                $('#total').text(
-               sum_table_col($('#monthly_sale_report_table'), 'total_amount').toFixed(2)
+                    sum_table_col($('#monthly_sale_report_table'), 'total_amount').toFixed(2)
                );
           },
      });
@@ -313,7 +324,7 @@
 
 
      $(
-     '#monthly_sale_report_filter_form #location_id').on('change', function() {
+          '#monthly_sale_report_filter_form #location_id').on('change', function() {
           monthly_sale_report_table.ajax.reload();
      });
 </script>
