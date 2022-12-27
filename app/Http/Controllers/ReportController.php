@@ -4351,6 +4351,7 @@ class ReportController extends Controller
                     DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
                     DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference  $vld_str) as current_stock"),
                     DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference) as all_time_sold"),
+                    DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
                     DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
                     // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
                     DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
@@ -4429,7 +4430,10 @@ class ReportController extends Controller
                 ->editColumn('all_time_sold', function ($row) {
                     return '<span  class="total_sold" data-currency_symbol=false data-orig-value="' . (int)$row->all_time_sold . '" data-unit="' . $row->unit . '" >' . (int) $row->all_time_sold . '</span> ' . $row->unit;
                 })
-                ->editColumn('fifteen_day_sold', function ($row) {
+                ->editColumn('seven_day_sold', function ($row) {
+                    return '<span  class="total_sold" data-currency_symbol=false data-orig-value="' . (int)$row->seven_day_sold . '" data-unit="' . $row->unit . '" >' . (int) $row->seven_day_sold . '</span> ' . $row->unit;
+                })
+                 ->editColumn('fifteen_day_sold', function ($row) {
                     return '<span  class="total_sold" data-currency_symbol=false data-orig-value="' . (int)$row->fifteen_day_sold . '" data-unit="' . $row->unit . '" >' . (int) $row->fifteen_day_sold . '</span> ' . $row->unit;
                 })
                 ->addColumn('all_time_purchased', function ($row) {

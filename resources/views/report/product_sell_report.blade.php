@@ -108,6 +108,7 @@
                                         {{-- <th>Barcode</th>
                                                             <th>@lang('messages.date')</th> --}}
                                         <th>A.T Sold</th>
+                                        <th>7-D Sold</th>
                                         <th>15-D Sold</th>
                                         <th>
                                             U Sold <small style="color: grey;font-weight:400">Filter</small>
@@ -120,7 +121,7 @@
                                 </thead>
                                 <tfoot>
                                     <tr class="bg-gray font-17 footer-total text-center">
-                                        <td colspan="8"><strong>@lang('sale.total'):</strong></td>
+                                        <td colspan="9"><strong>@lang('sale.total'):</strong></td>
                                         <td id="footer_total_grouped_sold"></td>
                                         <td></td>
                                         <td><span class="display_currency" id="footer_grouped_subtotal" data-currency_symbol="true"></span>

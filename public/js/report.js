@@ -1632,6 +1632,12 @@ $(document).ready(function() {
                 orderable: false
             },
             {
+                data: 'seven_day_sold',
+                name: 'seven_day_sold',
+                searchable: false,
+                orderable: false
+            },
+            {
                 data: 'fifteen_day_sold',
                 name: 'fifteen_day_sold',
                 searchable: false,
