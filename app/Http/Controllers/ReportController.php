@@ -4478,7 +4478,7 @@ class ReportController extends Controller
                         }
                     }
                 ])
-                ->rawColumns(['image', 'total_sold', 'current_stock', 'subtotal', 'total_qty_sold','detail','refference','all_time_purchased','all_time_sold','fifteen_day_sold'])
+                ->rawColumns(['image', 'total_sold', 'current_stock', 'subtotal', 'total_qty_sold','detail','refference','all_time_purchased','all_time_sold','seven_day_sold','fifteen_day_sold'])
                 ->make(true);
         }
     }
