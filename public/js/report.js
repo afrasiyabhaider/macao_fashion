@@ -1388,7 +1388,6 @@ $(document).ready(function() {
                     start = $('input#product_sr_date_filter')
                         .data('daterangepicker')
                         .startDate.format('YYYY-MM-DD');
-                    console.log("START: " + start);
                     end = $('input#product_sr_date_filter')
                         .data('daterangepicker')
                         .endDate.format('YYYY-MM-DD');
