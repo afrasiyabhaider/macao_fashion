@@ -1625,6 +1625,12 @@ $(document).ready(function() {
                 name: 'p.refference'
             },
             {
+                data: 'all_time_purchased',
+                name: 'all_time_purchased',
+                searchable: false,
+                orderable: false
+            },
+            {
                 data: 'all_time_sold',
                 name: 'all_time_sold',
                 searchable: false,
@@ -1647,12 +1653,7 @@ $(document).ready(function() {
                 name: 'total_qty_sold',
                 searchable: false
             },
-            {
-                data: 'all_time_purchased',
-                name: 'all_time_purchased',
-                searchable: false,
-                orderable: false
-            },
+           
             // { data: 'total_sold', searchable: false, orderable: false },
             // { data: 'barcode', name: 'p.sku' },
             // { data: 'transaction_date', name: 't.transaction_date' },
