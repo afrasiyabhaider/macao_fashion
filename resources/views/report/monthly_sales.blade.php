@@ -26,7 +26,6 @@
                     </div>
                </div>
                <div class="col-md-4">
-                    @if(auth()->user()->username ==='superadmin')
                     <div class="form-group">
                          {!! Form::label('monthly_sale_sr_date_filter', __('report.date_range') . ':') !!}
                          {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class'
@@ -34,7 +33,6 @@
                          'form-control', 'id' => 'monthly_sale_sr_date_filter', 'readonly']); !!}
                     </div>
 
-                    @endif
                </div>
                {!! Form::close() !!}
                @endcomponent

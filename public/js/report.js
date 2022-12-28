@@ -1388,6 +1388,7 @@ $(document).ready(function() {
                     start = $('input#product_sr_date_filter')
                         .data('daterangepicker')
                         .startDate.format('YYYY-MM-DD');
+                    console.log("START: " + start);
                     end = $('input#product_sr_date_filter')
                         .data('daterangepicker')
                         .endDate.format('YYYY-MM-DD');
@@ -1637,14 +1638,13 @@ $(document).ready(function() {
                 orderable: false
             },
             {
-                data: 'seven_day_sold',
-                name: 'seven_day_sold',
-                searchable: false,
-                orderable: false
-            },
-            {
                 data: 'fifteen_day_sold',
                 name: 'fifteen_day_sold',
+                searchable: false,
+                orderable: false
+            },{
+                data: 'seven_day_sold',
+                name: 'seven_day_sold',
                 searchable: false,
                 orderable: false
             },
