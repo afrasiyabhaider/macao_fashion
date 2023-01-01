@@ -1233,7 +1233,7 @@ class ReportController extends Controller
             if (!empty($to_date)) {
                 // dd($products->first());
                 $query->whereDate('p.created_at', '>=', $from_date)->whereDate('p.created_at', '<=', $to_date);
-                $query->where('vld.qty_available', '>', 0);
+                $query->where('vld.qty_available', '>=', 0);
             }
 
             if (!empty($request->input('unit_id'))) {
@@ -1602,7 +1602,7 @@ class ReportController extends Controller
             if (!empty($to_date)) {
                 // dd($products->first());
                 $query->whereDate('p.created_at', '>=', $from_date)->whereDate('p.created_at', '<=', $to_date);
-                $query->where('vld.qty_available', '>', 0);
+                $query->where('vld.qty_available', '>=', 0);
             }
 
             if (!empty($request->input('unit_id'))) {
@@ -1881,7 +1881,7 @@ class ReportController extends Controller
             if (!empty($to_date)) {
                 // dd($products->first());
                 $query->whereDate('p.created_at', '>=', $from_date)->whereDate('p.created_at', '<=', $to_date);
-                $query->where('vld.qty_available', '>', 0);
+                $query->where('vld.qty_available', '>=', 0);
             }
 
             if (!empty($request->input('unit_id'))) {
@@ -4079,6 +4079,8 @@ class ReportController extends Controller
      */
     public function getproductSellReport(Request $request)
     {
+        ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', 180); //3 minutes
         if (!auth()->user()->can('purchase_n_sell_report.view')) {
             abort(403, 'Unauthorized action.');
         }
@@ -4301,6 +4303,8 @@ class ReportController extends Controller
      */
     public function getproductSellGroupedReport(Request $request)
     {
+        ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', 180); //3 minutes
         if (!auth()->user()->can('purchase_n_sell_report.view')) {
             abort(403, 'Unauthorized action.');
         }

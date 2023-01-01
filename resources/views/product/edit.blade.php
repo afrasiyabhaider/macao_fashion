@@ -241,7 +241,14 @@
           <br>
           <input type="checkbox" value="1" checked name="allow_price_qty"> Yes
         </div>
+        <div class="col-sm-4">
+            <label>Print Price Check</label>
+            <br>
+            <input type="checkbox"
+             @if ($product->print_price_check == true) checked @endif name="print_price_check"> {{ $product->print_price_check == true ? 'Yes' : 'No' }}
+        </div>
       </div>
+
       <div class="row">
         <div class="col-sm-12 text-center">
           <button type="submit" class="btn btn-info col-12 fa-2x" style="width:150px;padding:5px;font-size:20px;margin-top: 10px;"

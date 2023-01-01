@@ -1167,6 +1167,7 @@ class ProductController extends Controller
             $product->size_id = $size->parent_id;
             $product->sub_size_id = $request->input('size');
             $product->sku = $request->input('sku');
+            $product->print_price_check = $request->print_price_check ? true : false;
             $product->description = $request->input('description');
             $product->product_updated_at = Carbon::now();
 
@@ -1448,6 +1449,7 @@ class ProductController extends Controller
                 // $product[$i]->sub_size_id = $request->input('size');
                 // $product[$i]->sku = $request->input('sku');
                 $product[$i]->description = $request->input('description');
+                $product[$i]->print_price_check = $request->print_price_check ? true : false;
                 $product[$i]->product_updated_at = Carbon::now();
 
                 $product[$i]->save();
@@ -1736,8 +1738,8 @@ class ProductController extends Controller
                 // $product[$i]->sub_size_id = $request->input('size');
                 // $product[$i]->sku = $request->input('sku');
                 $product[$i]->description = $request->input('description');
+                $product[$i]->print_price_check = $request->print_price_check ? true : false;
                 $product[$i]->product_updated_at = Carbon::now();
-
                 $product[$i]->save();
                 // dd($product[$i]);
 
@@ -3186,7 +3188,13 @@ class ProductController extends Controller
                 'transaction_sell_lines.item_tax',
                 'tax_rates.name as tax',
                 'u.short_name as unit',
-                DB::raw('((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
+                DB::raw("
+                IF (p.print_price_check = 1 ,
+                (transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.original_amount
+                , 
+                (transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax 
+                ) as subtotal"),
+                // DB::raw( "((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal")
             )
             ->orderBy('transaction_date', 'DESC')
             // ->orderBy('t.invoice_no','DESC')
