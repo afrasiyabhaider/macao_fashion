@@ -268,6 +268,7 @@ class SellPosController extends Controller
      */
     public function create()
     {
+        // dd(1);
         if (!auth()->user()->can('sell.create')) {
             abort(403, 'Unauthorized action.');
         }
@@ -2639,7 +2640,9 @@ class SellPosController extends Controller
             if ($supplier_id != 'all') {
                 $products->where('products.supplier_id', $supplier_id);
             }
-
+            if ($category_id === 'all' || $supplier_id === 'all') {
+                $products->orderBy('show_pos', 'DESC');
+            }
             $products = $products->select(
                 'products.id as product_id',
                 'products.name',
@@ -2668,13 +2671,14 @@ class SellPosController extends Controller
                 // ->orderBy('created_at', 'DESC')
                 ->groupBy('products.id')
                 // ->groupBy('variations.id')
-                ->orderBy('show_pos', 'DESC')
+                
                 // ->orderBy('VLD.product_updated_at', 'DESC')
                 ->orderBy('products.name', 'asc')
                 ->latest()
                 // ->limit(50)
                 // ->get();
             ->paginate(50);
+            
 
             // dd($products[2]);
 

@@ -223,6 +223,8 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::get('/reports/purchase-sell', 'ReportController@getPurchaseSell');
     Route::get('/reports/customer-supplier', 'ReportController@getCustomerSuppliers');
     Route::get('/reports/stock-report', 'ReportController@getStockReport');
+    Route::get('/reports/product-top-stock-report', 'ReportController@getProductInTopStockReport');
+    Route::get('/reports/product-pos-stock-report', 'ReportController@getProductInPosStockReport');
     Route::get('/reports/grouped-stock-report', 'ReportController@getGroupedStockReport');
     Route::get('/reports/color-report', 'ReportController@getColorStockReport');
     Route::get('/reports/supplier-report', 'ReportController@supplier_report');

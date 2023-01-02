@@ -266,6 +266,332 @@ $(document).ready(function() {
             __currency_convert_recursively($('#stock_report_table'));
         },
     });
+    product_in_top_report_table = $('#product_in_top_report_table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '/reports/product-top-stock-report',
+            data: function(d) {
+                var start = '';
+                var end = '';
+                if ($('#product_purchase_date_filter').val()) {
+                    // start = $('input#product_purchase_date_filter')
+                    //     .data('daterangepicker')
+                    //     .moment().subtract(10, 'years').format('YYYY-MM-DD');
+                    // end = $('input#product_purchase_date_filter')
+                    //     .data('daterangepicker')
+                    //     .endDate.format('YYYY-MM-DD');
+                    start = $('input#product_purchase_date_filter')
+                        .data('daterangepicker')
+                        .startDate.format('YYYY-MM-DD');
+                    end = $('input#product_purchase_date_filter')
+                        .data('daterangepicker')
+                        .endDate.format('YYYY-MM-DD');
+                }
+                d.start_date = start;
+                d.end_date = end;
+
+                d.location_id = $('#location_id').val();
+                d.category_id = $('#category_id').val();
+                d.sub_category_id = $('#sub_category_id').val();
+                d.supplier_id = $('#suppliers').val();
+                // d.from_date = $('#product_list_from_date').val();
+                // d.to_date = $('#product_list_to_date').val();
+                d.unit_id = $('#unit').val();
+            },
+        },
+        pageLength: 300,
+        lengthMenu: [
+            [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, -1],
+            [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, 'All'],
+        ],
+        aaSorting: [21, 'desc'],
+        columns: [{
+                data: 'DT_Row_Index',
+                name: 'DT_Row_Index',
+                searchable: false,
+                orderable: false
+            },
+            {
+                data: 'mass_delete',
+                name: 'mass_delete',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'printing_qty',
+                name: 'printing_qty',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'image',
+                name: 'image',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'sku',
+                name: 'variations.sub_sku'
+            },
+            {
+                data: 'show_pos',
+                name: 'show_pos',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'product',
+                name: 'p.name'
+            },
+            {
+                data: 'refference',
+                name: 'p.refference'
+            },
+            {
+                data: 'location_name',
+                name: 'bl.name'
+            },
+            {
+                data: 'actions',
+                name: 'actions',
+                searchable: false,
+                orderable: false
+            },
+            {
+                data: 'unit_price',
+                name: 'variations.sell_price_inc_tax'
+            },
+            {
+                data: 'color_name',
+                name: 'colors.name'
+            },
+            {
+                data: 'category_name',
+                name: 'categories.name'
+            },
+            {
+                data: 'sub_category_name',
+                name: 'sub_cat.name'
+            },
+            {
+                data: 'size_name',
+                name: 'sizes.name'
+            },
+            {
+                data: 'description',
+                name: 'p.description'
+            },
+            {
+                data: 'sale_percent',
+                name: 'sale_percent'
+            },
+            {
+                data: 'stock',
+                name: 'stock',
+                searchable: false
+            },
+            {
+                data: 'total_sold',
+                name: 'total_sold',
+                searchable: false
+            },
+            {
+                data: 'total_transfered',
+                name: 'total_transfered',
+                searchable: false
+            },
+            {
+                data: 'supplier_name',
+                name: 'suppliers.name'
+            },
+            {
+                data: 'product_date',
+                name: 'vld.product_updated_at'
+            },
+            {
+                data: 'product_date',
+                name: 'vld.product_updated_at'
+            },
+
+            // { data: 'updated_at', name: 'updated_at' },
+            // { data: 'total_adjusted', name: 'total_adjusted', searchable: false },
+        ],
+        fnDrawCallback: function(oSettings) {
+            $('#footer_total_stock').html(__sum_stock($('#product_in_top_report_table'), 'current_stock'));
+            $('#footer_total_sold').html(__sum_stock($('#product_in_top_report_table'), 'total_sold'));
+            $('#footer_total_transfered').html(
+                __sum_stock($('#product_in_top_report_table'), 'total_transfered')
+            );
+            $('#footer_total_adjusted').html(
+                __sum_stock($('#product_in_top_report_table'), 'total_adjusted')
+            );
+            __currency_convert_recursively($('#product_in_top_report_table'));
+        },
+    });   
+    product_in_pos_report_table = $('#product_in_pos_report_table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '/reports/product-pos-stock-report',
+            data: function(d) {
+                var start = '';
+                var end = '';
+                if ($('#product_purchase_date_filter').val()) {
+                    // start = $('input#product_purchase_date_filter')
+                    //     .data('daterangepicker')
+                    //     .moment().subtract(10, 'years').format('YYYY-MM-DD');
+                    // end = $('input#product_purchase_date_filter')
+                    //     .data('daterangepicker')
+                    //     .endDate.format('YYYY-MM-DD');
+                    start = $('input#product_purchase_date_filter')
+                        .data('daterangepicker')
+                        .startDate.format('YYYY-MM-DD');
+                    end = $('input#product_purchase_date_filter')
+                        .data('daterangepicker')
+                        .endDate.format('YYYY-MM-DD');
+                }
+                d.start_date = start;
+                d.end_date = end;
+
+                d.location_id = $('#location_id').val();
+                d.category_id = $('#category_id').val();
+                d.sub_category_id = $('#sub_category_id').val();
+                d.supplier_id = $('#suppliers').val();
+                // d.from_date = $('#product_list_from_date').val();
+                // d.to_date = $('#product_list_to_date').val();
+                d.unit_id = $('#unit').val();
+            },
+        },
+        pageLength: 300,
+        lengthMenu: [
+            [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, -1],
+            [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, 'All'],
+        ],
+        aaSorting: [21, 'desc'],
+        columns: [{
+                data: 'DT_Row_Index',
+                name: 'DT_Row_Index',
+                searchable: false,
+                orderable: false
+            },
+            {
+                data: 'mass_delete',
+                name: 'mass_delete',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'printing_qty',
+                name: 'printing_qty',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'image',
+                name: 'image',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'sku',
+                name: 'variations.sub_sku'
+            },
+            {
+                data: 'show_pos',
+                name: 'show_pos',
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'product',
+                name: 'p.name'
+            },
+            {
+                data: 'refference',
+                name: 'p.refference'
+            },
+            {
+                data: 'location_name',
+                name: 'bl.name'
+            },
+            {
+                data: 'actions',
+                name: 'actions',
+                searchable: false,
+                orderable: false
+            },
+            {
+                data: 'unit_price',
+                name: 'variations.sell_price_inc_tax'
+            },
+            {
+                data: 'color_name',
+                name: 'colors.name'
+            },
+            {
+                data: 'category_name',
+                name: 'categories.name'
+            },
+            {
+                data: 'sub_category_name',
+                name: 'sub_cat.name'
+            },
+            {
+                data: 'size_name',
+                name: 'sizes.name'
+            },
+            {
+                data: 'description',
+                name: 'p.description'
+            },
+            {
+                data: 'sale_percent',
+                name: 'sale_percent'
+            },
+            {
+                data: 'stock',
+                name: 'stock',
+                searchable: false
+            },
+            {
+                data: 'total_sold',
+                name: 'total_sold',
+                searchable: false
+            },
+            {
+                data: 'total_transfered',
+                name: 'total_transfered',
+                searchable: false
+            },
+            {
+                data: 'supplier_name',
+                name: 'suppliers.name'
+            },
+            {
+                data: 'product_date',
+                name: 'vld.product_updated_at'
+            },
+            {
+                data: 'product_date',
+                name: 'vld.product_updated_at'
+            },
+
+            // { data: 'updated_at', name: 'updated_at' },
+            // { data: 'total_adjusted', name: 'total_adjusted', searchable: false },
+        ],
+        fnDrawCallback: function(oSettings) {
+            $('#footer_total_stock').html(__sum_stock($('#product_in_pos_report_table'), 'current_stock'));
+            $('#footer_total_sold').html(__sum_stock($('#product_in_pos_report_table'), 'total_sold'));
+            $('#footer_total_transfered').html(
+                __sum_stock($('#product_in_pos_report_table'), 'total_transfered')
+            );
+            $('#footer_total_adjusted').html(
+                __sum_stock($('#product_in_pos_report_table'), 'total_adjusted')
+            );
+            __currency_convert_recursively($('#product_in_pos_report_table'));
+        },
+    });
     //Grouped Stock report table
     grouped_stock_report_table = $('#grouped_stock_report_table').DataTable({
         processing: true,
