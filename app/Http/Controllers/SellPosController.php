@@ -2641,9 +2641,14 @@ class SellPosController extends Controller
                 $products->where('products.supplier_id', $supplier_id);
             }
             if ($category_id === 'all' || $supplier_id === 'all') {
-                $products->orderBy('show_pos', 'DESC');
+                $products->where('show_pos','!=', 0);
+                
+                // $products->orderBy('show_pos', 'DESC');
             }
-            $products = $products->select(
+            if($supplier_id != 'all'){
+                $products->orderBy('products.updated_at', 'DESC');
+            }
+        $products = $products->select(
                 'products.id as product_id',
                 'products.name',
                 'products.show_pos as show_pos',
@@ -2671,8 +2676,6 @@ class SellPosController extends Controller
                 // ->orderBy('created_at', 'DESC')
                 ->groupBy('products.id')
                 // ->groupBy('variations.id')
-                
-                // ->orderBy('VLD.product_updated_at', 'DESC')
                 ->orderBy('products.name', 'asc')
                 ->latest()
                 // ->limit(50)

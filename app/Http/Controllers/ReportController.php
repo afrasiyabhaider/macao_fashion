@@ -1613,7 +1613,7 @@ class ReportController extends Controller
             if (!empty($type)) {
                 $query->where('p.type', $type);
             }
-            $query->where('show_pos',1);
+            $query->where('show_pos', '!=', 0);
             //TODO::Check if result is correct after changing LEFT JOIN to INNER JOIN
 
 
@@ -1902,6 +1902,7 @@ class ReportController extends Controller
         if ($request->ajax()) {
             $query = Variation::join('products as p', 'p.id', '=', 'variations.product_id')
                 ->join('units', 'p.unit_id', '=', 'units.id')
+                ->join('website_products', 'p.id', '=', 'website_products.product_id')
                 ->join('colors', 'p.color_id', '=', 'colors.id')
                 ->join('sizes', 'p.sub_size_id', '=', 'sizes.id')
                 ->join('suppliers', 'p.supplier_id', '=', 'suppliers.id')
@@ -2034,9 +2035,20 @@ class ReportController extends Controller
                     // return  '<input type="checkbox" class="row-select" value="' . $row->product_id . '"><input type="number" class="row-qty form-control" value="' . number_format($row->current_stock) . '" max="' . number_format($row->current_stock) . '" style="width:70px;" id="qty_' . $row->product_id . '">';
                 })
                 ->editColumn('show_pos',function($row){
+                    // $data = '';
+                    // if(!$row->show_pos){
+                    //     $data .= '<span class="btn btn-xs btn-danger">Normal</span>';
+                    // }
+                    // return $data;
+                    $web_items = WebsiteProducts::where('product_id',$row->product_id)->first();
                     $data = '';
-                    if(!$row->show_pos){
-                        $data .= '<span class="btn btn-xs btn-danger">Normal</span>';
+                    // if($row->show_pos){
+                    //     $data .= '<span class="btn btn-xs btn-info">TOP</span>';
+                    // }else{
+                    //     $data .= '<span class="btn btn-xs btn-danger">Normal</span>';
+                    // }
+                    if($web_items){
+                        $data .= '<span class="btn btn-xs btn-success">On Website</span>';
                     }
                     return $data;
                 })
