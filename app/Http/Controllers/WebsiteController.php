@@ -84,6 +84,48 @@ class WebsiteController extends Controller
         // dd(WebsiteProducts::get(),$product,$request->input());
 
     }
+    public function removeToWebsite(Request $request)
+    {
+        // dd($request);
+        // $validator = $request->validate([
+        //     'reffernce'
+        // ]);
+        try {
+            DB::beginTransaction();
+                $product = explode(",", $request->input('product_id'));
+                 $i=0;
+                 $count=0;
+                foreach ($product as $key => $value) {
+                    $product = Product::find($value);
+                    WebsiteProducts::where('product_id',$product->id)->delete();
+                    $i++;
+                    $count++;
+                }
+                if($i >= 1){
+                    $output = [
+                           'success' => 1,
+                           'msg' => $i." of ".$count." products remove from Website whose reffernces are unique"
+                       ]; 
+                }else{
+                    $output = [
+                        'success' => 1,
+                        'msg' => "All products of these reffernces not  exists in website"
+                    ]; 
+
+                }
+            DB::commit();
+        } catch (\Exception $ex) {
+            DB::rollback();
+            $output = [
+                'success' => 0,
+                'msg' => __("messages.something_went_wrong") . "Message:" . $ex->getMessage() . ' on Line: ' . $ex->getLine() . ' of ' . $ex->getFile()
+            ];
+        }
+        return redirect()->back()->with('status', $output);
+
+        // dd(WebsiteProducts::get(),$product,$request->input());
+
+    }
     /**
      * Display a listing of the resource.
      *

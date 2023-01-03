@@ -1950,10 +1950,30 @@ $(document).ready(function() {
             {
                 data: 'refference',
                 name: 'p.refference'
+            },{
+                data: 'unit_price',
+                name: 'unit_price'
             },
             {
-                data: 'all_time_purchased',
-                name: 'all_time_purchased',
+                data: 'current_stock',
+                name: 'current_stock',
+                searchable: false,
+                orderable: false
+            },
+            {
+                data: 'total_qty_sold',
+                name: 'total_qty_sold',
+                searchable: false
+            },
+            {
+                data: 'seven_day_sold',
+                name: 'seven_day_sold',
+                searchable: false,
+                orderable: false
+            },
+            {
+                data: 'fifteen_day_sold',
+                name: 'fifteen_day_sold',
                 searchable: false,
                 orderable: false
             },
@@ -1964,36 +1984,21 @@ $(document).ready(function() {
                 orderable: false
             },
             {
-                data: 'fifteen_day_sold',
-                name: 'fifteen_day_sold',
+                data: 'all_time_purchased',
+                name: 'all_time_purchased',
                 searchable: false,
                 orderable: false
-            },{
-                data: 'seven_day_sold',
-                name: 'seven_day_sold',
-                searchable: false,
-                orderable: false
-            },
-            {
-                data: 'total_qty_sold',
-                name: 'total_qty_sold',
-                searchable: false
             },
            
             // { data: 'total_sold', searchable: false, orderable: false },
             // { data: 'barcode', name: 'p.sku' },
             // { data: 'transaction_date', name: 't.transaction_date' },
-            {
-                data: 'current_stock',
-                name: 'current_stock',
-                searchable: false,
-                orderable: false
-            },
-            {
-                data: 'sale_percentage',
-                name: 'sale_percentage',
-                searchable: false
-            },
+           
+            // {
+            //     data: 'sale_percentage',
+            //     name: 'sale_percentage',
+            //     searchable: false
+            // },
             {
                 data: 'subtotal',
                 name: 'subtotal',

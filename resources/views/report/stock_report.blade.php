@@ -169,7 +169,7 @@
                         <li>
                             <a href="#psr_product_in_top_tab" data-toggle="tab" aria-expanded="true">
                                 <i class="fa fa-check" aria-hidden="true"></i>
-                                 Top in pos
+                                Top in pos
                             </a>
                         </li>
                         <li>
@@ -218,7 +218,7 @@
                                         'target' => '_blank',
                                     ]) !!}
                                     {{-- {!! Form::submit('Print Selected', array('class' => 'btn btn-md btn-warning', 'id' =>
-                            'bulkPrint-selected')) !!} --}}
+                                    'bulkPrint-selected')) !!} --}}
                                     {!! Form::hidden('selected_products_bulkPrint', null, ['id' => 'selected_products_bulkPrint']) !!}
                                     {!! Form::hidden('selected_products_bulkPrint_qty', null, ['id' => 'selected_products_bulkPrint_qty']) !!}
                                     {!! Form::hidden('printing_location_id', 1, ['id' => 'printing_location_id']) !!}
@@ -279,6 +279,20 @@
                             </div>
                         </div>
                         <div class="tab-pane" id="psr_product_in_pos_tab">
+                            <div class="row" style="margin-bottom: 20px">
+                                <div class="col-12">
+                                    <form action="{{ action('WebsiteController@removeToWebsite') }}" method="post"
+                                        class="ml-5" style="margin-left: 20px" id="remove_to_website">
+                                        @csrf
+                                        <input type="hidden" name="product_id" id="product_id">
+                                        <button type="submit" class="btn btn-danger pull-left" id="remove_to_website_button">
+                                            <i class="fa fa-cross "></i>
+                                            Remove from Website
+                                        </button>
+                                    </form>
+                                    
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-md-12">
                                     @include('report.partials.product_in_pos_report_table')
@@ -396,6 +410,29 @@
             if (selected_rows.length > 0) {
                 $('input#product_id').val(selected_rows);
                 $("form#add_to_website").submit();
+            } else {
+                $('input#product_id').val('');
+                swal('@lang('lang_v1.no_row_selected')');
+            }
+        }) 
+        $(document).on('click', '#remove_to_website_button', function(e) {
+            e.preventDefault();
+            var selected_rows = [];
+            var i = 0;
+            $('.row-select:checked').each(function() {
+                var selectedQty = $("#stock_qty_" + $(this).val()).val();
+                var selectedMaxQty = $("#stock_qty_" + $(this).val()).attr('max');
+                if (parseInt(selectedQty) <= parseInt(selectedMaxQty)) {
+                    selected_rows[i++] = $(this).val();
+                }
+            });
+            // console.log(selected_rows);
+            // return 0;
+
+
+            if (selected_rows.length > 0) {
+                $('input#product_id').val(selected_rows);
+                $("form#remove_to_website").submit();
             } else {
                 $('input#product_id').val('');
                 swal('@lang('lang_v1.no_row_selected')');

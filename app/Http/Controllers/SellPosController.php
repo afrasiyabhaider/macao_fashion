@@ -2640,13 +2640,15 @@ class SellPosController extends Controller
             if ($supplier_id != 'all') {
                 $products->where('products.supplier_id', $supplier_id);
             }
-            if ($category_id === 'all' || $supplier_id === 'all') {
+            if ($category_id === 'all' && $supplier_id === 'all') {
+                // dd(1);
                 $products->where('show_pos','!=', 0);
-                
                 // $products->orderBy('show_pos', 'DESC');
             }
-            if($supplier_id != 'all'){
+            if($category_id === 'all' || $supplier_id != 'all'){
                 $products->orderBy('products.updated_at', 'DESC');
+            }else{
+                $products->orderBy('created_at', 'DESC');
             }
         $products = $products->select(
                 'products.id as product_id',
@@ -2673,7 +2675,7 @@ class SellPosController extends Controller
             )
                 ->where("p_type", "product")
                 ->where("products.sub_size_id", '!=', 'null')
-                // ->orderBy('created_at', 'DESC')
+                
                 ->groupBy('products.id')
                 // ->groupBy('variations.id')
                 ->orderBy('products.name', 'asc')

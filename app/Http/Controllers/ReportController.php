@@ -5080,6 +5080,7 @@ class ReportController extends Controller
                     'v.name as variation_name',
                     't.id as transaction_id',
                     't.transaction_date as transaction_date',
+                    'transaction_sell_lines.unit_price_before_discount as unit_price',
                     DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
                     DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference  $vld_str) as current_stock"),
                     DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference) as all_time_sold"),
@@ -5156,6 +5157,9 @@ class ReportController extends Controller
                 ->editColumn('product_updated_at', function ($row) {
                     return Carbon::parse($row->product_updated_at)->format('d-M-Y H:i');
                 })
+                ->editColumn('unit_price', function ($row) {
+                    return '<span class="display_currency" data-currency_symbol = true>' . $row->unit_price . '</span>';
+                })
                 ->editColumn('total_sold', function ($row) {
                     return '<span  class="total_sold" data-currency_symbol=false data-orig-value="' . (int)$row->total_sold . '" data-unit="' . $row->unit . '" >' . (int) $row->total_sold . '</span> ' . $row->unit;
                 })
@@ -5210,7 +5214,7 @@ class ReportController extends Controller
                         }
                     }
                 ])
-                ->rawColumns(['image', 'total_sold', 'current_stock', 'subtotal', 'total_qty_sold','detail','refference','all_time_purchased','all_time_sold','seven_day_sold','fifteen_day_sold'])
+                ->rawColumns(['image', 'total_sold','unit_price', 'current_stock', 'subtotal', 'total_qty_sold','detail','refference','all_time_purchased','all_time_sold','seven_day_sold','fifteen_day_sold'])
                 ->make(true);
         }
     }
