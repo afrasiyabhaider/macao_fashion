@@ -417,6 +417,7 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     // Website Routes
     Route::post('website/product/', 'WebsiteController@addToWebsite');
     Route::post('pos/product/', 'ProductController@showPos');
+    Route::post('website/remove-product/', 'WebsiteController@removeToWebsite');
     Route::post('pos/bottom/product/', 'ProductController@showBottomPos');
     Route::get('website/product/ajax', 'WebsiteController@websiteAjaxProducts');
     Route::get('website/product/{id}/delete', 'WebsiteController@destroy');
