@@ -1180,6 +1180,7 @@ class ProductController extends Controller
             $variation->sub_sku = $product->sku;
             if($request->allow_price_qty){
                 $variation->dpp_inc_tax = $this->productUtil->num_uf($request->input('unit_price'));
+                $variation->old_sell_price_inc_tax	 = $variation->sell_price_inc_tax;
                 $variation->sell_price_inc_tax = $this->productUtil->num_uf($request->input('custom_price'));
             }
             $variation->save();
@@ -1461,6 +1462,7 @@ class ProductController extends Controller
                 // $variation->sub_sku = $product[$i]->sku;
                 if($request->allow_price_qty){
                     $variation->dpp_inc_tax = $this->productUtil->num_uf($request->input('unit_price'));
+                    $variation->old_sell_price_inc_tax	 = $variation->sell_price_inc_tax;
                     $variation->sell_price_inc_tax = $this->productUtil->num_uf($request->input('custom_price'));
                 }
                 $variation->save();
@@ -1750,6 +1752,7 @@ class ProductController extends Controller
                 // $variation->sub_sku = $product[$i]->sku;
                 if($request->allow_price_qty){
                     $variation->dpp_inc_tax = $this->productUtil->num_uf($request->input('unit_price'));
+                    $variation->old_sell_price_inc_tax	 = $variation->sell_price_inc_tax;
                     $variation->sell_price_inc_tax = $this->productUtil->num_uf($request->input('custom_price'));
                 }
                 $variation->save();
@@ -4160,6 +4163,7 @@ class ProductController extends Controller
                         'sku' => $pro->sku,
                         'max_price' => $pro->variations()->first()->sell_price_inc_tax,
                         'min_price' => $pro->variations()->first()->sell_price_inc_tax,
+                        'old_price' => $pro->variations()->first()->old_sell_price_inc_tax,
                         'supplier' => $pro->supplier()->first()->name,
                         'sub_category' => $pro->sub_category()->first()->name,
                         'count' => $selected_products_qty[$i],

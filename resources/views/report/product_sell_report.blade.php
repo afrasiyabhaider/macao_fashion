@@ -127,8 +127,7 @@
                                             <th>@lang('sale.product')</th>
                                             {{-- <th>Purchase Date</th> --}}
                                             <th>Ref</th>
-                                            <th>Unit Price</th>
-                                            <th>@lang('report.current_stock')</th>
+                                           
 
                                             {{-- <th>Total Sold</th> --}}
                                             {{-- <th>Barcode</th>
@@ -141,6 +140,8 @@
                                             {{-- <th>15-D Sold</th> --}}
                                             <th>A.T Sold</th>
                                             <th>A.T Purchased</th>
+                                            <th>@lang('report.current_stock')</th>
+                                            <th>Unit Price</th>
                                             {{-- <th>Sale %</th> --}}
                                             <th>Total</th>
                                         </tr>

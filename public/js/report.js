@@ -1950,15 +1950,6 @@ $(document).ready(function() {
             {
                 data: 'refference',
                 name: 'p.refference'
-            },{
-                data: 'unit_price',
-                name: 'unit_price'
-            },
-            {
-                data: 'current_stock',
-                name: 'current_stock',
-                searchable: false,
-                orderable: false
             },
             {
                 data: 'total_qty_sold',
@@ -1989,7 +1980,17 @@ $(document).ready(function() {
                 searchable: false,
                 orderable: false
             },
-           
+            
+            {
+                data: 'current_stock',
+                name: 'current_stock',
+                searchable: false,
+                orderable: false
+            },
+            {
+                data: 'unit_price',
+                name: 'unit_price'
+            },
             // { data: 'total_sold', searchable: false, orderable: false },
             // { data: 'barcode', name: 'p.sku' },
             // { data: 'transaction_date', name: 't.transaction_date' },
