@@ -135,8 +135,8 @@
                                             <th>
                                                 U Sold <small style="color: grey;font-weight:400">Filter</small>
                                             </th>
-                                            <th>A.7 Sold</th>
-                                            <th>A.15 Sold</th>
+                                            <th>7 Sold</th>
+                                            <th>15 Sold</th>
                                             {{-- <th>15-D Sold</th> --}}
                                             <th>A.T Sold</th>
                                             <th>A.T Purchased</th>
