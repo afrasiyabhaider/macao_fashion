@@ -14,6 +14,7 @@ use GuzzleHttp\Client;
 
 use Spatie\Permission\Models\Role;
 
+
 class Util
 {
     /**
@@ -27,7 +28,7 @@ class Util
     {
         $thousand_separator  = '';
         $decimal_separator  = '';
-
+     
         if (!empty($currency_details)) {
             $thousand_separator = $currency_details->thousand_separator;
             $decimal_separator = $currency_details->decimal_separator;

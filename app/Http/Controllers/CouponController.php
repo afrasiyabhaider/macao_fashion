@@ -236,9 +236,10 @@ coupon ki 3 month expire date
         $duplicate_product = null;
         $rack_details = null;
         $module_form_parts = $this->moduleUtil->getModuleData('product_form_part');
+        $RandomId = $this->productUtil->RandomId();
 
         return view('coupon.create')
-            ->with(compact(  'brands', 'barcode_types','barcode_default', 'module_form_parts'));
+            ->with(compact(  'brands', 'barcode_types','barcode_default', 'module_form_parts', 'RandomId'));
     }
 
     /**
@@ -261,20 +262,32 @@ coupon ki 3 month expire date
             if (!empty($module_form_fields)) {
                 $form_fields = array_merge($form_fields, $module_form_fields);
             }
+            // dd($form_fields);
             
             $objDetails = $request->only($form_fields);
             $objDetails['business_id'] = $business_id;
             $objDetails['orig_value'] = $objDetails['value'];
             $objDetails['created_by'] = $request->session()->get('user.id');
  
-            $objDetails['isActive'] = 'active' ;
+            $objDetails['isActive'] = 'inactive' ;
             $objDetails['isUsed'] = '0' ;
-
-             
+            // $objDetails['barcode'] = rand(11111,99999);
+            $objDetails['barcode'] = $objDetails['barcode'];
+            // dd($objDetails);
+            if(empty($objDetails['barcode'])){
+                $objDetails['barcode'] = 1;
+            }
+            // if(empty($objDetails['barcode'])){
+            //     $objDetails['barcode'] = $this->generateUUID(6);
+            // }
             DB::beginTransaction();
 
             $GiftCard = Coupon::create($objDetails);
-            
+            if(!empty($objDetails['barcode']) && $GiftCard->barcode == 1 ){
+                    $barcode= $this->productUtil->generateProductSku($GiftCard->id);
+                    $GiftCard->barcode = $barcode;
+                } 
+            $GiftCard->save();
              
             DB::commit();
             $output = ['success' => 1,
@@ -723,8 +736,9 @@ coupon ki 3 month expire date
      *
      * @return \Illuminate\Http\Response
      */
-    public function quickAdd()
+    public function quickAdd(Request $request)
     {
+        // dd($request->all());
         if (!auth()->user()->can('coupon.create')) {
             abort(403, 'Unauthorized action.');
         }
@@ -732,7 +746,7 @@ coupon ki 3 month expire date
         $business_id = request()->session()->get('user.business_id');
 
         
-        
+        $location_id = request()->location_id;
         $brands = Brands::where('business_id', $business_id)
                             ->pluck('name', 'id');
        
@@ -745,32 +759,51 @@ coupon ki 3 month expire date
         $module_form_parts = $this->moduleUtil->getModuleData('product_form_part');
         $RandomId = $this->productUtil->RandomId();
  
-        return view('coupon.partials.quick_add')->with(compact(  'brands', 'barcode_types','barcode_default', 'module_form_parts','RandomId'));
+        return view('coupon.partials.quick_add')->with(compact(  'brands', 'barcode_types','barcode_default', 'module_form_parts','RandomId','location_id'));
     }
 
-    
+
+        public function generateUUID($length)
+        {
+            $characters = '0123456789';
+            $uuid = '';
+
+            for ($i = 0; $i < $length; $i++) {
+                $uuid .= $characters[rand(0, 6)];
+            }
+
+            return $uuid;
+        }
+
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    
     public function saveQuickProduct(Request $request)
     {
+        
         // return $request;
         if (!auth()->user()->can('coupon.create')) {
             abort(403, 'Unauthorized action.');
         } 
-
+// dd($request->location_id);
+            $request->validate([
+                'location_id' => 'required',
+            ]);
         try {
+
+            
             $business_id = $request->session()->get('user.business_id');
             $form_fields =['name', 'barcode', 'business_id', 'gift_card_id', 'value', 'barcode_type', 'isActive', 'transaction_id','start_date', 'created_by', 'isUsed'];
-
+           
             $module_form_fields = $this->moduleUtil->getModuleFormField('product_form_fields');
             if (!empty($module_form_fields)) {
                 $form_fields = array_merge($form_fields, $module_form_fields);
             }
-            
+            // dd($form_fields);
             $objDetails = $request->only($form_fields);
             $objDetails['business_id'] = $business_id;
             $objDetails['orig_value'] = $objDetails['value'];
@@ -778,13 +811,26 @@ coupon ki 3 month expire date
  
             $objDetails['isActive'] = 'inactive' ;
             $objDetails['isUsed'] = '0' ;
-
-             
+            $objDetails['barcode'] = $objDetails['barcode'];
+            // dd($objDetails);
+            if(empty($objDetails['barcode'])){
+                $objDetails['barcode'] = 1;
+            }
+            // dd($objDetails);
+            // if(empty($objDetails['barcode'])){
+            // //     $objDetails['barcode'] = $this->generateUUID(6);
+            // $objDetails['barcode'] = rand(11111,99999);
+            // }
             DB::beginTransaction();
-
+            // dd($objDetails);
             $GiftCard = Coupon::create($objDetails);
+            if(!empty($objDetails['barcode']) && $GiftCard->barcode == 1 ){
+                    $barcode= $this->productUtil->generateProductSku($GiftCard->id);
+                    $GiftCard->barcode = $barcode;
+                } 
+            $GiftCard->save();
             //------ PRODUCT Creation Start
-            
+             
             $objProductDetails['name'] = "Coupon - ".$GiftCard->barcode;
             $objProductDetails['business_id'] =$request->session()->get('user.business_id');
             // $objProductDetails['brand_id'] = 1;
@@ -792,7 +838,8 @@ coupon ki 3 month expire date
             $objProductDetails['category_id'] = 1;
             $objProductDetails['barcode_type'] = 'C128';
             $objProductDetails['tax_type'] = 'exclusive';
-            $objProductDetails['sku'] = "Coupon".$GiftCard->barcode;
+            // $objProductDetails['sku'] = "Coupon".$GiftCard->barcode;
+            $objProductDetails['sku'] = $GiftCard->barcode;
             $objProductDetails['alert_quantity'] = '    1';
             $objProductDetails['type'] = 'single';
             $objProductDetails['p_type'] = 'coupon';
@@ -820,13 +867,16 @@ coupon ki 3 month expire date
             $objVariationDetails['sell_price_inc_tax'] = $GiftCard->value;
 
             $objVariations = Variation::create($objVariationDetails);
- 
+
+            
             $objVariationLocationDetails['qty_available'] = '1';  
-            $objVariationLocationDetails['location_id'] = $request->session()->get('user.business_location_id');
+            // $objVariationLocationDetails['location_id'] = $request->session()->get('user.business_location_id');
+            $objVariationLocationDetails['location_id'] = $request->location_id;
             $objVariationLocationDetails['product_id'] = $objProduct->id;
             $objVariationLocationDetails['product_variation_id'] = $product_variation->id;
             $objVariationLocationDetails['variation_id'] = $objVariations->id;
             $objVariationLocationDetails['product_refefrence'] = $objProduct->refference;
+            $objVariationLocationDetails['sell_price'] = $GiftCard->value;
 
             $objVariationsLocation = VariationLocationDetails::create($objVariationLocationDetails);
             //------ PRODUCT Creation Ends

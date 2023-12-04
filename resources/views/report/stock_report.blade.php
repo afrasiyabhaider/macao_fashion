@@ -58,6 +58,43 @@
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div>
+    <div class="modal fade in" tabindex="-1" role="dialog" id="VldPriceModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" id="closeThis" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">Ã—</span></button>
+                    <h4 class="modal-title">SELECT BUSSINESS</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{-- <div class="form-group">
+                                {!! Form::label('category_id', 'Business :') !!}
+                                @foreach ($business_locations as $key => $value)
+                                    @php
+                                        $newBusiness_locations[$key] = $value;
+                                    @endphp
+                                @endforeach
+                                {!! Form::select('category_id', collect($newBusiness_locations), null, [
+                                    'class' => 'form-control select2',
+                                    'style' => 'width:100%',
+                                    'id' => 'PriceBussiness',
+                                    'placeholder' => __('lang_v1.all'),
+                                ]) !!}
+                            </div> --}}
+                            <h3>Do you want to Change Price </h3>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="PriceSelected();">Finalize price</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
     <!-- Main content -->
     <section class="content">
         <div class="row">
@@ -73,6 +110,7 @@
                         <div class="form-group">
                             {!! Form::label('location_id', __('purchase.business_location') . ':') !!}
                             {!! Form::select('location_id', $business_locations, null, [
+                                // 'id' => 'location_ID',
                                 'class' => 'form-control select2',
                                 'style' => 'width:100%',
                             ]) !!}
@@ -221,7 +259,8 @@
                                     'bulkPrint-selected')) !!} --}}
                                     {!! Form::hidden('selected_products_bulkPrint', null, ['id' => 'selected_products_bulkPrint']) !!}
                                     {!! Form::hidden('selected_products_bulkPrint_qty', null, ['id' => 'selected_products_bulkPrint_qty']) !!}
-                                    {!! Form::hidden('printing_location_id', 1, ['id' => 'printing_location_id']) !!}
+                                    {!! Form::hidden('printing_location_id', null, ['id' => 'printing_location_id']) !!}
+                                    {{-- {!! Form::hidden('printing_location_id', 1, ['id' => 'printing_location_id']) !!} --}}
 
                                     <button type="submit" class="btn btn-success pull-left" id="bulkPrint-selected"
                                         style="margin-left: 20px">
@@ -253,6 +292,23 @@
                                     <button type="submit" class="btn btn-warning" id="bulkTransfer-selected">
                                         <i class="fa fa-random"></i>
                                         Transfer Selected
+                                    </button>
+                                    {!! Form::close() !!}
+                                    {!! Form::open([
+                                        'url' => action('ReportController@massVldSellPrice'),
+                                        'method' => 'post',
+                                        'id' => 'bulkPrice_form',
+                                        'class' => 'ml-5',
+                                    ]) !!}
+                                    {!! Form::hidden('selected_products_bulkprice', null, ['id' => 'selected_products_bulkprice']) !!}
+                                    {!! Form::hidden('selected_products_qty_bulkTransfer', null, ['id' => 'selected_products_qty_bulkTransfer']) !!}
+                                    {!! Form::hidden('bussiness_bulkPrice', null, ['id' => 'bussiness_bulkPrice']) !!}
+                                    {!! Form::hidden('current_location_id', null, ['id' => 'current_location_id']) !!}
+                                    {{-- {!! Form::submit(' Transfer Selected', array('class' => 'btn btn-warning', 'id' =>
+                            'bulkTransfer-selected')) !!} --}}
+                                    <button type="submit" class="btn btn-warning" id="bulkPrice-selected">
+                                        <i class="fa fa-random"></i>
+                                        Set price 
                                     </button>
                                     {!! Form::close() !!}
 
@@ -346,7 +402,8 @@
                 $('input#selected_products_bulkPrint').val(selected_rows);
                 $('input#selected_products_bulkPrint_qty').val(print_qty);
                 $('input#printing_location_id').val($("#location_id").val());
-                $("#location_id").val(1);
+                // $("#location_id").val(1);
+                $("#location_id").val($("#location_id").val());
 
                 $('form#bulkPrint_form').submit();
             } else {
@@ -365,6 +422,18 @@
             $("#bussiness_bulkTransfer").val(transferBussiness);
             $("#current_location").val($("#location_id").val());
             $('form#bulkTransfer_form').submit();
+        } 
+        function PriceSelected() {
+            // var PriceBussiness = $("#PriceBussiness option:selected").val();
+            var PriceBussiness = $("#location_id option:selected").val();
+            console.log(PriceBussiness);
+            if (PriceBussiness == "" || PriceBussiness == 0) {
+                alert("Please Choose Bussiness First to change price ");
+                return (false);
+            }
+            $("#bussiness_bulkPrice").val(PriceBussiness);
+            $("#current_location_id").val($("#location_id").val());
+            $('form#bulkPrice_form').submit();
         }
 
         $(document).on('click', '#bulkTransfer-selected', function(e) {
@@ -389,6 +458,32 @@
                 $('input#selected_products_bulkTransfer').val(selected_rows);
             } else {
                 $('input#selected_products_bulkTransfer').val('');
+                swal('@lang('lang_v1.no_row_selected')');
+            }
+        }) 
+        $(document).on('click', '#bulkPrice-selected', function(e) {
+            
+            e.preventDefault();
+            var selected_rows = [];
+            var selected_rows_qty = [];
+            var i = 0;
+            $('.row-select:checked').each(function() {
+                var selectedPrice = $("#vld_sell_price_" + $(this).val()).val();
+                var selectedOldPrice = $("#vld_old_sell_price_" + $(this).val()).val();
+                // var selectedLocation = $("#location_" + $(this).val()).text();
+                // var selectedLocationId = $("#location_" + $(this).val()).attr("max");
+                console.log(selectedPrice);
+                // if (parseInt(selectedPrice) <= parseInt(selectedMaxQty)) {
+                    selected_rows[i++] = $(this).val() + "@" + selectedPrice + "@" + selectedOldPrice;
+                        // $(this).val() + "@" + selectedPrice + "@" + selectedMaxQty + "@" +
+                        // selectedLocationId;
+                // }
+            });
+            if (selected_rows.length > 0) {
+                $('#VldPriceModal').modal('show');
+                $('input#selected_products_bulkprice').val(selected_rows);
+            } else {
+                $('input#selected_products_bulkprice').val('');
                 swal('@lang('lang_v1.no_row_selected')');
             }
         })

@@ -18,10 +18,12 @@
               'placeholder' => __('coupon.name')]); !!}
           </div>
         </div>
+        <input type="hidden" name="location_id"  value="{{$location_id}}" required>
         <div class="col-sm-4">
           <div class="form-group">
             {!! Form::label('barcode', __('coupon.barcode') . ':') !!} @show_tooltip(__('tooltip.sku'))
-            {!! Form::text('barcode', $RandomId, ['class' => 'form-control', 'required',
+            {{-- {!! Form::text('barcode', $RandomId, ['class' => 'form-control', 'required', --}}
+            {!! Form::text('barcode', null, ['class' => 'form-control', 
               'placeholder' => __('coupon.barcode')]); !!}
           </div>
         </div>
@@ -161,6 +163,12 @@
                 } else {
                     toastr.error(data.msg);
                 }
+            },
+             error: function(data){
+                var errors = data.responseJSON;
+                $.each( errors.errors, function( key, value ) {
+                  toastr.error(value[0]);
+                });
             }
         });
         return false;

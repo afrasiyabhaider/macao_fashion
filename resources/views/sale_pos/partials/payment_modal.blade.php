@@ -113,7 +113,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">@lang('messages.close')</button>
-				<button type="submit" class="btn btn-primary" id="pos-save">@lang('sale.finalize_payment')</button>
+				<button type="submit" class="btn btn-primary" id="pos-save"  data-cash-value="023" >@lang('sale.finalize_payment')</button>
 			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->

@@ -15,17 +15,22 @@
 
 <!-- Main content -->
 {{-- @dd($pos_settings) --}}
+
 <section class="content no-print">
 	<div class="row">
+		
 		<div class="@if(!empty($pos_settings['hide_product_suggestion']) && !empty($pos_settings['hide_recent_trans'])) col-md-10 col-md-offset-1 @else col-md-7 @endif col-sm-12">
 			@component('components.widget', ['class' => 'box-success'])
 			@slot('header')
 			<div class="row" style="margin-bottom: 5px;">
 				<div class="col-sm-6">
+				
 					<h3 class="box-title">POS Terminal <i class="fa fa-keyboard-o hover-q text-muted" aria-hidden="true"
 							data-container="body" data-toggle="popover" data-placement="bottom"
 							data-content="@include('sale_pos.partials.keyboard_shortcuts_details')" data-html="true"
-							data-trigger="hover" data-original-title="" title=""></i></h3>
+							data-trigger="hover" data-original-title="" title=""></i>
+							</h3>
+							<br> <strong class="ml-2" id="total_b_point"> </strong>
 							<br>
 							<br>
 					<input type="hidden" id="item_addition_method" value="{{$business_details->item_addition_method}}">
@@ -40,7 +45,8 @@
 									{!! Form::select('select_location_id', $business_locations, null, ['class' =>
 									'form-control input-sm mousetrap ',
 									'placeholder' => __('lang_v1.select_location'),
-									'id' => 'select_location_id',
+									'id' => 'select_location_id','onchange' =>
+								'locationChange(event);',
 									'required', 'autofocus'], $bl_attributes); !!}
 									<span class="input-group-addon">
 										@show_tooltip(__('tooltip.sale_location'))
@@ -99,6 +105,8 @@
 						Stock Report
 					</a>
 					
+					<button type="button" class="btn btn-warning btn-md pull-right" style="margin-right: 5px; " onClick="transationHistory();">Client History</button>
+					{{-- <button type="button" class="btn btn-danger btn-md pull-right " style="margin-right: 5px; " onClick="PriceChange();">Price Change</button> --}}
 				</div>
 			</div>
 			
@@ -113,6 +121,8 @@
 			<!-- /.box-header -->
 			<div class="box-body">
 				<div class="row">
+					<input type="text" hidden id="direct_cash" name="direct_cash" value="0">
+
 					@if(config('constants.enable_sell_in_diff_currency') == true)
 					<div class="col-md-4 col-sm-6">
 						<div class="form-group">
@@ -244,17 +254,23 @@
 					@endif
 				</div>
 
-				<div class="form-group col-md-4">
+				
+				<div class="form-group col-md-4" id="Bonus_Points" style="display: none"  >
 					<div class="input-group">
-						{{-- <label>Discount %</label> --}}
-						<input class="form-control" type="number" id="cust_discount" name="cust_discount"
-							 onchange="updateDiscount(this.value);" placeholder="Discount">
+						{{-- <label>Bonus Points</label> --}}
+						<p id="custDet" hidden></p>
+						<input class="form-control" type="hidden"  id="user_total_point" placeholder="Bonus Point">
+						<input class="form-control" type="hidden"  id="total_points" placeholder="Bonus Point">
+						<input class="form-control" type="number"  id="cust_points" name="cust_bonus_point" placeholder="Bonus Point" 
+						onchange="bonusinputes()">
+						<span id="errorshow" class="text-danger"></span>
 					</div>
 				</div>
 				<div class="form-group col-md-4">
 					<div class="input-group">
-						{{-- <label>Bonus Points</label> --}}
-						<input class="form-control" type="number" id="cust_points" placeholder="Bonus Point">
+						{{-- <label>Discount %</label> --}}
+						<input class="form-control" type="hidden"  id="cust_discount" name="cust_discount"
+							 onchange="updateDiscount(this.value);" placeholder="Discount" readonly>
 					</div>
 				</div>
 				{{-- <div class="form-group col-md-2"  >
@@ -396,7 +412,64 @@
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->
 </div>
+{{-- Transaction History Start--}}
+<div class="modal fade in" tabindex="-1" role="dialog" id="tHistoryModal">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" id="closeThis" class="close" data-dismiss="modal" aria-label="Close"><span
+						aria-hidden="true">×</span></button>
+				<h4 class="modal-title">transaction History</h4>
+			</div>
+			<div class="modal-body">
+				<div id="transaction_table"></div>
+				
+			
+			</div>
+			<div class="modal-footer">
+				{{-- <button type="button" class="btn btn-primary" onclick="updateUnknown();">Update</button> --}}
+				{{-- <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button> --}}
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div>
+{{-- Transaction History Stop--}}
 
+{{-- Price Change Start--}}
+{{-- <div class="modal fade in" tabindex="-1" role="dialog" id="PChangeModal">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" id="closeThis" class="close" data-dismiss="modal" aria-label="Close"><span
+						aria-hidden="true">×</span></button>
+				<h4 class="modal-title">Price Change</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="New_Price">
+								New Price*
+							</label>
+							<div class="input-group">
+								<span class="input-group-addon">
+									<i class="fa fa-info"></i>
+								</span>
+								<input type="text" class="form-control" placeholder="0.00"
+									id="unknownDiscountAmount">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" onclick="updateUnknown11();">Update</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+			</div>
+		</div>
+	</div>
+</div> --}}
+{{-- Price Change Stop--}}
 @stop
 
 @section('javascript')
@@ -418,6 +491,43 @@
 		var calc =  parseFloat(amount - __read_number($('#final_total_input')));
 		$('#change_text').html(__currency_trans_from_en(calc,true));
 	}
+	function transationHistory(){
+		$('#tHistoryModal').modal('show'); 
+		// $('#customer_id');
+		var customer_id=$('#customer_id').val();
+		$.ajax({
+           type:'GET',
+           url:'/sells/pos/transationhistory?customer_id='+customer_id, 
+        //    url:'/sells/pos/transationhistory', 
+           success:function(data){
+			// console.log(data);
+
+			$('#transaction_table').html('');
+			$('#transaction_table').append(data)
+		}
+        });
+    	
+    } 
+	// function PriceChange(){
+	// 	$('#PChangeModal').modal('show'); 
+	// 	// $('#customer_id');
+	// 	var customer_id=$('#customer_id').val();
+	// 	var location_id=$('#location_id').val();
+	// 	var product_id=$('#product_id').attr("data-variation_id")
+	// 	console.log(location_id,product_id);
+	// 	$.ajax({
+    //        type:'GET',
+    //        url:'/sells/pos/transationhistory?customer_id='+customer_id, 
+    //     //    url:'/sells/pos/transationhistory', 
+    //        success:function(data){
+	// 		// console.log(data);
+
+	// 		// $('#transaction_table').html('');
+	// 		// $('#transaction_table').append(data)
+	// 	}
+    //     });
+    	
+    // } 
 	function ResetFields(index)
 	{
 		$("#amount_"+index).removeAttr("max");
@@ -540,7 +650,11 @@
            }
         });
     }
-
+function locationChange(e){
+	var category_id = $('select#product_category').val();
+        var brand_id = $('select#product_brand').val();
+	get_product_suggestion_list(category_id, brand_id, e.target.value);
+}
      function checkThiss(obj)
     {
        if(obj.value != '1')
@@ -554,7 +668,23 @@
               	var objData = data.msg;
               	 //Update values
               	// $('input#discount_amount_modal').val(objData['discount']);
-              	$('input#cust_points').val(objData['bonus_points']);
+				$('#Bonus_Points').css('display', 'block');
+              	
+				//   $('input#cust_points').val(objData['bonus_points']);
+				const bonusePoint = @json(config('app.discount_amount'));
+				total_amountOfbonus = bonusePoint * objData['bonus_points'];
+				
+				console.log(objData);
+				// console.log('total bonus Points'+bonusePoint+total_amountOfbonus);
+				$('input#total_points').val(total_amountOfbonus.toFixed(2));
+              	$('input#cust_points').val(0);
+              	$('input#user_total_point').val(objData['bonus_points']);
+				$("#cust_points").attr("max",total_amountOfbonus.toFixed(2));
+
+				$('#custDet').text('');
+				$('#custDet').text(' Mobile: '+objData['mobile']+ ' Address: '+objData['landmark']);
+				$('#total_b_point').text('');
+              	$('#total_b_point').text('Total BP: '+objData['bonus_points']+' ('+total_amountOfbonus.toFixed(2)+')'+' Mobile: '+objData['mobile']+ ' Address: '+objData['landmark']);
               	$('input#cust_discount').val(objData['discount']);
               	$('input#cust_expiry').val(objData['bp_expiry']);
 
@@ -574,12 +704,40 @@
           	$('input#cust_expiry').val(0);
        }
     }
-    function updateDiscount(Value)
-    {
-    	// $('input#discount_type_modal').val('percentage');
-    	// $('input#discount_amount_modal').val(Value);
-        // $('#posEditDiscountModalUpdate').click();
-    }
+	function updateDiscount(Value)
+	{
+		// $('input#discount_type_modal').val('percentage');
+		// $('input#discount_amount_modal').val(Value);
+		// $('#posEditDiscountModalUpdate').click();
+	}
+	function bonusinputes() {
+		const value = parseInt($('#cust_points').val());
+		// console.log(value);
+		var user_total_point= parseInt($('#user_total_point').val());
+		var total_point= parseInt($('#total_points').val());
+		const discount = @json(config('app.discount_amount'));
+		total_amountOfbonus = discount * user_total_point;
+		// console.log(total_point,value, value <= total_point);
+		if(value <= total_point ){
+			$('#errorshow').text('');
+			var request_point=value*20;
+			var remaining_point=user_total_point-request_point;
+			
+			var detail= $('#custDet').text()
+			$('#total_b_point').text('Total BP: '+remaining_point+' ('+(total_amountOfbonus-value).toFixed(2)+')'+detail)
+			var subtract_price = value
+			// var subtract_price = value*discount
+			const spanText =$('input[name=final_total]').val().replace(',', '.');
+			var total_price =parseFloat(spanText)!=0 ? parseFloat(spanText)-subtract_price:0;
+			console.log(spanText,total_price,parseFloat(spanText));
+			$('#total_payable').text(total_price.toFixed(2).replace('.', ','));
+		}else{
+			$('input#cust_points').val(total_point);
+			$('#errorshow').text('Please enter a value less than or equal to '+total_point);
+		}
+		
+	}
+
     function openGiftCard(){
     	$('#modal_payment').modal('show');
     	//method_0
@@ -587,10 +745,30 @@
     	$('#gift_card_0').focus();
 
     }
+	function openBonusPoint(){
+    	$('#modal_payment').modal('show');
+    	//method_0
+    	$('#method_0').val("bonus_points").change();
+    	$('#bonus_points_0').focus();
+		// $('#pos-save').removeAttr('disabled');
+
+
+    }
+    
+    function couponPayment(){
+		// $('#coupon_payment_modal').modal('show');
+	$('#modal_payment').modal('show');
+		$('#method_0').val("coupon").change();
+    	$('#coupon_0').focus();
+		
+	}
 
     function changePayment(obj,rowIndex)
     {
-    	$("#amount_"+rowIndex).val(obj.value).change();
+		console.log(obj);
+		var discount  = $('input#cust_discount').val(); 
+    	var amount_bonus_points  = obj.value * 0.5; 
+    	$("#amount_"+rowIndex).val(amount_bonus_points).change();
     	$("#amount_"+rowIndex).removeAttr("max");
     }
     function applyUnknown(obj,rowIndex)
@@ -610,20 +788,22 @@
 		var yyyy = today.getFullYear();
 
 		var td = yyyy + '-' + mm + '-' + dd;
-    	if(ed == '0' || ed == '' )
-    	{
-    		alert("your Bonus Points is Expired ");return(false);
-    	} 
-    	if(td >= ed )
-    	{
-    		alert("This user Bonus Points is Expired ");return(false);
-    	}
+    	// if(ed == '0' || ed == '' )
+    	// {
+    	// 	alert("your Bonus Points is Expired ");return(false);
+    	// } 
+    	// if(td >= ed )
+    	// {
+    	// 	alert("This user Bonus Points is Expired ");return(false);
+    	// }
     	var points  = $('input#cust_points').val(); 
+    	var discount  = $('input#cust_discount').val(); 
+    	var amount_bonus_points  = points * 0.5; 
     	$("#bonus_points_"+rowIndex).val(points);
-    	$("#amount_"+rowIndex).val(points).change();
+    	$("#amount_"+rowIndex).val(amount_bonus_points).change();
 
     	$("#bonus_points_"+rowIndex).attr("max",points)
-    	$("#amount_"+rowIndex).attr("max",points)
+    	// $("#amount_"+rowIndex).attr("max",points)
 
     }
     function giveDiscount(discount,rowIndex,isButton=true)
@@ -674,7 +854,8 @@
 		//     return this.value == "percentage"; 
 		// }).attr('selected', true);
     	$('#posEditDiscountModal').modal('show'); 
-    } 
+    }  
+	  
     function openUnkown(){
     	$('#unknownDiscountModal').modal('show'); 
     } 

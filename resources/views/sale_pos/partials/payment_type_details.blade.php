@@ -1,4 +1,4 @@
-<div class="payment_details_div @if( $payment_line['method'] !== 'gift_card' ) {{ 'hide' }} @endif" data-type="gift_card" >
+{{-- <div class="payment_details_div @if( $payment_line['method'] !== 'gift_card' ) {{ 'hide' }} @endif" data-type="gift_card" >
 	<div class="col-md-6">
 		<div class="form-group">
 			{!! Form::label("gift_card_$row_index", __('lang_v1.gift_card')) !!}
@@ -7,7 +7,7 @@
 	</div>
 	 
 	<div class="clearfix"></div>
-</div>
+</div> --}}
 <div class="payment_details_div @if( $payment_line['method'] !== 'coupon' ) {{ 'hide' }} @endif" data-type="coupon" >
 	<div class="col-md-6">
 		<div class="form-group">

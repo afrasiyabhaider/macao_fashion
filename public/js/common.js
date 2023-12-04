@@ -231,6 +231,7 @@ $(document).ready(function() {
 
             __write_number(input, qty + step);
             input.change();
+            $('#cust_points').trigger('change');
         } else if ($(this).hasClass('quantity-down')) {
             //if max reached return false
             if (typeof min != 'undefined' && qty - step < min) {
@@ -239,6 +240,7 @@ $(document).ready(function() {
 
             __write_number(input, qty - step);
             input.change();
+            $('#cust_points').trigger('change');
         }
     });
 

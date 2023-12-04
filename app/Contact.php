@@ -63,14 +63,14 @@ class Contact extends Authenticatable
             $query->select(
                 DB::raw("IF(contact_id IS NULL OR contact_id='', name, CONCAT(name, ' - ', COALESCE(supplier_business_name, ''), '(', contact_id, ')')) AS supplier"),
                 'id'
-                    );
+            );
         } else {
             $query->select(
                 'id',
                 DB::raw("IF (supplier_business_name IS not null, CONCAT(name, ' (', supplier_business_name, ')'), name) as supplier")
             );
         }
-        
+
         $contacts = $query->pluck('supplier', 'id');
 
         //Prepend none
@@ -92,18 +92,18 @@ class Contact extends Authenticatable
     public static function suppliersDropdown($business_id, $prepend_none = true, $append_id = true)
     {
         $all_contacts = Contact::where('business_id', $business_id)
-                        ->whereIn('type', ['supplier', 'both']);
+            ->whereIn('type', ['supplier', 'both']);
 
         if ($append_id) {
             $all_contacts->select(
                 DB::raw("IF(contact_id IS NULL OR contact_id='', name, CONCAT(name, ' - ', COALESCE(supplier_business_name, ''), '(', contact_id, ')')) AS supplier"),
                 'id'
-                    );
+            );
         } else {
             $all_contacts->select(
                 'id',
                 DB::raw("CONCAT(name, ' (', supplier_business_name, ')') as supplier")
-                );
+            );
         }
 
         $suppliers = $all_contacts->pluck('supplier', 'id');
@@ -127,13 +127,13 @@ class Contact extends Authenticatable
     public static function customersDropdown($business_id, $prepend_none = true, $append_id = true)
     {
         $all_contacts = Contact::where('business_id', $business_id)
-                        ->whereIn('type', ['customer', 'both']);
+            ->whereIn('type', ['customer', 'both']);
 
         if ($append_id) {
             $all_contacts->select(
                 DB::raw("IF(contact_id IS NULL OR contact_id='', name, CONCAT(name, ' (', contact_id, ')')) AS customer"),
                 'id'
-                );
+            );
         } else {
             $all_contacts->select('id', DB::raw("name as customer"));
         }
@@ -146,5 +146,14 @@ class Contact extends Authenticatable
         }
 
         return $customers;
+    }
+    public function getUpdatedAtAttribute($value)
+    {
+
+        return date('m/d/Y h:i A', strtotime($value));
+    } public function getlandmarkAttribute($value)
+    {
+
+        return  isset($value)?$value: '';
     }
 }

@@ -25,6 +25,7 @@
                       'placeholder' => __('gift.barcode')]); !!}
                   </div>
                 </div>
+                <input type="hidden" name="location_id"  value="{{$location_id}}">
                 <div class="col-sm-4 hide">
                   <div class="form-group">
                     {!! Form::label('applicable', __('gift.applicable') . ':') !!}

@@ -3,7 +3,7 @@
 {{-- @dd($product->pluck('name'))
  --}}
 {{-- @dd($products[20]->name, $product->sub_size()->first()) --}}
-{{-- {{ dd($product) }} --}}
+{{-- {{ dd($product) }}  --}}
 <div class="col-md-3 col-xs-4 product_list no-print">
 	<div class="product_box bg-gray" data-toggle="tooltip" data-placement="bottom"
 		data-variation_id="{{$product->variation_id}}"

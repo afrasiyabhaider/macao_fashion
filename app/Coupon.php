@@ -8,9 +8,10 @@ class Coupon extends Model
 {
    // Scheme is ['name', 'barcode', 'business_id', 'gift_card_id', 'value', 'orig_value' ,'barcode_type', 'isActive', 'transaction_id','start_date', 'created_by', 'isUsed']
 
-	protected $fillable = [
-        'name', 'barcode', 'business_id', 'gift_card_id', 'coupon_id', 'details', 'value', 'orig_value', 'barcode_type', 'created_by', 'start_date', 'transaction_id', 'isActive', 'isUsed' 
-    ];
+// 	protected $fillable = [
+//         'name', 'barcode', 'business_id', 'gift_card_id', 'coupon_id', 'details', 'value', 'orig_value', 'barcode_type', 'created_by', 'start_date', 'transaction_id', 'isActive', 'isUsed' 
+//     ];
+ protected $guarded = [];
 
 	/**
      * Get the business that owns the user.

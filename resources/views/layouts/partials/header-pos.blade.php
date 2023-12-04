@@ -67,8 +67,9 @@
 
     </div>
 
-    <div class="col-md-2">
-      <div class="m-6 pull-right mt-15 hidden-xs"><strong>{{ @format_date('now') }}</strong></div>
+    <div class="col-md-6">
+      
+      <div class="m-6 pull-left mt-15 hidden-xs ">   <strong >{{ @format_date('now') }}</strong><strong style="margin-left: 10px;"  id="total_b_point"> </strong></div>
     </div>
     
   </div>

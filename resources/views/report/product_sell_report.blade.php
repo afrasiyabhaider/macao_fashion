@@ -97,6 +97,40 @@
                             ]) !!}
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('category_id', 'Category' . ':') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-map-marker"></i>
+                                </span>
+
+                                {!! Form::select('category_id', $categories, null, [
+                                    'class' => 'form-control select2',
+                                    'placeholder' => __('messages.please_select'),
+                                    'required',
+                                ]) !!}
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('sub_category_id', 'Sub Category' . ':') !!}
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="fa fa-map-marker"></i>
+                                </span>
+
+                                {!! Form::select('sub_category_id', $sub_categories, null, [
+                                    'class' => 'form-control select2',
+                                    'placeholder' => __('messages.please_select'),
+                                    'required',
+                                ]) !!}
+
+                            </div>
+                        </div>
+                    </div>
                     {!! Form::close() !!}
                 @endcomponent
             </div>
@@ -159,7 +193,7 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="tab-pane" id="psr_detailed_tab">
+                        {{-- <div class="tab-pane" id="psr_detailed_tab">
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped ajax_view dataTable"
                                     id="product_sell_report_table">
@@ -169,7 +203,7 @@
                                             <th>@lang('sale.product')</th>
                                             <th>Refference</th>
                                             <th>Size</th>
-                                            {{-- <th>Total Sold</th> --}}
+                                            
                                             <th>Current Stock</th>
                                             <th>Sold Quantity</th>
                                             <th>Supplier</th>
@@ -181,10 +215,9 @@
                                             <th>Barcode</th>
                                             <th>@lang('messages.date')</th>
                                             <th>Purchase Date</th>
-                                            {{-- <th>@lang('sale.customer_name')</th> --}}
+                                           
                                             <th>@lang('sale.invoice_no')</th>
-                                            {{-- <th>@lang('sale.tax')</th> --}}
-                                            {{-- 16 --}}
+                                            
                                         </tr>
                                     </thead>
                                     <tfoot>
@@ -192,10 +225,7 @@
                                             <td colspan="4">
                                                 <strong>@lang('sale.total'):</strong>
                                             </td>
-                                            {{-- <td></td>
-                                        <td></td>
-                                        <td id="footer_tax"></td>
-                                        <td></td> --}}
+                               
                                             <td>
                                                 <span id="footer_total_sold">
                                             </td>
@@ -206,7 +236,6 @@
 
                                             </td>
                                             <td colspan="2"></td>
-                                            {{-- <td colspan=""></td> --}}
                                             <td><span class="display_currency" id="footer_subtotal"
                                                     data-currency_symbol="true"></span></td>
                                             <td colspan="4"></td>
@@ -214,7 +243,7 @@
                                     </tfoot>
                                 </table>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>

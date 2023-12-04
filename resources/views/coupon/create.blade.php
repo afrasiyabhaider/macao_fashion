@@ -21,14 +21,14 @@
         <div class="col-sm-4">
           <div class="form-group">
             {!! Form::label('name', __('coupon.name') . ':*') !!}
-              {!! Form::text('name', !empty($duplicate_product->name) ? $duplicate_product->name : null, ['class' => 'form-control', 'required',
+              {!! Form::text('name', !empty($duplicate_product->name) ? $duplicate_product->name : null, ['class' => 'form-control',
               'placeholder' => __('coupon.name')]); !!}
           </div>
         </div>
         <div class="col-sm-4">
           <div class="form-group">
             {!! Form::label('barcode', __('coupon.barcode') . ':') !!} @show_tooltip(__('tooltip.sku'))
-            {!! Form::text('barcode', null, ['class' => 'form-control',
+            {!! Form::number('barcode', null, ['class' => 'form-control',
               'placeholder' => __('coupon.barcode')]); !!}
           </div>
         </div>

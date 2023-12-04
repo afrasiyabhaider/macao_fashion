@@ -11,6 +11,7 @@
 			$sell_line_note = "";
 		}
 	@endphp
+	{{-- <h1>hello</h1> --}}
 	<div class="{{$col_class}}">
 		<div class="form-group">
 			{!! Form::label("amount_$row_index" ,__('sale.amount') . ':*') !!}
@@ -18,6 +19,8 @@
 				<span class="input-group-addon">
 					<i class="fa fa-money"></i>
 				</span>
+				{{-- this is last one whis is correct  --}}
+				{{-- {!! Form::text("payment[$row_index][amount]", ($sell_line_note != "return")? (float)$payment_line['amount'] : 0, ['class' => 'form-control payment-amount input_number', 'required', 'id' => "amount_$row_index", 'placeholder' => __('sale.amount')]); !!} --}}
 				{!! Form::text("payment[$row_index][amount]", ($sell_line_note != "return")? (float)$payment_line['amount'] : 0, ['class' => 'form-control payment-amount input_number', 'required', 'id' => "amount_$row_index", 'placeholder' => __('sale.amount')]); !!}
 				{{-- {!! Form::text("payment[$row_index][amount]", ($sell_line_note != "return")? @num_format($payment_line['amount']) : 0, ['class' => 'form-control payment-amount input_number', 'required', 'id' => "amount_$row_index", 'placeholder' => __('sale.amount')]); !!} --}}
 			</div>

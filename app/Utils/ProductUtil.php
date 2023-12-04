@@ -43,12 +43,12 @@ class ProductUtil extends Util
         if (!is_object($product)) {
             $product = Product::find($product);
         }
-
         //create product variations
         $product_variation_data = [
             'name' => 'DUMMY',
             'is_dummy' => 1
         ];
+        // dd($selling_price);
         $product_variation = $product->product_variations()->create($product_variation_data);
         //create variations
         $variation_data = [
@@ -60,6 +60,34 @@ class ProductUtil extends Util
             'profit_percent' => $this->num_uf($profit_percent),
             'default_sell_price' => $this->num_uf($selling_price),
             'sell_price_inc_tax' => $this->num_uf($selling_price_inc_tax)
+        ];
+        // dd($variation_data);
+        $product_variation->variations()->create($variation_data);
+
+        return true;
+    }
+    // added by hamza in product bulkUpdate fuction for addNew Color  
+    public function createSingleProductVariation2($product, $sku, $purchase_price, $dpp_inc_tax, $profit_percent, $selling_price, $selling_price_inc_tax)
+    {
+        if (!is_object($product)) {
+            $product = Product::find($product);
+        }
+        //create product variations
+        $product_variation_data = [
+            'name' => 'DUMMY',
+            'is_dummy' => 1
+        ];
+        $product_variation = $product->product_variations()->create($product_variation_data);
+        //create variations
+        $variation_data = [
+            'name' => 'DUMMY',
+            'product_id' => $product->id,
+            'sub_sku' => $sku,
+            'default_purchase_price' => $purchase_price,
+            'dpp_inc_tax' => ($dpp_inc_tax),
+            'profit_percent' => $profit_percent,
+            'default_sell_price' => $selling_price,
+            'sell_price_inc_tax' => $selling_price_inc_tax
         ];
         $product_variation->variations()->create($variation_data);
 
@@ -97,7 +125,7 @@ class ProductUtil extends Util
             'default_purchase_price' => $purchase_price,
             'dpp_inc_tax' => $dpp_inc_tax,
             'profit_percent' => $profit_percent,
-            'default_sell_price' =>$selling_price,
+            'default_sell_price' => $selling_price,
             'sell_price_inc_tax' => $selling_price_inc_tax
         ];
         $product_variation->variations()->create($variation_data);
@@ -325,37 +353,39 @@ class ProductUtil extends Util
             $qty_difference = $new_quantity - $old_quantity;
         }
 
-
+// dd(1);
         $product = Product::find($product_id);
 
         //Check if stock is enabled or not.
         // && $qty_difference != 0
-        if ($product->enable_stock == 1 ) {
+        if ($product->enable_stock == 1) {
             $variation = Variation::where('id', $variation_id)
                 ->where('product_id', $product_id)
                 ->first();
 
             //Add quantity in VariationLocationDetails
-                $variation_location_d = VariationLocationDetails::where('variation_id', $variation->id)
+            $variation_location_d = VariationLocationDetails::where('variation_id', $variation->id)
                 ->where('product_id', $product_id)
                 ->where('product_variation_id', $variation->product_variation_id)
                 ->where('location_id', $location_id)
                 ->first();
 
             if (empty($variation_location_d)) {
-                
+
                 $variation_location_d = new VariationLocationDetails();
                 $variation_location_d->variation_id = $variation->id;
                 $variation_location_d->product_id = $product_id;
                 $variation_location_d->product_refference = $product->refference;
                 $variation_location_d->location_id = $location_id;
                 $variation_location_d->product_variation_id = $variation->product_variation_id;
+                $variation_location_d->sell_price = $variation->sell_price_inc_tax;
                 $variation_location_d->qty_available = 0;
                 $variation_location_d->printing_qty = 0;
                 $variation_location_d->product_updated_at = Carbon::now();
             }
-            
+
             $variation_location_d->printing_qty = $qty_difference;
+            // $variation_location_d->sell_price = $variation->sell_price_inc_tax;
             $variation_location_d->qty_available += $qty_difference;
             // $variation_location_d->transfered_from = 5;
             $variation_location_d->save();
@@ -371,7 +401,7 @@ class ProductUtil extends Util
         // dd('Hello');
         return true;
     }
-    public function updateProductQuantityInTransfer($location_id, $product_id, $variation_id, $new_quantity, $old_quantity = 0, $number_format = null, $uf_data = true,$transferFrom = 1)
+    public function updateProductQuantityInTransfer($location_id, $product_id, $variation_id, $new_quantity, $old_quantity = 0, $number_format = null, $uf_data = true, $transferFrom = 1)
     {
         if ($uf_data) {
             $qty_difference = $this->num_uf($new_quantity, $number_format) - $this->num_uf($old_quantity, $number_format);
@@ -397,7 +427,7 @@ class ProductUtil extends Util
                 ->first();
 
             if (empty($variation_location_d)) {
-                
+
                 $variation_location_d = new VariationLocationDetails();
                 $variation_location_d->variation_id = $variation->id;
                 $variation_location_d->product_id = $product_id;
@@ -407,10 +437,8 @@ class ProductUtil extends Util
                 $variation_location_d->qty_available = 0;
                 $variation_location_d->transfered_from = $transferFrom;
                 $variation_location_d->product_updated_at = Carbon::now();
-                
-                
             }
-            
+
             $variation_location_d->qty_available += $qty_difference;
             $variation_location_d->transfered_from = $transferFrom;
             $variation_location_d->product_updated_at = Carbon::now();
@@ -428,16 +456,16 @@ class ProductUtil extends Util
         return true;
     }
 
-    public function addProductFOrAllLocations($product_id, $variation_id,$qty)
+    public function addProductFOrAllLocations($product_id, $variation_id, $qty)
     {
 
         $product = Product::find($product_id);
 
         //Check if stock is enabled or not.
         $variation = Variation::where('id', $variation_id)
-                ->where('product_id', $product_id)
-                ->first();
-        $locations= BusinessLocation::whereNotIn('id',[1])->pluck('id');
+            ->where('product_id', $product_id)
+            ->first();
+        $locations = BusinessLocation::whereNotIn('id', [1])->pluck('id');
         // dd($locations);
 
         // New table for Purchase Report
@@ -455,18 +483,19 @@ class ProductUtil extends Util
         // $location_transfer_detail->save();
 
 
-        for ($i=0; $i < count($locations); $i++) { 
+        for ($i = 0; $i < count($locations); $i++) {
             $variation_location_d = new VariationLocationDetails();
             $variation_location_d->variation_id = $variation->id;
             $variation_location_d->product_refference = $product->refference;
             $variation_location_d->product_id = $product_id;
             $variation_location_d->location_id = $locations[$i];
             $variation_location_d->product_variation_id = $variation->product_variation_id;
+            $variation_location_d->sell_price = $variation->sell_price_inc_tax;
             $variation_location_d->qty_available = 0;
             $variation_location_d->product_updated_at = Carbon::now();
 
             $variation_location_d->save();
-            
+
             // New table for Purchase Report
             $ref = Product::find($product_id)->refference;
             $location_transfer_detail = new LocationTransferDetail();
@@ -477,12 +506,11 @@ class ProductUtil extends Util
             $location_transfer_detail->transfered_from = 1;
 
             $location_transfer_detail->product_variation_id = $variation->product_variation_id;
-
+            $variation_location_d->sell_price = $variation->sell_price_inc_tax;
             $location_transfer_detail->quantity = 0;
             $location_transfer_detail->transfered_on = Carbon::now();
 
             $location_transfer_detail->save();
-            
         }
     }
 
@@ -500,11 +528,11 @@ class ProductUtil extends Util
     public function decreaseProductQuantity($product_id, $variation_id, $location_id, $new_quantity, $old_quantity = 0)
     {
         $qty_difference = $new_quantity - $old_quantity;
-
+        // dd($qty_difference);
         $product = Product::find($product_id);
 
         //Check if stock is enabled or not.
-        // dd($product);
+        // dd($product_id);
         if ($product['enable_stock'] == 1) {
             //Decrement Quantity in variations location table
             $data[] = VariationLocationDetails::where('variation_id', $variation_id)
@@ -533,7 +561,8 @@ class ProductUtil extends Util
      *
      * @return array
      */
-    public function getDetailsFromVariation($variation_id, $business_id, $location_id = null, $check_qty = false)
+    // public function getDetailsFromVariation($variation_id, $business_id, $location_id = null, $check_qty = false)
+    public function getDetailsFromVariation($variation_id, $business_id, $location_id, $check_qty = false)
     {
         // dd($check_qty);
         $query = Variation::join('products AS p', 'variations.product_id', '=', 'p.id')
@@ -545,6 +574,7 @@ class ProductUtil extends Util
                     ->whereNull('brands.deleted_at');
             })
             ->where('p.business_id', $business_id)
+            ->where('vld.location_id', $location_id)
             ->where('variations.id', $variation_id);
         // return $query->first();
 
@@ -582,6 +612,7 @@ class ProductUtil extends Util
             'p.barcode_type',
             'vld.qty_available',
             'variations.default_sell_price',
+            'vld.sell_price',
             'variations.sell_price_inc_tax',
             'variations.id as variation_id',
             'units.short_name as unit',
@@ -760,11 +791,11 @@ class ProductUtil extends Util
         //         'tsl.transaction_id'
         //     )
         $query = TransactionSellLine::join(
-                'transactions as t',
-                'transaction_sell_lines.transaction_id',
-                '=',
-                't.id'
-            )
+            'transactions as t',
+            'transaction_sell_lines.transaction_id',
+            '=',
+            't.id'
+        )
             ->join('products as p', 'transaction_sell_lines.product_id', '=', 'p.id')
             ->leftjoin('units as u', 'u.id', '=', 'p.unit_id')
             ->where('t.business_id', $business_id)
@@ -803,7 +834,7 @@ class ProductUtil extends Util
                 $filters['start_date'],
                 $filters['end_date']
             ]);
-        }else{
+        } else {
             $start_week = Carbon::now()->addDays(-6);
             $end_week = Carbon::now();
 
@@ -817,7 +848,7 @@ class ProductUtil extends Util
                 $filters['purchase_start_date'],
                 $filters['purchse_end_date']
             ]);
-        }else{
+        } else {
             $start_year = Carbon::now()->startOfYear();
             $now = Carbon::now();
 
@@ -1141,6 +1172,7 @@ class ProductUtil extends Util
 
         $tax_percent = !empty($product->product_tax->amount) ? $product->product_tax->amount : 0;
         $tax_id = !empty($product->product_tax->id) ? $product->product_tax->id : null;
+
         foreach ($input as $key => $value) {
 
             $location_id = $key;
@@ -1149,12 +1181,11 @@ class ProductUtil extends Util
             //Check if valid location 
             if (array_key_exists($location_id, $locations)) {
                 $purchase_lines = [];
-
                 $purchase_price = $this->num_uf(trim($value['purchase_price']));
                 $item_tax = $this->calc_percentage($purchase_price, $tax_percent);
+
                 $purchase_price_inc_tax = $purchase_price + $item_tax;
                 $qty = $this->num_uf(trim($value['quantity']));
-
                 $exp_date = null;
                 if (!empty($value['exp_date'])) {
                     $exp_date = \Carbon::createFromFormat('d-m-Y', $value['exp_date'])->format('Y-m-d');
@@ -1170,7 +1201,7 @@ class ProductUtil extends Util
                     //Calculate transaction total
                     $purchase_total += ($purchase_price_inc_tax * $qty);
                     $variation_id = $product->variations->first()->id;
-
+                    // dd($product->variations()->first());
                     $purchase_line = new PurchaseLine();
                     $purchase_line->product_id = $product->id;
                     $purchase_line->variation_id = $variation_id;
@@ -1185,7 +1216,85 @@ class ProductUtil extends Util
                     $purchase_lines[] = $purchase_line;
 
                     $this->updateProductQuantity($location_id, $product->id, $variation_id, $qty_formated);
-                    $this->addProductFOrAllLocations($product->id, $variation_id,$qty);
+                    $this->addProductFOrAllLocations($product->id, $variation_id, $qty);
+                }
+                //create transaction & purchase lines
+                if (!empty($purchase_lines)) {
+                    $transaction = Transaction::create(
+                        [
+                            'type' => 'opening_stock',
+                            'opening_stock_product_id' => $product->id,
+                            'status' => 'received',
+                            'business_id' => $business_id,
+                            'transaction_date' => $transaction_date,
+                            'total_before_tax' => $purchase_total,
+                            'location_id' => $location_id,
+                            'final_total' => $purchase_total,
+                            'payment_status' => 'paid',
+                            'created_by' => $user_id
+                        ]
+                    );
+                    $transaction->purchase_lines()->saveMany($purchase_lines);
+                }
+            }
+        }
+    }
+    public function addSingleProductOpeningStock2($business_id, $product, $input, $transaction_date, $user_id, $isJugadOn = false)
+    {
+        $locations = BusinessLocation::forDropdownForQuickProduct($business_id)->toArray();
+
+        $tax_percent = !empty($product->product_tax->amount) ? $product->product_tax->amount : 0;
+        $tax_id = !empty($product->product_tax->id) ? $product->product_tax->id : null;
+
+        foreach ($input as $key => $value) {
+            // dd($value['quantity']!=0);
+
+            $location_id = $key;
+
+            $purchase_total = 0;
+            //Check if valid location 
+            if (array_key_exists($location_id, $locations)) {
+                $purchase_lines = [];
+                $purchase_price = $this->num_uf(trim($value['purchase_price']));
+                $item_tax = $this->calc_percentage($purchase_price, $tax_percent);
+
+                $purchase_price_inc_tax = $purchase_price + $item_tax;
+                $qty = 0;
+                $purchase_price_inc_tax_value = 0;
+                if ($value['quantity'] != 0) {
+                    $qty = $this->num_uf(trim($value['quantity']));
+                    $purchase_price_inc_tax_value = $purchase_price_inc_tax * $qty;
+                }
+                $exp_date = null;
+                if (!empty($value['exp_date'])) {
+                    $exp_date = \Carbon::createFromFormat('d-m-Y', $value['exp_date'])->format('Y-m-d');
+                }
+
+                $lot_number = null;
+                if (!empty($value['lot_number'])) {
+                    $lot_number = $value['lot_number'];
+                }
+
+                if ($qty > 0) {
+                    $qty_formated = $this->num_f($qty);
+                    //Calculate transaction total
+                    $purchase_total += $purchase_price_inc_tax_value;
+                    $variation_id = $product->variations()->first()->id;
+                    $purchase_line = new PurchaseLine();
+                    $purchase_line->product_id = $product->id;
+                    $purchase_line->variation_id = $variation_id;
+                    $purchase_line->item_tax = $item_tax;
+                    $purchase_line->tax_id = $tax_id;
+                    $purchase_line->quantity = $qty;
+                    $purchase_line->pp_without_discount = $purchase_price;
+                    $purchase_line->purchase_price = $purchase_price;
+                    $purchase_line->purchase_price_inc_tax = $purchase_price_inc_tax;
+                    $purchase_line->exp_date = $exp_date;
+                    $purchase_line->lot_number = $lot_number;
+                    $purchase_lines[] = $purchase_line;
+
+                    $this->updateProductQuantity($location_id, $product->id, $variation_id, $qty_formated);
+                    $this->addProductFOrAllLocations($product->id, $variation_id, $qty);
                 }
                 //create transaction & purchase lines
                 if (!empty($purchase_lines)) {

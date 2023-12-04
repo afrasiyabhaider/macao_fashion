@@ -39,8 +39,13 @@
 		$id = App\Product::first()->id;
 		@endphp
 		<div class="col-sm-6">
-			<a href="{{url('/products/'.$id.'/edit')}}" class="btn btn-info ml-5" target="__blank">
-				Update Product
+			<a href="{{url('/products/'.$id.'/edit?shop_id=all')}}" class="btn btn-info ml-5" target="__blank">
+				Edit All Product
+				<i class="fa fa-edit"></i>
+			</a>
+			
+			<a href="{{url('/products/'.$id.'/edit?shop_id=1')}}" class="btn btn-info ml-5" target="__blank">
+				Update Main Product
 				<i class="fa fa-edit"></i>
 			</a>
 		</div>

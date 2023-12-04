@@ -738,7 +738,7 @@ coupon ki 3 month expire date
             return $this->moduleUtil->quotaExpiredResponse('products', $business_id, action('ProductController@index'));
         }
 
-        
+        $location_id = request()->location_id;
         $brands = Brands::where('business_id', $business_id)
                             ->pluck('name', 'id');
        
@@ -752,10 +752,20 @@ coupon ki 3 month expire date
         $RandomId = $this->productUtil->RandomId();
 
         return view('gift_card.partials.quick_add')
-            ->with(compact(   'barcode_types','barcode_default', 'module_form_parts','RandomId'));
+            ->with(compact(   'barcode_types','barcode_default', 'module_form_parts','RandomId', 'location_id'));
     }
 
-    
+    public function generateUUID($length)
+        {
+            $characters = '0123456789';
+            $uuid = '';
+
+            for ($i = 0; $i < $length; $i++) {
+                $uuid .= $characters[rand(0, 6)];
+            }
+
+            return $uuid;
+        }
 
     /**
      * Store a newly created resource in storage.
@@ -769,7 +779,7 @@ coupon ki 3 month expire date
         if (!auth()->user()->can('gift.create')) {
             abort(403, 'Unauthorized action.');
         } 
-        
+        // dd($request->location_id);
         try {
             $business_id = $request->session()->get('user.business_id');
             $form_fields = ['name', 'barcode', 'business_id', 'type', 'applicable', 'product_id', 'brand_id', 'value', 'details', 'barcode_type', 'created_by', 'start_date', 'expiry_date', 'isActive', 'isUsed', 'product_description'];
@@ -787,7 +797,9 @@ coupon ki 3 month expire date
             $objDetails['type'] = 'fixed' ;
             $objDetails['isActive'] = 'inactive' ;
             $objDetails['isUsed'] = '0' ;
-
+            if(empty($objDetails['barcode'])){
+                $objDetails['barcode'] = $this->generateUUID(6);
+            }
             
              
             DB::beginTransaction();
@@ -834,11 +846,13 @@ coupon ki 3 month expire date
             $objVariations = Variation::create($objVariationDetails);
  
             $objVariationLocationDetails['qty_available'] = '1';  
-            $objVariationLocationDetails['location_id'] = $request->session()->get('user.business_location_id');
+            $objVariationLocationDetails['location_id'] = $request->location_id;
+            // $objVariationLocationDetails['location_id'] = $request->session()->get('user.business_location_id');
             $objVariationLocationDetails['product_id'] = $objProduct->id;
             $objVariationLocationDetails['product_variation_id'] = $product_variation->id;
             $objVariationLocationDetails['variation_id'] = $objVariations->id;
             $objVariationLocationDetails['product_refference'] = $objProduct->refference;
+            $objVariationLocationDetails['sell_price'] = $GiftCard->value;
 
             $objVariationsLocation = VariationLocationDetails::create($objVariationLocationDetails);
             //------ PRODUCT Creation Ends

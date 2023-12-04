@@ -91,12 +91,22 @@ class WebsiteController extends Controller
         //     'reffernce'
         // ]);
         try {
+             $connection = DB::connection('website');
+            $website_products=$connection->table('products')->get();
             DB::beginTransaction();
                 $product = explode(",", $request->input('product_id'));
                  $i=0;
                  $count=0;
                 foreach ($product as $key => $value) {
-                    $product = Product::find($value);
+                     $product = Product::find($value);
+                    $products = Product::where('id', $product->id)->first();
+                   
+                    foreach ($website_products as $website) {
+                       
+                        if ($website->name === $products->name) {
+                            $connection->table('products')->where('id', $website->id)->delete();
+                        }
+                    }
                     WebsiteProducts::where('product_id',$product->id)->delete();
                     $i++;
                     $count++;

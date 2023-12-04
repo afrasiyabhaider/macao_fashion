@@ -22,7 +22,7 @@
                 @lang('messages.add')
             </a>
         @endcan
-        {!! Form::open(['url' => action('ProductController@massBulkPrint'), 'method' => 'post', 'id' => 'bulkPrint_form' ]) !!}
+        {!! Form::open(['url' => action('ProductController@massBulkPrint'), 'method' => 'post', 'id' => 'bulkPrint_form','target' => '_blank' ]) !!}
                 {!! Form::hidden('selected_products_bulkPrint', null, ['id' => 'selected_products_bulkPrint']); !!}
                 {!! Form::hidden('selected_products_bulkPrint_qty', null, ['id' => 'selected_products_bulkPrint_qty']); !!}
                 {!! Form::hidden('printing_location_id', 1, ['id' => 'printing_location_id']); !!}

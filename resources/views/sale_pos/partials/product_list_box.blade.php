@@ -1,6 +1,6 @@
 <div class="box box-widget">
 	<div class="box-header with-border">
-
+{{-- @dd($location_id); --}}
 	@if(!empty($categories))
 	{{-- @dd($categories) --}}
 		<select class="select2" id="product_category" style="width:45% !important">

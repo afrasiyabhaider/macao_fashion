@@ -129,6 +129,19 @@
 				<span>
 					<b>Operator : </b> {{$receipt_details->user}}
 				</span>
+				<br>
+				<span>
+					<b>
+						bienvenue à Macao
+					</b>
+				</span>
+				<br>
+				<span>
+					<b>Name : </b> {{$receipt_details->customer_name }}
+				</span>
+				<span>
+					<b>Bonus Points : </b> {{$receipt_details->customer_bonus_points}}
+				</span>
 
 				@if(!empty($receipt_details->serial_no_label) || !empty($receipt_details->repair_serial_no))
 				<br>

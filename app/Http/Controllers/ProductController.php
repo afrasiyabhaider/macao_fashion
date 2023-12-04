@@ -13,6 +13,7 @@ use App\Category;
 use App\LocationTransferDetail;
 use App\Product;
 use App\ProductVariation;
+use App\ProductQuantity;
 use App\PurchaseLine;
 use App\SellingPriceGroup;
 use App\TaxRate;
@@ -31,6 +32,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -135,7 +137,8 @@ class ProductController extends Controller
                     'vld.product_updated_at as product_date',
                     'colors.name as color',
                     'v.dpp_inc_tax as purchase_price',
-                    'v.sell_price_inc_tax as selling_price',
+                    // 'v.sell_price_inc_tax as selling_price',
+                    'vld.sell_price as selling_price',
                     'vld.qty_available as current_stock',
                     // DB::raw('SUM(vld.qty_available) as current_stock'),
                     DB::raw('MAX(v.sell_price_inc_tax) as max_price'),
@@ -143,7 +146,7 @@ class ProductController extends Controller
                 )
                 // ->orderBy('products.updated_at', 'DESC')
                 // ->orderBy('vld.updated_at', 'DESC')
-                ->orderBy('vld.product_updated_at', 'DESC')
+                ->orderBy('vld.updated_at', 'DESC')
                 ->groupBy('products.id');
 
             // $type = request()->get('type', null);
@@ -299,8 +302,8 @@ class ProductController extends Controller
         $rack_enabled = (request()->session()->get('business.enable_racks') || request()->session()->get('business.enable_row') || request()->session()->get('business.enable_position'));
 
         $categories = Category::where('business_id', $business_id)
-                                ->where('parent_id', 0)
-                                ->pluck('name', 'id');
+            ->where('parent_id', 0)
+            ->pluck('name', 'id');
         $suppliers = Supplier::forDropdown($business_id);
         $businessArr = Business::forDropdown($business_id);
 
@@ -378,14 +381,15 @@ class ProductController extends Controller
                     'sizes.name as size',
                     'colors.name as color',
                     'v.dpp_inc_tax as purchase_price',
-                    'v.sell_price_inc_tax as selling_price',
+                    // 'v.sell_price_inc_tax as selling_price',
+                    'vld.sell_price as selling_price',
                     'vld.printing_qty as printing_qty',
                     DB::raw('SUM(vld.qty_available) as current_stock'),
                     DB::raw('MAX(v.sell_price_inc_tax) as max_price'),
                     DB::raw('MIN(v.sell_price_inc_tax) as min_price')
                 )
                 ->groupBy('products.id')
-                ->orderBy('vld.product_updated_at', 'DESC');
+                ->orderBy('vld.updated_at', 'DESC');
 
             $type = request()->get('type', null);
             if (!empty($type)) {
@@ -653,7 +657,7 @@ class ProductController extends Controller
         if (!auth()->user()->can('product.create')) {
             abort(403, 'Unauthorized action.');
         }
-
+// dd($request);
         try {
             $business_id = $request->session()->get('user.business_id');
             $form_fields = ['name', 'brand_id', 'unit_id', 'category_id', 'tax', 'type', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_description'];
@@ -693,7 +697,7 @@ class ProductController extends Controller
             $product_details['image'] = $this->productUtil->uploadFile($request, 'image', config('constants.product_img_path'));
 
             DB::beginTransaction();
-
+            // dd($product_details);
             $product = Product::create($product_details);
 
             if (empty(trim($request->input('sku')))) {
@@ -779,12 +783,18 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
+        // dd($request->all());
+     
         if (!auth()->user()->can('product.create')) {
             abort(403, 'Unauthorized action.');
         }
 
         $business_id = request()->session()->get('user.business_id');
-
+        
+        $location_id = request()->session()->get('location_id');
+        // $location_input = request()->input('location_id');
+        // dd($location_id);
+        
         //Check if subscribed or not, then check for products quota
         if (!$this->moduleUtil->isSubscribed($business_id)) {
             return $this->moduleUtil->expiredResponse();
@@ -792,21 +802,36 @@ class ProductController extends Controller
             return $this->moduleUtil->quotaExpiredResponse('products', $business_id, action('ProductController@index'));
         }
         $product = Product::where('id', '=', $id)->where('business_id', '=', $business_id)->first();
+        $location_id = $product->variation_location_details()->first()->location_id;
+        // dd($location_id);
         // dd($product);
-        $product_qty = Product::join('variation_location_details as vld','vld.product_id','products.id')
-                ->join('colors as c','c.id','products.color_id')
-                ->where('products.refference',$product->refference)
-                ->select([
-                    DB::raw('SUM(vld.qty_available) as qty'),
-                    'c.name as color_name',
-                    'products.name as product_name',
-                    'products.id'
-                ])
-                ->groupBy('color_name')
-                ->get();
+        $product_qty = Product::join('variation_location_details as vld', 'vld.product_id', 'products.id')
+            ->join('colors as c', 'c.id', 'products.color_id')
+            ->where('products.refference', $product->refference)
+            ->select([
+                DB::raw('SUM(vld.qty_available) as qty'),
+                'c.name as color_name',
+                'c.id as color_id',
+                'products.name as product_name',
+                'products.id'
+            ])
+            ->groupBy('color_name')
+            ->get();
+            
+            $product_price = VariationLocationDetails::where('location_id' , $location_id)
+            ->where('product_refference', $product->refference)
+            ->where('product_id', $id)
+            ->first();
+            // dd($product_price,$location_id);
+        $product_sizes = Product::where('products.refference', $product->refference)
+            ->get();
+        $get_product_size_unique = Product::with('sub_size')->where('products.refference', $product->refference)
+            ->get()->unique('sub_size_id')->toArray();
+        $total_main_qty = VariationLocationDetails::where('product_refference', $product->refference)
+            ->get()->sum('qty_available');
         // $product_qty = VariationLocationDetails::where('product_id',$product->id)->get()->pluck('qty_available');
-        // dd($product_qty);
-                        
+        // dd($get_product_size_unique);
+
 
         // dd($product->image);
         //If brands, category are enabled then send else false.
@@ -835,7 +860,7 @@ class ProductController extends Controller
         $suppliers = Supplier::where('business_id', $business_id)
             ->orderBy('name', 'ASC')
             ->pluck('name', 'id');
-        $colors = Color::where('business_id', $business_id)->pluck('name', 'id');
+        $colors = Color::where('business_id', $business_id)->whereNotIn('id', $product_sizes->pluck('color_id'))->pluck('name', 'id');
         $units = Unit::forDropdown($business_id, true);
 
         $tax_dropdown = TaxRate::forBusinessDropdown($business_id, true, true);
@@ -892,7 +917,9 @@ class ProductController extends Controller
         $selling_price_group_count = SellingPriceGroup::countSellingPriceGroups($business_id);
 
         $module_form_parts = $this->moduleUtil->getModuleData('product_form_part');
-
+        request()->session()->put('url_id',$id);
+        request()->session()->put('refference',$product->refference);
+        
         // dd($categories);
         // dd($product);
         // dd($product->variations()->get());
@@ -901,8 +928,9 @@ class ProductController extends Controller
         // dd($product->size()->get());
         // dd($product->color()->get());
         // dd($product);
+        // dd($product);
         return view('product.edit')
-            ->with(compact('product', 'categories', 'suppliers', 'noRefferenceProducts', 'brands', 'refferenceCount', 'pnc', 'suppliers', 'sizes', 'sub_sizes', 'colors', 'units', 'taxes', 'barcode_types', 'default_profit_percent', 'tax_attributes', 'barcode_default', 'business_locations', 'duplicate_product', 'sub_categories', 'rack_details', 'selling_price_group_count', 'module_form_parts','product_qty'));
+            ->with(compact('product','categories', 'get_product_size_unique', 'total_main_qty', 'product_sizes', 'suppliers', 'noRefferenceProducts', 'brands', 'refferenceCount', 'pnc', 'suppliers', 'sizes', 'sub_sizes', 'colors', 'units', 'taxes', 'barcode_types', 'default_profit_percent', 'tax_attributes', 'barcode_default', 'business_locations', 'duplicate_product', 'sub_categories', 'rack_details', 'selling_price_group_count', 'module_form_parts', 'product_qty' , 'product_price'));
     }
     public function old_edit($id)
     {
@@ -1119,7 +1147,439 @@ class ProductController extends Controller
      */
     public function bulkUpdate(Request $request)
     {
-        // dd($request->input());
+        // dd($request->all());
+        if (!auth()->user()->can('product.update')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'supplier' => ['required', Rule::notIn(0)],
+            'category' => ['required', Rule::notIn(0)],
+            // 'sub_category' => [Rule::notIn(0)],
+            'product_name' => 'required',
+            'refference' => 'required',
+            'unit_price' => 'required',
+            'custom_price' => 'required',
+            'sku' => 'required',
+            // 'color' => ['required', Rule::notIn(0)],
+            // 'quantity' => 'required',
+            // 'size' => ['required', Rule::notIn(0)],
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $product = Product::find($request->input('product_id'));
+
+            $product_image = $product->image;
+            $location_id = $request->input('location_id');
+            // dd($location_id);
+            if ($request->hasFile('file')) {
+                $file = $request->file();
+                $file['file'];
+                $product_image =  $this->productUtil->uploadFileArr($request, 'file', config('constants.product_img_path'), 0);
+            }
+            $location = 1;
+            if ($request->input('location_id')) {
+                $location = $request->input('location_id');
+            }
+            session()->put('location_id', $location);
+            $size = Size::find($request->input('size'));
+            // $product->name = $request->input('product_name');
+            $product->image = $product_image;
+            // if ($request->input('supplier_id') == 0) {
+            //     $product->supplier_id = $request->input('supplier');
+            // } else {
+            //     $product->supplier_id = $request->input('supplier');
+            // }
+            $product->supplier_id = $request->input('supplier');
+            $product->category_id = $request->input('category');
+            if ($request->input('sub_category') != 0) {
+                $product->sub_category_id = $request->input('sub_category');
+            }
+            $product->refference = $request->input('refference');
+            // $product->color_id = $request->input('color');
+            // $product->size_id = $size->parent_id;
+            // $product->sub_size_id = $request->input('size');   // comment by hamza due to adding in 
+            $product->sku = $request->input('sku');
+            $product->print_price_check = $request->print_price_check ? true : false;
+            $product->description = $request->input('description');
+            $product->product_updated_at = Carbon::now();
+
+            $product->save();
+
+            $variation = Variation::where('product_id', '=', $request->input('product_id'))->first();
+            // $unit = str_replace($request->input('unit_price'),'.',',');
+            // dd($this->productUtil->num_uf($request->input('unit_price')));
+            // dd($unit);
+            $variation->sub_sku = $product->sku;
+            // dd($variation);
+           
+            if ($request->allow_price_qty) {
+                $variation->dpp_inc_tax = $this->productUtil->num_uf($request->input('unit_price'));
+                $variation->old_sell_price_inc_tax= $this->productUtil->num_uf($request->old_price);
+                $variation->sell_price_inc_tax = $this->productUtil->num_uf($request->input('custom_price'));
+            }
+            $variation->save();
+
+            if($location_id === 'all'){
+                // dd($request->input('custom_price'));
+                $price_change = VariationLocationDetails::where('product_refference', $product->refference)->get();
+                foreach ($price_change as $price_changes){
+                    $price_changes->update([
+                        'old_sell_price' => $this->productUtil->num_uf($request->old_price),
+                        'sell_price' => $this->productUtil->num_uf($request->input('custom_price')),
+                    ]);
+                    } 
+            }else{
+                // dd(1);
+            $price_change = VariationLocationDetails::where('product_refference', $product->refference)->where('location_id', $location_id)->get();
+            foreach ($price_change as $price_changes){
+            $price_changes->update([
+                'old_sell_price' => $this->productUtil->num_uf($request->old_price),
+                'sell_price' => $this->productUtil->num_uf($request->input('custom_price')),
+            ]);
+            }
+        }
+            
+            // add the size while checking the colors
+            // $product_colors = Product::join('variation_location_details as vld', 'vld.product_id', 'products.id')
+            //     ->join('colors as c', 'c.id', 'products.color_id')
+            //     ->where('products.refference', $product->refference)
+            //     ->select([
+            //         DB::raw('SUM(vld.qty_available) as qty'),
+            //         'c.id as color_id',
+            //         'c.name as color_name',
+            //         'products.name as product_name',
+            //         'products.id as product_id'
+            //     ])
+            //     ->groupBy('color_name')
+            //     ->get();
+            $product_sizes = Product::where('products.refference', $product->refference)
+                ->get();
+            // dd($product_sizes);
+            $message = 'Product Updated Successfully. ';
+            // dd($request->productColor);
+            // update unit price and custom price same reference prodeucts
+            foreach ($product_sizes as $product_size) {
+                $record = Variation::where('product_id', '=', $product_size->id)->first();
+                if ($request->allow_price_qty && isset($record)) {
+                    $record->dpp_inc_tax = $this->productUtil->num_uf($request->input('unit_price'));
+                    $record->old_sell_price_inc_tax = $this->productUtil->num_uf($request->old_price);
+                    $record->sell_price_inc_tax = $this->productUtil->num_uf($request->input('custom_price'));
+                    $record->save();
+                }
+            }
+            // update multi color quantity  and image
+
+            foreach ($request->productColor as $key => $updateColorArray) {
+                $findColorArray = $product_sizes->where('id', $updateColorArray['product_id'])->first();
+                if (!is_null($findColorArray)) {
+                    $new_qty = !is_null($updateColorArray['new_qty']) ? $updateColorArray['new_qty'] : 0;
+                    // dd($new_qty);
+                    if ($request->allow_price_qty) {
+
+                        // dd($updateColorArray['old_qty'] ,  $updateColorArray['new_qty']);
+
+                        // dd($findColorArray->qty +  $newColorArray['new_qty'],$findColorArray,$findColorArray->qty,$newColorArray,isset($newColorArray['new_qty']) && $request->allow_price_qty,isset($newColorArray['new_qty']) , $request->allow_price_qty);
+                        // $purchase_line = VariationLocationDetails::where('product_id', '=', $findColorArray->id)->first();
+                        $purchase_line = VariationLocationDetails::where('product_id', '=', $findColorArray->id)->where('location_id', 1)->first();
+                       if($new_qty != 0){
+                        $product_quantity_d = new ProductQuantity();
+                        $product_quantity_d->product_id = $purchase_line['product_id'];
+                        $product_quantity_d->variation_id = $purchase_line['variation_id'];
+                        $product_quantity_d->refference = $product->refference;
+                        $product_quantity_d->location_id = 1;
+                        $product_quantity_d->quantity = $new_qty;
+                        $product_quantity_d->created_at = Carbon::now();
+                        $product_quantity_d->updated_at = Carbon::now();
+                        $product_quantity_d->save();
+                    }
+                        if (!is_null($purchase_line)) {
+                            $purchase_line->update([
+                                'qty_available' => $updateColorArray['old_qty'] +  $new_qty,
+                                'updated_at' => Carbon::now(),
+                            ]);
+                            $purchase_line->update([
+                                'printing_qty' => $purchase_line->qty_available,
+                            ]);
+                          
+                        } else {
+                            $variation_location_d = new VariationLocationDetails();
+                            $variation_location_d->variation_id = $variation->id;
+                            $variation_location_d->product_refference = $product->refference;
+                            $variation_location_d->product_id = $product->id;
+                            $variation_location_d->location_id = 1;
+                            $variation_location_d->product_variation_id = $variation->id;
+                            $variation_location_d->qty_available = (float)$updateColorArray['old_qty'] + $new_qty;
+                            $variation_location_d->product_updated_at = Carbon::now();
+                            $variation_location_d->printing_qty = (float)$updateColorArray['old_qty'] + $new_qty;
+                            $variation_location_d->updated_at = Carbon::now();
+                            $variation_location_d->save();
+
+                            $product_quantity_d = new product_quantity();
+                            $product_quantity_d->product_id = $variation_location_d['product_id'];
+                            $product_quantity_d->variation_id = $variation_location_d['variation_id'];
+                            $product_quantity_d->refference = $product->refference;
+                            $product_quantity_d->location_id = 1;
+                            $product_quantity_d->quantity = $new_qty;
+                            $product_quantity_d->created_at = Carbon::now();
+                            $product_quantity_d->updated_at = Carbon::now();
+                            // dd($product_quantity_d);
+                            $product_quantity_d->save();
+                        }
+                    }
+                    // dd(isset($request->color_file));
+                    if (isset($request->color_file)) {
+                        foreach ($request->color_file as $key => $file_name) {
+                            if ($key === $updateColorArray['color_name']) {
+                                $uploaded_file_name = null;
+                                if ($file_name->getSize() <= config('constants.document_size_limit')) {
+                                    $new_file_name = time() . '_' . $file_name->getClientOriginalName();
+                                    if ($file_name->storeAs(config('constants.product_img_path'), $new_file_name)) {
+                                        $uploaded_file_name = $new_file_name;
+                                    }
+                                }
+                                if (!is_null($uploaded_file_name)) {
+                                    $findColorArray->update([
+                                        'image' => $uploaded_file_name,
+                                    ]);
+                                }
+                            }
+                        }
+                    }
+                    $all_products = VariationLocationDetails::where('product_refference', $product->refference)->get();
+                    foreach ($all_products as $all_product) {
+                        $all_product->update([
+                            'updated_at' => Carbon::now(),
+                            'product_updated_at' => Carbon::now(),
+                        ]);
+                    }
+                }
+            }
+            // dd($request->newColor);
+            // add new multi color with quantity  
+            if (!is_null($request->newColor)) {
+                foreach ($request->newColor as $key => $new_color_array) {
+                    $qty = 1;
+                    if (!is_null($new_color_array['new_qty'])) {
+                        $qty = $new_color_array['new_qty'];
+                    }
+                    // dd(isset($new_color_array['file']),!is_null($new_color_array['new_qty']),$qty);
+                    $new_color = Color::where('name', $new_color_array['color_name'])->first();
+                    $size = Size::find($new_color_array['size_id']);
+                    $lastId = Product::orderBy('id', 'desc')->first();
+
+                    $new_product = $product->replicate();
+                    $new_product->color_id = $new_color->id;
+                    $new_product->size_id = $size->parent_id;
+                    $new_product->sub_size_id = $size->id;
+                    // $new_product->sku = $sku;
+                    $new_product->created_by = Auth::id();
+                    $new_product->save();
+                    $sku = $this->productUtil->generateProductSku($new_product->id);
+                    $new_product->update([
+                        'sku' => $sku,
+                    ]);
+
+                    $user_id = Auth::id();
+                    //  dd($lastId);
+                    if ($new_product->type == 'single') {
+                        $variation = $product->variations->first();
+                        $this->productUtil->createSingleProductVariation2($new_product, $new_product->sku, $variation->dpp_inc_tax, $variation->dpp_inc_tax, $variation->profit_percent, $variation->default_sell_price, $variation->sell_price_inc_tax);
+                    }
+                    // dd($new_product->variations);
+                    if ($product->enable_stock == 1) {
+                        $transaction_date = $request->session()->get("financial_year.start");
+                        $transaction_date = \Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
+                        $variatArr = array(
+                            "1" => array(
+                                "purchase_price" => $request->input('custom_price'),
+                                "quantity" => $qty,
+                                "exp_date" => "",
+                                "lot_number" => ""
+                            )
+                        );
+                        $this->productUtil->addSingleProductOpeningStock2(1, $new_product, $variatArr, $transaction_date, $user_id);
+                    }
+                }
+            }
+
+
+            DB::commit();
+            $this->update_on_website($product->name);
+            $output = [
+                'success' => 1,
+                'msg' => $message
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // dd($e->getMessage());
+            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
+
+            $output = [
+                'success' => 0,
+                'msg' => __("messages.something_went_wrong" . ' ' . "File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage())
+            ];
+        }
+        // dd($location);
+        return redirect(url('products/' . $product->id . '/edit'))->with('status', $output)->with('location_id_set', $location);
+
+        $business_id = $request->session()->get('user.business_id');
+        $product_details = $request->only(['name', 'brand_id', 'unit_id', 'category_id', 'tax', 'barcode_type', 'sku', 'alert_quantity', 'tax_type', 'weight', 'product_custom_field1', 'product_custom_field2', 'product_custom_field3', 'product_custom_field4', 'product_description']);
+
+        $product = Product::where('business_id', $business_id)
+            ->where('id', $id)
+            ->with(['product_variations'])
+            ->first();
+        try {
+            DB::beginTransaction();
+
+            $product = Product::where('business_id', $business_id)
+                ->where('id', $id)
+                ->with(['product_variations'])
+                ->first();
+
+            $module_form_fields = $this->moduleUtil->getModuleFormField('product_form_fields');
+            if (!empty($module_form_fields)) {
+                foreach ($module_form_fields as $column) {
+                    $product->$column = $request->input($column);
+                }
+            }
+
+            $product->name = $product_details['name'];
+            $product->brand_id = $product_details['brand_id'];
+            $product->unit_id = $product_details['unit_id'];
+            $product->category_id = $product_details['category_id'];
+            $product->tax = $product_details['tax'];
+            $product->barcode_type = $product_details['barcode_type'];
+            $product->sku = $product_details['sku'];
+            $product->alert_quantity = $product_details['alert_quantity'];
+            $product->tax_type = $product_details['tax_type'];
+            $product->weight = $product_details['weight'];
+            $product->product_custom_field1 = $product_details['product_custom_field1'];
+            $product->product_custom_field2 = $product_details['product_custom_field2'];
+            $product->product_custom_field3 = $product_details['product_custom_field3'];
+            $product->product_custom_field4 = $product_details['product_custom_field4'];
+            $product->product_description = $product_details['product_description'];
+
+            if (!empty($request->input('enable_stock')) &&  $request->input('enable_stock') == 1) {
+                $product->enable_stock = 1;
+            } else {
+                $product->enable_stock = 0;
+            }
+            if (!empty($request->input('sub_category_id'))) {
+                $product->sub_category_id = $request->input('sub_category_id');
+            } else {
+                $product->sub_category_id = null;
+            }
+
+            $expiry_enabled = $request->session()->get('business.enable_product_expiry');
+            if (!empty($expiry_enabled)) {
+                if (!empty($request->input('expiry_period_type')) && !empty($request->input('expiry_period')) && ($product->enable_stock == 1)) {
+                    $product->expiry_period_type = $request->input('expiry_period_type');
+                    $product->expiry_period = $this->productUtil->num_uf($request->input('expiry_period'));
+                } else {
+                    $product->expiry_period_type = null;
+                    $product->expiry_period = null;
+                }
+            }
+
+            if (!empty($request->input('enable_sr_no')) &&  $request->input('enable_sr_no') == 1) {
+                $product->enable_sr_no = 1;
+            } else {
+                $product->enable_sr_no = 0;
+            }
+
+            //upload document
+            $file_name = $this->productUtil->uploadFile($request, 'image', config('constants.product_img_path'));
+            if (!empty($file_name)) {
+                $product->image = $file_name;
+            }
+            $product->product_updated_at = Carbon::now();
+
+            $product->save();
+
+            if ($product->type == 'single') {
+                $single_data = $request->only(['single_variation_id', 'single_dpp', 'single_dpp_inc_tax', 'single_dsp_inc_tax', 'profit_percent', 'single_dsp_inc_tax']);
+                $variation = Variation::find($single_data['single_variation_id']);
+
+                $variation->sub_sku = $product->sku;
+                $variation->default_purchase_price = $this->productUtil->num_uf($single_data['single_dpp_inc_tax']);
+                $variation->dpp_inc_tax = $this->productUtil->num_uf($single_data['single_dpp_inc_tax']);
+                $variation->profit_percent = $this->productUtil->num_uf($single_data['profit_percent']);
+                $variation->default_sell_price = $this->productUtil->num_uf($single_data['single_dsp_inc_tax']);
+                $variation->sell_price_inc_tax = $this->productUtil->num_uf($single_data['single_dsp_inc_tax']);
+                $variation->save();
+            } elseif ($product->type == 'variable') {
+                //Update existing variations
+                $input_variations_edit = $request->get('product_variation_edit');
+                if (!empty($input_variations_edit)) {
+                    $this->productUtil->updateVariableProductVariations($product->id, $input_variations_edit);
+                }
+
+                //Add new variations created.
+                $input_variations = $request->input('product_variation');
+                if (!empty($input_variations)) {
+                    $this->productUtil->createVariableProductVariations($product->id, $input_variations);
+                }
+            }
+
+            //Add product racks details.
+            $product_racks = $request->get('product_racks', null);
+            if (!empty($product_racks)) {
+                $this->productUtil->addRackDetails($business_id, $product->id, $product_racks);
+            }
+
+            $product_racks_update = $request->get('product_racks_update', null);
+            if (!empty($product_racks_update)) {
+                $this->productUtil->updateRackDetails($business_id, $product->id, $product_racks_update);
+            }
+
+            DB::commit();
+            $this->update_on_website($product->name);
+            $output = [
+                'success' => 1,
+                'msg' => __('product.product_updated_success')
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
+
+            $output = [
+                'success' => 0,
+                'msg' => __("messages.something_went_wrong")
+            ];
+        }
+
+        if ($request->input('submit_type') == 'update_n_edit_opening_stock') {
+            return redirect()->action(
+                'OpeningStockController@add',
+                ['product_id' => $product->id]
+            );
+        } elseif ($request->input('submit_type') == 'submit_n_add_selling_prices') {
+            return redirect()->action(
+                'ProductController@addSellingPrices',
+                [$product->id]
+            );
+        } elseif ($request->input('submit_type') == 'save_n_add_another') {
+            return redirect()->action(
+                'ProductController@create'
+            )->with('status', $output);
+        }
+
+        return redirect('products')->with('status', $output);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function bulkUpdateOld(Request $request)
+    {
+        dd($request->input());
         if (!auth()->user()->can('product.update')) {
             abort(403, 'Unauthorized action.');
         }
@@ -1135,7 +1595,7 @@ class ProductController extends Controller
             'sku' => 'required',
             'color' => ['required', Rule::notIn(0)],
             'quantity' => 'required',
-            'size' => ['required', Rule::notIn(0)],
+            // 'size' => ['required', Rule::notIn(0)],
         ]);
 
         try {
@@ -1178,9 +1638,9 @@ class ProductController extends Controller
             // dd($this->productUtil->num_uf($request->input('unit_price')));
             // dd($unit);
             $variation->sub_sku = $product->sku;
-            if($request->allow_price_qty){
+            if ($request->allow_price_qty) {
                 $variation->dpp_inc_tax = $this->productUtil->num_uf($request->input('unit_price'));
-                $variation->old_sell_price_inc_tax	 = $variation->sell_price_inc_tax;
+                $variation->old_sell_price_inc_tax     = $variation->sell_price_inc_tax;
                 $variation->sell_price_inc_tax = $this->productUtil->num_uf($request->input('custom_price'));
             }
             $variation->save();
@@ -1417,9 +1877,9 @@ class ProductController extends Controller
         try {
             DB::beginTransaction();
             $product_id = Product::find($request->input('product_id'));
-            $product = Product::where('name',$product_id->name)->get();
+            $product = Product::where('name', $product_id->name)->get();
 
-            for($i = 0;$i<count($product);$i++){
+            for ($i = 0; $i < count($product); $i++) {
                 $product_image = $product[$i]->image;
 
                 if ($request->hasFile('file')) {
@@ -1460,9 +1920,9 @@ class ProductController extends Controller
                 // dd($this->productUtil->num_uf($request->input('unit_price')));
                 // dd($unit);
                 // $variation->sub_sku = $product[$i]->sku;
-                if($request->allow_price_qty){
+                if ($request->allow_price_qty) {
                     $variation->dpp_inc_tax = $this->productUtil->num_uf($request->input('unit_price'));
-                    $variation->old_sell_price_inc_tax	 = $variation->sell_price_inc_tax;
+                    $variation->old_sell_price_inc_tax     = $variation->sell_price_inc_tax;
                     $variation->sell_price_inc_tax = $this->productUtil->num_uf($request->input('custom_price'));
                 }
                 $variation->save();
@@ -1484,7 +1944,7 @@ class ProductController extends Controller
 
                 $purchase_line->save();
 
-                $message = count($product).' Products Updated Successfully. ';
+                $message = count($product) . ' Products Updated Successfully. ';
                 // Adding Product In Purchase Line
                 if (($request->input('new_quantity') && $purchase_line->location_id != 1) && $request->allow_price_qty) {
                     $location_transfer_detail = new LocationTransferDetail();
@@ -1705,14 +2165,13 @@ class ProductController extends Controller
             $product_id = Product::where('color_id', $request->input('color'))->where('name', $request->input('product_name'))->first();
             $product = Product::where('color_id', $request->input('color'))->where('name', $request->input('product_name'))->get();
             // dd($product, $product_id,$request->input());
-            if (is_null($product_id) && $product->isEmpty() )
-            {
+            if (is_null($product_id) && $product->isEmpty()) {
                 $product_id =  Product::where('name', $request->input('product_name'))->first();
                 $product = Product::where('name', $request->input('product_name'))->get();
             }
             // dd($request->input());
 
-            for($i = 0;$i<count($product);$i++){
+            for ($i = 0; $i < count($product); $i++) {
                 $product_image = $product[$i]->image;
 
                 if ($request->hasFile('file')) {
@@ -1734,7 +2193,7 @@ class ProductController extends Controller
                     $product[$i]->sub_category_id = $request->input('sub_category');
                 }
                 $product[$i]->refference = $request->input('refference');
-                
+
                 $product[$i]->color_id = $request->input('color');
                 // $product[$i]->size_id = $size->parent_id;
                 // $product[$i]->sub_size_id = $request->input('size');
@@ -1750,9 +2209,9 @@ class ProductController extends Controller
                 // dd($this->productUtil->num_uf($request->input('unit_price')));
                 // dd($unit);
                 // $variation->sub_sku = $product[$i]->sku;
-                if($request->allow_price_qty){
+                if ($request->allow_price_qty) {
                     $variation->dpp_inc_tax = $this->productUtil->num_uf($request->input('unit_price'));
-                    $variation->old_sell_price_inc_tax	 = $variation->sell_price_inc_tax;
+                    $variation->old_sell_price_inc_tax     = $variation->sell_price_inc_tax;
                     $variation->sell_price_inc_tax = $this->productUtil->num_uf($request->input('custom_price'));
                 }
                 $variation->save();
@@ -1774,7 +2233,7 @@ class ProductController extends Controller
 
                 $purchase_line->save();
 
-                $message = count($product).' Products Updated Successfully. ';
+                $message = count($product) . ' Products Updated Successfully. ';
                 // Adding Product In Purchase Line
                 if (($request->input('new_quantity') && $purchase_line->location_id != 1) && $request->allow_price_qty) {
                     $location_transfer_detail = new LocationTransferDetail();
@@ -1969,9 +2428,9 @@ class ProductController extends Controller
     public function update_on_website($product_name)
     {
         try {
-            
+
             $products = WebsiteProducts::join('products as p', 'p.refference', '=', 'website_products.refference')
-                ->where('p.name',$product_name)
+                ->where('p.name', $product_name)
                 ->join('variation_location_details as vld', 'vld.product_id', '=', 'p.id')
                 ->join('variations as v', 'p.id', '=', 'v.product_id')
                 ->join('sizes as s', 'p.sub_size_id', '=', 's.id')
@@ -2026,7 +2485,7 @@ class ProductController extends Controller
                     $child = $connection->table('childcategories')->where('name', $current_product[0]['sub_category_name'])->first();
                     $child_id = $child->id;
                     $subcat_id = $child->subcategory_id;
-                    $cat_id = $connection->table('subcategories')->where('id',$subcat_id)->first()->category_id;
+                    $cat_id = $connection->table('subcategories')->where('id', $subcat_id)->first()->category_id;
                 }
                 $size = [];
                 $color = [];
@@ -3154,8 +3613,8 @@ class ProductController extends Controller
             ->join('products as p', 'pv.product_id', '=', 'p.id')
             // ->join('variation_location_details as vlds', 'pv.product_id', '=', 'vlds.product_id')
             // ->join('suppliers as s', 's.id','=','p.supplier_id')
-            ->join('sizes as sub_size', 'p.sub_size_id','=','sub_size.id')
-            ->join('colors', 'p.color_id','=','colors.id')
+            ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
+            ->join('colors', 'p.color_id', '=', 'colors.id')
             ->leftjoin('tax_rates', 'transaction_sell_lines.tax_id', '=', 'tax_rates.id')
             ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
             ->where('t.business_id', $business_id)
@@ -3326,8 +3785,8 @@ class ProductController extends Controller
             ->join('products as p', 'pv.product_id', '=', 'p.id')
             // ->join('variation_location_details as vlds', 'pv.product_id', '=', 'vlds.product_id')
             // ->join('suppliers as s', 's.id','=','p.supplier_id')
-            ->join('sizes as sub_size', 'p.sub_size_id','=','sub_size.id')
-            ->join('colors', 'p.color_id','=','colors.id')
+            ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
+            ->join('colors', 'p.color_id', '=', 'colors.id')
             ->leftjoin('tax_rates', 'transaction_sell_lines.tax_id', '=', 'tax_rates.id')
             ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
             ->where('t.business_id', $business_id)
@@ -3427,7 +3886,7 @@ class ProductController extends Controller
             ])
             ->first();
 
-        $price_groups = SellingPriceGroup::where('business_id', $business_id)->pluck('name', 'id','refference');
+        $price_groups = SellingPriceGroup::where('business_id', $business_id)->pluck('name', 'id', 'refference');
 
         $allowed_group_prices = [];
         foreach ($price_groups as $key => $value) {
@@ -3458,7 +3917,482 @@ class ProductController extends Controller
      * View Color Detail of Product 
      * 
      **/
-    public function viewColorDetail($name,$from_date=null, $to_date=null)
+    public function viewColorDetail($name, $from_date = null, $to_date = null)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $location_id = request()->get('location_id', null);
+
+        $vld_str = '';
+        if (!empty($location_id)) {
+
+            $vld_str = "AND vld.location_id=$location_id";
+        }
+        $variation_id = request()->get('variation_id', null);
+        $now = Carbon::now();
+
+        // dd($now->today()->format('Y-m-d'));
+        $group_query =
+            TransactionSellLine::join(
+                'transactions as t',
+                'transaction_sell_lines.transaction_id',
+                '=',
+                't.id'
+            )
+            ->join(
+                'variations as v',
+                'transaction_sell_lines.variation_id',
+                '=',
+                'v.id'
+            )
+            // ->rightjoin('variation_location_details as vlds', 'v.id', '=', 'vlds.variation_id')
+            ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
+            ->join('products as p', 'pv.product_id', '=', 'p.id')
+            // ->join('suppliers as s', 'p.supplier_id', '=', 's.id')
+            ->join('colors as c', 'p.color_id', '=', 'c.id')
+            ->join('sizes', 'p.size_id', '=', 'sizes.id')
+            ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
+            ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
+            ->where('t.business_id', $business_id)
+            ->where('t.type', 'sell')
+            ->where('t.status', 'final')
+            ->where('p.name', $name)
+            ->select(
+                'p.id as product_id',
+                'p.name as product_name',
+                'p.image as image',
+                'p.refference',
+                'p.sku as barcode',
+                'p.supplier_id as supplier',
+                'p.enable_stock',
+                'c.id as color_id',
+                'c.name as color',
+                'sub_size.name as size',
+                'p.type as product_type',
+                'pv.name as product_variation',
+                'v.name as variation_name',
+                't.id as transaction_id',
+                't.transaction_date as transaction_date',
+                DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
+                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id) as all_time_sold"),
+                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
+                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
+                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at  >= DATE_FORMAT(now(), '%Y-%m-%d')  ) as today_sold"),
+                // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference $vld_str GROUP BY p.color_id) as current_stock"),
+                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
+                DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
+                DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
+                DB::raw('DATE_FORMAT(p.created_at, "%Y-%m-%d %H:%i:%s") as purchase_date'),
+                DB::raw('DATE_FORMAT(transaction_sell_lines.updated_at, "%Y-%m-%d %H:%i:%s") as last_update_date'),
+                // 'p.product_updated_at as product_updated_at',
+                'u.short_name as unit',
+                DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
+            );
+        $group_query_color =
+            TransactionSellLine::join(
+                'transactions as t',
+                'transaction_sell_lines.transaction_id',
+                '=',
+                't.id'
+            )
+            ->join(
+                'variations as v',
+                'transaction_sell_lines.variation_id',
+                '=',
+                'v.id'
+            )
+            // ->rightjoin('variation_location_details as vlds', 'v.id', '=', 'vlds.variation_id')
+            ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
+            ->join('products as p', 'pv.product_id', '=', 'p.id')
+            // ->join('suppliers as s', 'p.supplier_id', '=', 's.id')
+            ->join('colors as c', 'p.color_id', '=', 'c.id')
+            // ->join('sizes', 'p.size_id', '=', 'sizes.id')
+            // ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
+            ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
+            ->where('t.business_id', $business_id)
+            ->where('t.type', 'sell')
+            ->where('t.status', 'final')
+            ->where('p.name', $name)
+            ->select(
+                'p.id as product_id',
+                'p.name as product_name',
+                'p.image as image',
+                'p.refference as refference',
+                'p.sku as barcode',
+                'p.supplier_id as supplier',
+                'p.enable_stock',
+                'c.id as color_id',
+                'c.name as color',
+                // 'sub_size.name as size',
+                'p.type as product_type',
+                'pv.name as product_variation',
+                'v.name as variation_name',
+                't.id as transaction_id',
+                't.transaction_date as transaction_date',
+                DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
+                // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference $vld_str GROUP BY p.color_id) as current_stock"),
+                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
+                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id) as all_time_sold"),
+                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
+                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
+                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at >= DATE_FORMAT(now(), '%Y-%m-%d') ) as today_sold"),
+                DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
+                DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
+                DB::raw('DATE_FORMAT(p.created_at, "%Y-%m-%d %H:%i:%s") as purchase_date'),
+                DB::raw('DATE_FORMAT(transaction_sell_lines.updated_at, "%Y-%m-%d %H:%i:%s") as last_update_date'),
+                // 'p.product_updated_at as product_updated_at',
+                'u.short_name as unit',
+                DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
+            );
+        $current_group = $group_query;
+        $current_group_color = $group_query_color;
+        $history_group = $group_query->get();
+        if (!empty($from_date) && !empty($to_date)) {
+            $current_group = $current_group->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
+            $current_group_color = $current_group_color->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
+        }
+        if (isset($location_id)) {
+            $current_group = $current_group->where('location_id', $location_id);
+            $current_group_color = $current_group_color->where('location_id', $location_id);
+        }
+        $current_group = $current_group
+            ->orderBy('color', 'DESC')
+            // ->groupBy('color')
+            ->groupBy('product_id')
+            ->get();
+        $current_group_color = $current_group_color
+            ->orderBy('color', 'DESC')
+            ->groupBy('color_id')
+            ->get();
+        $query =
+            TransactionSellLine::join(
+                'transactions as t',
+                'transaction_sell_lines.transaction_id',
+                '=',
+                't.id'
+            )
+            ->join(
+                'variations as v',
+                'transaction_sell_lines.variation_id',
+                '=',
+                'v.id'
+            )
+            ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
+            // ->join('contacts as c', 't.contact_id', '=', 'c.id')
+            ->join('products as p', 'transaction_sell_lines.product_id', '=', 'p.id')
+            // ->join('variation_location_details as vlds', 'pv.product_id', '=', 'vlds.product_id')
+            // ->join('suppliers as s', 's.id','=','p.supplier_id')
+            ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
+            ->join('colors as c', 'p.color_id', '=', 'c.id')
+            ->leftjoin('tax_rates', 'transaction_sell_lines.tax_id', '=', 'tax_rates.id')
+            ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
+            ->where('t.business_id', $business_id)
+            ->where('t.type', 'sell')
+            ->where('t.status', 'final')
+            ->where('p.name', $name)
+            ->select(
+                'p.id as product_id',
+                'p.name as product_name',
+                'p.image as image',
+                'p.supplier_id as supplier_id',
+                // 's.name as supplier',
+                'p.refference as refference',
+                'sub_size.name as size',
+                'p.type as product_type',
+                'p.sku as barcode',
+                'pv.name as product_variation',
+                'v.name as variation_name',
+                'c.name as color',
+                't.id as transaction_id',
+                't.invoice_no',
+                't.transaction_date as transaction_date',
+                'transaction_sell_lines.unit_price_before_discount as unit_price',
+                'transaction_sell_lines.unit_price_inc_tax as unit_sale_price',
+                'p.product_updated_at as product_updated_at',
+                'transaction_sell_lines.original_amount as original_amount',
+                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference $vld_str GROUP BY p.color_id) as current_stock"),
+                DB::raw('(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as sell_qty'),
+                DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_id = p.id) as total_sold"),
+                'transaction_sell_lines.line_discount_type as discount_type',
+                'transaction_sell_lines.line_discount_amount as discount_amount',
+                'transaction_sell_lines.item_tax',
+                'tax_rates.name as tax',
+                'u.short_name as unit',
+                DB::raw('((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
+            )
+            ->orderBy('color', 'DESC')
+            // ->orderBy('transaction_date', 'DESC')
+            // ->orderBy('t.invoice_no','DESC')
+            ->groupBy('t.id');
+        // ->groupBy('transaction_sell_lines.id');
+        $current_detail = $query;
+        $history_detail = $query->get();
+        // dd(isset($location_id) && isset($location_id) != '0');
+        if (!empty($from_date)  && !empty($to_date)) {
+            // dd(isset($location_id) && isset($location_id) != '0');
+            $current_detail = $current_detail->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
+
+            // dd($current_detail->get());
+        }
+        if (isset($location_id)) {
+            $current_detail = $current_detail->where('location_id', $location_id);
+        }
+        $current_detail = $current_detail->orderBy('transaction_date', 'DESC')
+            ->get();
+        // $current_detail = $current_detail
+        //                     ->orderBy('transaction_date','DESC')
+        //                     ->groupBy('t.id')
+        //                     ->get();
+        // ->toSql();
+        // dd($current_group_color);
+        $business_locations = BusinessLocation::forDropdown($business_id, true);
+        $select_date = date('d/m/y', strtotime($from_date)) . ' - ' . date('d/m/y', strtotime($to_date));
+        // dd( $select_date);
+        return view('report.partials.color_report_by_name_dates', compact('current_group', 'select_date', 'name', 'business_locations', 'current_group_color', 'history_group', 'current_detail', 'history_detail', 'from_date', 'to_date'));
+        // return view('product.view-product-color-detail', compact('current_group', 'current_group_color', 'history_group', 'current_detail', 'history_detail', 'from_date', 'to_date'));
+    }
+    public function viewColorDetailByFilter($name, $from_date = null, $to_date = null)
+    {
+        $business_id = request()->session()->get('user.business_id');
+        $location_id = request()->get('location_id', null);
+
+        $vld_str = '';
+        if (!empty($location_id)) {
+
+            $vld_str = "AND vld.location_id=$location_id";
+        }
+        $variation_id = request()->get('variation_id', null);
+        $now = Carbon::now();
+
+        // dd($now->today()->format('Y-m-d'));
+        $group_query =
+            TransactionSellLine::join(
+                'transactions as t',
+                'transaction_sell_lines.transaction_id',
+                '=',
+                't.id'
+            )
+            ->join(
+                'variations as v',
+                'transaction_sell_lines.variation_id',
+                '=',
+                'v.id'
+            )
+            // ->rightjoin('variation_location_details as vlds', 'v.id', '=', 'vlds.variation_id')
+            ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
+            ->join('products as p', 'pv.product_id', '=', 'p.id')
+            // ->join('suppliers as s', 'p.supplier_id', '=', 's.id')
+            ->join('colors as c', 'p.color_id', '=', 'c.id')
+            ->join('sizes', 'p.size_id', '=', 'sizes.id')
+            ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
+            ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
+            ->where('t.business_id', $business_id)
+            ->where('t.type', 'sell')
+            ->where('t.status', 'final')
+            ->where('p.name', $name)
+            ->select(
+                'p.id as product_id',
+                'p.name as product_name',
+                'p.image as image',
+                'p.refference',
+                'p.sku as barcode',
+                'p.supplier_id as supplier',
+                'p.enable_stock',
+                'c.id as color_id',
+                'c.name as color',
+                'sub_size.name as size',
+                'p.type as product_type',
+                'pv.name as product_variation',
+                'v.name as variation_name',
+                't.id as transaction_id',
+                't.transaction_date as transaction_date',
+                DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
+                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id) as all_time_sold"),
+                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
+                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
+                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at  >= DATE_FORMAT(now(), '%Y-%m-%d')  ) as today_sold"),
+                // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference $vld_str GROUP BY p.color_id) as current_stock"),
+                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
+                DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
+                DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
+                DB::raw('DATE_FORMAT(p.created_at, "%Y-%m-%d %H:%i:%s") as purchase_date'),
+                DB::raw('DATE_FORMAT(transaction_sell_lines.updated_at, "%Y-%m-%d %H:%i:%s") as last_update_date'),
+                // 'p.product_updated_at as product_updated_at',
+                'u.short_name as unit',
+                DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
+            );
+        $group_query_color =
+            TransactionSellLine::join(
+                'transactions as t',
+                'transaction_sell_lines.transaction_id',
+                '=',
+                't.id'
+            )
+            ->join(
+                'variations as v',
+                'transaction_sell_lines.variation_id',
+                '=',
+                'v.id'
+            )
+            // ->rightjoin('variation_location_details as vlds', 'v.id', '=', 'vlds.variation_id')
+            ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
+            ->join('products as p', 'pv.product_id', '=', 'p.id')
+            // ->join('suppliers as s', 'p.supplier_id', '=', 's.id')
+            ->join('colors as c', 'p.color_id', '=', 'c.id')
+            // ->join('sizes', 'p.size_id', '=', 'sizes.id')
+            // ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
+            ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
+            ->where('t.business_id', $business_id)
+            ->where('t.type', 'sell')
+            ->where('t.status', 'final')
+            ->where('p.name', $name)
+            ->select(
+                'p.id as product_id',
+                'p.name as product_name',
+                'p.image as image',
+                'p.refference as refference',
+                'p.sku as barcode',
+                'p.supplier_id as supplier',
+                'p.enable_stock',
+                'c.id as color_id',
+                'c.name as color',
+                // 'sub_size.name as size',
+                'p.type as product_type',
+                'pv.name as product_variation',
+                'v.name as variation_name',
+                't.id as transaction_id',
+                't.transaction_date as transaction_date',
+                DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
+                // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference $vld_str GROUP BY p.color_id) as current_stock"),
+                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
+                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id) as all_time_sold"),
+                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
+                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
+                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at >= DATE_FORMAT(now(), '%Y-%m-%d') ) as today_sold"),
+                DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
+                DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
+                DB::raw('DATE_FORMAT(p.created_at, "%Y-%m-%d %H:%i:%s") as purchase_date'),
+                DB::raw('DATE_FORMAT(transaction_sell_lines.updated_at, "%Y-%m-%d %H:%i:%s") as last_update_date'),
+                // 'p.product_updated_at as product_updated_at',
+                'u.short_name as unit',
+                DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
+            );
+        $current_group = $group_query;
+        $current_group_color = $group_query_color;
+        $history_group = $group_query->get();
+        if (!empty($from_date) && !empty($to_date)) {
+            $current_group = $current_group->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
+            $current_group_color = $current_group_color->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
+        }
+        if (isset($location_id)) {
+            $current_group = $current_group->where('location_id', $location_id);
+            $current_group_color = $current_group_color->where('location_id', $location_id);
+        }
+        $current_group = $current_group
+            ->orderBy('color', 'DESC')
+            // ->groupBy('color')
+            ->groupBy('product_id')
+            ->get();
+        $current_group_color = $current_group_color
+            ->orderBy('color', 'DESC')
+            ->groupBy('color_id')
+            ->get();
+        $query =
+            TransactionSellLine::join(
+                'transactions as t',
+                'transaction_sell_lines.transaction_id',
+                '=',
+                't.id'
+            )
+            ->join(
+                'variations as v',
+                'transaction_sell_lines.variation_id',
+                '=',
+                'v.id'
+            )
+            ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
+            // ->join('contacts as c', 't.contact_id', '=', 'c.id')
+            ->join('products as p', 'transaction_sell_lines.product_id', '=', 'p.id')
+            // ->join('variation_location_details as vlds', 'pv.product_id', '=', 'vlds.product_id')
+            // ->join('suppliers as s', 's.id','=','p.supplier_id')
+            ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
+            ->join('colors as c', 'p.color_id', '=', 'c.id')
+            ->leftjoin('tax_rates', 'transaction_sell_lines.tax_id', '=', 'tax_rates.id')
+            ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
+            ->where('t.business_id', $business_id)
+            ->where('t.type', 'sell')
+            ->where('t.status', 'final')
+            ->where('p.name', $name)
+            ->select(
+                'p.id as product_id',
+                'p.name as product_name',
+                'p.image as image',
+                'p.supplier_id as supplier_id',
+                // 's.name as supplier',
+                'p.refference as refference',
+                'sub_size.name as size',
+                'p.type as product_type',
+                'p.sku as barcode',
+                'pv.name as product_variation',
+                'v.name as variation_name',
+                'c.name as color',
+                't.id as transaction_id',
+                't.invoice_no',
+                't.transaction_date as transaction_date',
+                'transaction_sell_lines.unit_price_before_discount as unit_price',
+                'transaction_sell_lines.unit_price_inc_tax as unit_sale_price',
+                'p.product_updated_at as product_updated_at',
+                'transaction_sell_lines.original_amount as original_amount',
+                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference $vld_str GROUP BY p.color_id) as current_stock"),
+                DB::raw('(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as sell_qty'),
+                DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_id = p.id) as total_sold"),
+                'transaction_sell_lines.line_discount_type as discount_type',
+                'transaction_sell_lines.line_discount_amount as discount_amount',
+                'transaction_sell_lines.item_tax',
+                'tax_rates.name as tax',
+                'u.short_name as unit',
+                DB::raw('((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
+            )
+            ->orderBy('color', 'DESC')
+            // ->orderBy('transaction_date', 'DESC')
+            // ->orderBy('t.invoice_no','DESC')
+            ->groupBy('t.id');
+        // ->groupBy('transaction_sell_lines.id');
+        $current_detail = $query;
+        $history_detail = $query->get();
+        // dd(isset($location_id) && isset($location_id) != '0');
+        if (!empty($from_date)  && !empty($to_date)) {
+            // dd(isset($location_id) && isset($location_id) != '0');
+            $current_detail = $current_detail->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
+
+            // dd($current_detail->get());
+        }
+        if (isset($location_id)) {
+            $current_detail = $current_detail->where('location_id', $location_id);
+        }
+        $current_detail = $current_detail->orderBy('transaction_date', 'DESC')
+            ->get();
+        // $current_detail = $current_detail
+        //                     ->orderBy('transaction_date','DESC')
+        //                     ->groupBy('t.id')
+        //                     ->get();
+        // ->toSql();
+        // dd($current_group_color);
+        $business_locations = BusinessLocation::forDropdown($business_id, true);
+        $select_date = date('d/m/y', strtotime($from_date)) . ' - ' . date('d/m/y', strtotime($to_date));
+        // dd( $select_date);
+        return view('report.partials.filter_color_detail_by_name_dates', compact('current_group', 'select_date', 'name', 'business_locations', 'current_group_color', 'history_group', 'current_detail', 'history_detail', 'from_date', 'to_date'));
+        // return view('product.view-product-color-detail', compact('current_group', 'current_group_color', 'history_group', 'current_detail', 'history_detail', 'from_date', 'to_date'));
+    }
+
+    /**
+     * View Color Detail of Product By Refrence Id
+     * 
+     **/
+    public function viewColorDetailByRefrenceID($name, $id = null, $from_date = null, $to_date = null)
     {
         $business_id = request()->session()->get('user.business_id');
         $location_id = request()->get('location_id', null);
@@ -3493,6 +4427,7 @@ class ProductController extends Controller
             ->where('t.type', 'sell')
             ->where('t.status', 'final')
             ->where('p.name', $name)
+            ->where('p.refference', $id)
             ->select(
                 'p.id as product_id',
                 'p.name as product_name',
@@ -3546,6 +4481,7 @@ class ProductController extends Controller
             ->where('t.type', 'sell')
             ->where('t.status', 'final')
             ->where('p.name', $name)
+            // ->where('c.id', $id)
             ->select(
                 'p.id as product_id',
                 'p.name as product_name',
@@ -3617,6 +4553,7 @@ class ProductController extends Controller
             ->where('t.type', 'sell')
             ->where('t.status', 'final')
             ->where('p.name', $name)
+            // ->where('c.id', $id)
             ->select(
                 'p.id as product_id',
                 'p.name as product_name',
@@ -3629,6 +4566,7 @@ class ProductController extends Controller
                 'p.sku as barcode',
                 'pv.name as product_variation',
                 'v.name as variation_name',
+                'c.id as color_id',
                 'c.name as color',
                 't.id as transaction_id',
                 't.invoice_no',
@@ -3648,9 +4586,9 @@ class ProductController extends Controller
                 DB::raw('((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
             )
             ->orderBy('color', 'DESC')
-        // ->orderBy('transaction_date', 'DESC')
-        // ->orderBy('t.invoice_no','DESC')
-        ->groupBy('t.id');
+            // ->orderBy('transaction_date', 'DESC')
+            // ->orderBy('t.invoice_no','DESC')
+            ->groupBy('t.id');
         // ->groupBy('transaction_sell_lines.id');
         $current_detail = $query;
         $history_detail = $query->get();
@@ -3658,22 +4596,22 @@ class ProductController extends Controller
             $current_detail = $current_detail->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
             // dd($current_detail->get());
         }
-        $current_detail = $current_detail->orderBy('transaction_date','DESC')
-                            ->get();
+        $current_detail = $current_detail->orderBy('transaction_date', 'DESC')
+            ->get();
         // $current_detail = $current_detail
         //                     ->orderBy('transaction_date','DESC')
         //                     ->groupBy('t.id')
         //                     ->get();
-                            // ->toSql();
+        // ->toSql();
         // dd($current_group_color);
-        return view('product.view-product-color-detail', compact('current_group', 'current_group_color', 'history_group', 'current_detail', 'history_detail', 'from_date', 'to_date'));
+        return view('product.view-product-color-detail-by-id', compact('current_group', 'current_group_color', 'history_group', 'current_detail', 'history_detail', 'from_date', 'to_date'));
         // dd($query);
     }
     /**
      * View Color Detail of Product Stock Report
      * 
      **/
-    public function viewColorDetailStock($name,$from_date=null, $to_date=null,$location_id=0)
+    public function viewColorDetailStock($name, $from_date = null, $to_date = null, $location_id = 0)
     {
         $business_id = request()->session()->get('user.business_id');
         // $location_id = request()->get('location_id', null);
@@ -3682,25 +4620,25 @@ class ProductController extends Controller
         if (!empty($location_id)) {
             $vld_str = "AND vld.location_id=$location_id";
         }
-            $variation_id = request()->get('variation_id', null);
+        $variation_id = request()->get('variation_id', null);
         $group_query =
-        Variation::join('products as p', 'p.id', '=', 'variations.product_id')
-        ->join('units', 'p.unit_id', '=', 'units.id')
-        ->join('colors', 'p.color_id', '=', 'colors.id')
-        ->join('sizes', 'p.sub_size_id', '=', 'sizes.id')
-        ->join('suppliers', 'p.supplier_id', '=', 'suppliers.id')
-        ->join('categories', 'p.category_id', '=', 'categories.id')
-        ->join('categories as sub_cat', 'p.sub_category_id', '=', 'sub_cat.id')
-        ->leftjoin('colors as c', 'p.color_id', '=', 'c.id')
-        ->leftjoin('variation_location_details as vld', 'variations.id', '=', 'vld.variation_id')
-        ->join('business_locations as bl', 'bl.id', '=', 'vld.location_id')
-        ->join('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
+            Variation::join('products as p', 'p.id', '=', 'variations.product_id')
+            ->join('units', 'p.unit_id', '=', 'units.id')
+            ->join('colors', 'p.color_id', '=', 'colors.id')
+            ->join('sizes', 'p.sub_size_id', '=', 'sizes.id')
+            ->join('suppliers', 'p.supplier_id', '=', 'suppliers.id')
+            ->join('categories', 'p.category_id', '=', 'categories.id')
+            ->join('categories as sub_cat', 'p.sub_category_id', '=', 'sub_cat.id')
+            ->leftjoin('colors as c', 'p.color_id', '=', 'c.id')
+            ->leftjoin('variation_location_details as vld', 'variations.id', '=', 'vld.variation_id')
+            ->join('business_locations as bl', 'bl.id', '=', 'vld.location_id')
+            ->join('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
             ->where('p.business_id', $business_id)
             ->where('p.name', $name)
             ->whereIn('p.type', ['single', 'variable']);
-            // dd($location_id);
-        if($location_id){
-            $group_query = $group_query->where('vld.location_id',$location_id);
+        // dd($location_id);
+        if ($location_id) {
+            $group_query = $group_query->where('vld.location_id', $location_id);
         }
         $group_query = $group_query->select(
             // DB::raw("(SELECT SUM(quantity) FROM transaction_sell_lines LEFT JOIN transactions ON transaction_sell_lines.transaction_id=transactions.id WHERE transactions.status='final'  AND
@@ -3748,12 +4686,12 @@ class ProductController extends Controller
             ->groupBy('color')
             ->orderBy('vld.product_updated_at', 'DESC');
 
-                $current_group = $group_query;
-                $history_group = $group_query->get();
-                if (!empty($from_date) && !empty($to_date)) {
-                    $current_group = $current_group->whereBetween(DB::raw('date(vld.product_updated_at)'), [$from_date, $to_date]);
-                }
-                $current_group = $current_group->get();
+        $current_group = $group_query;
+        $history_group = $group_query->get();
+        if (!empty($from_date) && !empty($to_date)) {
+            $current_group = $current_group->whereBetween(DB::raw('date(vld.product_updated_at)'), [$from_date, $to_date]);
+        }
+        $current_group = $current_group->get();
 
         $query =
             Variation::join('products as p', 'p.id', '=', 'variations.product_id')
@@ -3770,62 +4708,62 @@ class ProductController extends Controller
             ->where('p.business_id', $business_id)
             ->where('p.name', $name)
             ->whereIn('p.type', ['single', 'variable']);
-        if($location_id){
-            $query = $query->where('vld.location_id',$location_id);
+        if ($location_id) {
+            $query = $query->where('vld.location_id', $location_id);
         }
         $query = $query->select(
-                // DB::raw("(SELECT SUM(quantity) FROM transaction_sell_lines LEFT JOIN transactions ON transaction_sell_lines.transaction_id=transactions.id WHERE transactions.status='final' AND
-                //     transaction_sell_lines.product_id=products.id) as total_sold"),
+            // DB::raw("(SELECT SUM(quantity) FROM transaction_sell_lines LEFT JOIN transactions ON transaction_sell_lines.transaction_id=transactions.id WHERE transactions.status='final' AND
+            //     transaction_sell_lines.product_id=products.id) as total_sold"),
 
-                DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
+            DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
                         JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
                         WHERE transactions.status='final' AND transactions.type='sell'  
                         AND TSL.variation_id=variations.id) as sell_qty"),
-                DB::raw("(SELECT SUM(IF(transactions.type='sell_transfer', TSL.quantity, 0) ) FROM transactions 
+            DB::raw("(SELECT SUM(IF(transactions.type='sell_transfer', TSL.quantity, 0) ) FROM transactions 
                         JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
                         WHERE transactions.status='final' AND transactions.type='sell_transfer'  
                         AND (TSL.variation_id=variations.id)) as total_transfered"),
-                DB::raw("(SELECT SUM(IF(transactions.type='stock_adjustment', SAL.quantity, 0) ) FROM transactions 
+            DB::raw("(SELECT SUM(IF(transactions.type='stock_adjustment', SAL.quantity, 0) ) FROM transactions 
                         JOIN stock_adjustment_lines AS SAL ON transactions.id=SAL.transaction_id
                         WHERE transactions.status='received' AND transactions.type='stock_adjustment'  
                         AND (SAL.variation_id=variations.id)) as total_adjusted"),
-                DB::raw("SUM(vld.qty_available) as stock"),
-                'variations.sub_sku as sku',
-                'p.id as product_id',
-                'bl.name as location_name',
-                'vld.location_id as location_id',
-                'p.created_at',
-                'p.show_pos as show_pos',
-                'p.name as product_name',
-                'p.image as image',
-                'p.description as description',
-                'p.type',
-                'p.refference',
-                'colors.name as color',
-                'suppliers.name as supplier_name',
-                'categories.name as category_name',
-                'sub_cat.name as sub_category_name',
-                'sizes.name as size_name',
-                'units.short_name as unit',
-                'p.enable_stock as enable_stock',
-                'variations.sell_price_inc_tax as unit_price',
-                'pv.name as product_variation',
-                'vld.product_updated_at as product_date',
-                'vld.location_print_qty as printing_qty',
-                'variations.name as variation_name',
-                'vld.updated_at',
-                // 'vld.qty_available as current_stock'
-                DB::raw('SUM(vld.qty_available) as current_stock')
-            )->groupBy('variations.id')
+            DB::raw("SUM(vld.qty_available) as stock"),
+            'variations.sub_sku as sku',
+            'p.id as product_id',
+            'bl.name as location_name',
+            'vld.location_id as location_id',
+            'p.created_at',
+            'p.show_pos as show_pos',
+            'p.name as product_name',
+            'p.image as image',
+            'p.description as description',
+            'p.type',
+            'p.refference',
+            'colors.name as color',
+            'suppliers.name as supplier_name',
+            'categories.name as category_name',
+            'sub_cat.name as sub_category_name',
+            'sizes.name as size_name',
+            'units.short_name as unit',
+            'p.enable_stock as enable_stock',
+            'variations.sell_price_inc_tax as unit_price',
+            'pv.name as product_variation',
+            'vld.product_updated_at as product_date',
+            'vld.location_print_qty as printing_qty',
+            'variations.name as variation_name',
+            'vld.updated_at',
+            // 'vld.qty_available as current_stock'
+            DB::raw('SUM(vld.qty_available) as current_stock')
+        )->groupBy('variations.id')
             ->orderBy('vld.product_updated_at', 'DESC');
 
-            $history_detail = $query->get();
-            $current_detail = $query;
-            if (!empty($from_date) && !empty($to_date)) {
-                $current_detail = $current_detail->whereBetween(DB::raw('date(vld.product_updated_at)'), [$from_date, $to_date]);
-            }
-            $current_detail = $current_detail->get();
-        return view('product.view-product-color-detail',compact('current_group','history_group','current_detail','history_detail'));
+        $history_detail = $query->get();
+        $current_detail = $query;
+        if (!empty($from_date) && !empty($to_date)) {
+            $current_detail = $current_detail->whereBetween(DB::raw('date(vld.product_updated_at)'), [$from_date, $to_date]);
+        }
+        $current_detail = $current_detail->get();
+        return view('product.view-product-color-detail', compact('current_group', 'history_group', 'current_detail', 'history_detail'));
         // dd($query);
     }
     /**
@@ -4140,18 +5078,35 @@ class ProductController extends Controller
         try {
             if (!empty($request->input('selected_products_bulkPrint'))) {
                 $business_location = $request->input('printing_location_id');
-                $location = 'All Location';
-                if ($business_location) {
-                    $location = BusinessLocation::find($business_location)->name;
-                }
+                $location = $business_location;
+                // $location = 'All Location';
+                // dd($business_location);
+                // if ($business_location) {
+                //     $location = BusinessLocation::find($business_location)->name;
+                //     // dd($location);
+                // }
+                // if($location === '0'){
+                //     $location = '1';
+                // }
                 $business_id = $request->session()->get('user.business_id');
-
+                // dd($location);
                 $selected_products = explode(',', $request->input('selected_products_bulkPrint'));
                 $selected_products_qty = explode(',', $request->input('selected_products_bulkPrint_qty'));
-
+                // dd($location);
                 for ($i = 0; $i < count($selected_products); $i++) {
                     $pro = Product::find($selected_products[$i]);
-                    // dd($pro);
+                    $Vld = VariationLocationDetails::where("product_id",$pro->id)->where("location_id",$location)->first();
+                    // dd($Vld);
+                    if(!is_null($Vld)){
+                        $sell_price = $Vld->sell_price;
+                    }else{
+                        $sell_price = 0; 
+                    }
+                    if(!is_null($Vld)){
+                        $old_sell_price = $Vld->old_sell_price;
+                    }else{
+                        $old_sell_price = 0; 
+                    }
                     $product[] = [
                         'id' => $pro->id,
                         'name' => $pro->name,
@@ -4161,9 +5116,13 @@ class ProductController extends Controller
                         'refference' => $pro->refference,
                         'ColorName' => $pro->color()->first()->name,
                         'sku' => $pro->sku,
-                        'max_price' => $pro->variations()->first()->sell_price_inc_tax,
-                        'min_price' => $pro->variations()->first()->sell_price_inc_tax,
-                        'old_price' => $pro->variations()->first()->old_sell_price_inc_tax,
+                        // 'max_price' => $pro->variations()->first()->sell_price_inc_tax,
+                        // 'min_price' => $pro->variations()->first()->sell_price_inc_tax,
+                        // 'old_price' => $pro->variations()->first()->old_sell_price_inc_tax,
+                         
+                        'max_price' => $sell_price,
+                        'min_price' => $sell_price,
+                        'old_price' => $old_sell_price,
                         'supplier' => $pro->supplier()->first()->name,
                         'sub_category' => $pro->sub_category()->first()->name,
                         'count' => $selected_products_qty[$i],
@@ -4175,7 +5134,8 @@ class ProductController extends Controller
                 $qtys = $s_products->combine($selected_products_qty);
 
                 $print_qtys = $selected_products_qty;
-                $product = collect($product)->sortBy('name')->sortBy('refference');
+                $product = collect($product)->groupBy('refference');
+                // $product = collect($product)->sortBy('name')->sortBy('refference')->sortBy('size')->sortBy('ColorName')->sortBy('supplier_id');
                 // ->sortBy('ColorName');
                 // $product = collect($product)->sortBy('refference')->sortBy('ColorName');
                 // dd($product->sortBy('refference')->sortBy('ColorName'));
@@ -4277,7 +5237,7 @@ class ProductController extends Controller
                 // $print_qtys = $qtys->sortKeys()->values()->toArray();
                 // $print_qtys = $qtys->sortKeysDesc()->values()->toArray();
 
-                dd($qtys, $s_products, $selected_products_qty, $print_qtys, $product->pluck('id'));
+                // dd($qtys, $s_products, $selected_products_qty, $print_qtys, $product->pluck('id'));
 
                 return view('product.massBulkPrint')
                     ->with(compact('product', 'print_qtys', 'location'));
@@ -4388,16 +5348,48 @@ class ProductController extends Controller
                             // Commented below for checking
                             $after_transfer = VariationLocationDetails::where("location_id", $business_location_id)->where("variation_id", $objNewPurchaseLine->variation_id)->where("product_id", $objNewPurchaseLine->product_id);
 
-                            $before_transfer_qty = VariationLocationDetails::where("location_id", $business_location_id)->where("variation_id", $objNewPurchaseLine->variation_id)->where("product_id", $objNewPurchaseLine->product_id)->first()->qty_available;
+                            $before_transfer_qty = VariationLocationDetails::where("location_id", $business_location_id)->where("variation_id", $objNewPurchaseLine->variation_id)->where("product_id", $objNewPurchaseLine->product_id)->first();
 
-                            $new_qty = $before_transfer_qty + $productQty;
+                            $product_detail = Product::find($objNewPurchaseLine->product_id);
+                            // dd($before_transfer_qty, $after_transfer);
+                            
+                            if (!is_null($before_transfer_qty)) {
+                                $new_qty = $before_transfer_qty->qty_available + $productQty;
 
-                            $after_transfer->update(['location_print_qty' => $productQty]);
-                            $after_transfer->update(['qty_available' => $new_qty]);
-                            $after_transfer->update(['product_updated_at' => Carbon::now()]);
+                                $before_transfer_qty->update(['location_print_qty' => $productQty]);
+                                $before_transfer_qty->update(['qty_available' => $new_qty]);
+                                $before_transfer_qty->update(['product_updated_at' => Carbon::now()]);
+                            } else {
+                                $variation_location_d = new VariationLocationDetails();
+                                $variation_location_d->variation_id = $objNewPurchaseLine->variation_id;
+                                $variation_location_d->product_refference = $product_detail->refference;
+                                $variation_location_d->product_id = $product_detail->id;
+                                $variation_location_d->location_id = $business_location_id;
+                                $variation_location_d->product_variation_id = $objNewPurchaseLine->variation_id;
+                                $variation_location_d->qty_available = $productQty;
+                                $variation_location_d->location_print_qty = $productQty;
+                                $variation_location_d->product_updated_at = Carbon::now();
+                                $variation_location_d->save();
+                            }
+                            // dd(1);
                         }
+                        // dd(2);
+                        // dd($location_id);
                         $ref = Product::find($objOldPurchaseLine->product_id)->refference;
-
+                        $all_products = VariationLocationDetails::where('product_refference', $ref)->where("product_id", $objOldPurchaseLine->product_id)->where("location_id", $location_id)->get();
+                        foreach ($all_products as $all_product) {
+                            $all_product->update([
+                                'updated_at' => Carbon::now(),
+                                'product_updated_at' => Carbon::now(),
+                            ]);
+                        }
+                        $all_products = VariationLocationDetails::where('product_refference', $ref)->where("product_id", $objOldPurchaseLine->product_id)->where("location_id", $user_location_id)->get();
+                        foreach ($all_products as $all_product) {
+                            $all_product->update([
+                                'updated_at' => Carbon::now(),
+                                'product_updated_at' => Carbon::now(),
+                            ]);
+                        }
                         $location_transfer_detail = new LocationTransferDetail();
                         $location_transfer_detail->variation_id = $objOldPurchaseLine->variation_id;
                         $location_transfer_detail->product_id = $objOldPurchaseLine->product_id;
@@ -4408,8 +5400,8 @@ class ProductController extends Controller
 
                         $location_transfer_detail->product_variation_id = $objOldPurchaseLine->variation_id;
 
-                        $location_transfer_detail->quantity = (float)$qtyForPurchaseLine;
-                        
+                        $location_transfer_detail->quantity = (float)$productQty;
+
                         $location_transfer_detail->transfered_on = Carbon::now();
 
                         $location_transfer_detail->save();
@@ -4592,23 +5584,56 @@ class ProductController extends Controller
                         $oldPurchaseLine = VariationLocationDetails::where("location_id", $user_location_id)->where("variation_id", $objOrignalPurchaseLine->variation_id)->where("product_id", $product->id)->update(['qty_available' => $LeftQty]);
 
                         $transfer_to_location = VariationLocationDetails::where("location_id", $business_location_id)->where("variation_id", $objOldPurchaseLine->variation_id)->where("product_id", $product->id)->first();
-                        $new_qty = (float)$transfer_to_location->qty_available + (float)$qtyForPurchaseLine;
+                        // dd(!is_null($transfer_to_location));
+                        if (!is_null($transfer_to_location)) {
+                            $new_qty = (float)$transfer_to_location->qty_available + (float)$qtyForPurchaseLine;
 
-                        // dd($transfer_to_location,(float)$transfer_to_location->qty_available,(float)$qtyForPurchaseLine,$new_qty);
+                            // dd($transfer_to_location,(float)$transfer_to_location->qty_available,(float)$qtyForPurchaseLine,$new_qty);
 
-                        $transfer_to_location->qty_available = $new_qty;
-                        $transfer_to_location->location_print_qty =$productQty;
-                        $transfer_to_location->product_updated_at = Carbon::now();
-                        $transfer_to_location->save();
+                            $transfer_to_location->qty_available = $new_qty;
+                            $transfer_to_location->location_print_qty = $productQty;
+                            $transfer_to_location->product_updated_at = Carbon::now();
+                            $transfer_to_location->save();
+                        } else {
+                            // dd($qtyForPurchaseLine);
+
+                            $variation_location_d = new VariationLocationDetails();
+                            $variation_location_d->variation_id = $objOldPurchaseLine->variation_id;
+                            $variation_location_d->product_refference = $product->refference;
+                            $variation_location_d->product_id = $product->id;
+                            $variation_location_d->location_id = $business_location_id;
+                            $variation_location_d->location_print_qty = $productQty;
+                            $variation_location_d->product_variation_id = $objOldPurchaseLine->variation_id;
+                            $variation_location_d->qty_available = $productQty;
+                            $variation_location_d->product_updated_at = Carbon::now();
+                            $variation_location_d->save();
+                        }
+
+
 
                         $product->product_updated_at = Carbon::now();
                         $product->save();
 
 
-
+                        // dd($location_id);
+                        // dd(3);
                         // New table for Purchase Report
+                        $transfer_new_location = VariationLocationDetails::where("location_id", $business_location_id)->where("variation_id", $objOldPurchaseLine->variation_id)->where("product_id", $product->id)->first();
                         $ref = Product::find($objOldPurchaseLine->product_id)->refference;
-
+                        $all_products = VariationLocationDetails::where('product_refference', $ref)->where("product_id", $product->id)->where("location_id", $location_id)->get();
+                        foreach ($all_products as $all_product) {
+                            $all_product->update([
+                                'updated_at' => Carbon::now(),
+                                'product_updated_at' => Carbon::now(),
+                            ]);
+                        } 
+                        $all_products = VariationLocationDetails::where('product_refference', $ref)->where("product_id", $product->id)->where("location_id", $user_location_id)->get();
+                        foreach ($all_products as $all_product) {
+                            $all_product->update([
+                                'updated_at' => Carbon::now(),
+                                'product_updated_at' => Carbon::now(),
+                            ]);
+                        }
                         $location_transfer_detail = new LocationTransferDetail();
                         $location_transfer_detail->variation_id = $objOldPurchaseLine->variation_id;
                         $location_transfer_detail->product_id = $product->id;
@@ -4617,7 +5642,7 @@ class ProductController extends Controller
                         // transfer to
                         $location_transfer_detail->location_id = $location_id;
 
-                        $location_transfer_detail->product_variation_id = $transfer_to_location->product_variation_id;
+                        $location_transfer_detail->product_variation_id = $transfer_new_location->product_variation_id;
 
                         $location_transfer_detail->quantity = (float)$qtyForPurchaseLine;
                         $location_transfer_detail->transfered_on = Carbon::now();
@@ -4727,7 +5752,7 @@ class ProductController extends Controller
             ->orderBy('name', 'Asc')
             ->pluck('name', 'id');
 
-        $dd_sizes = Size::where('parent_id',0)->pluck('name','id');
+        $dd_sizes = Size::where('parent_id', 0)->pluck('name', 'id');
         // dd($dd_sizes);
         $sizes = Size::where('business_id', $business_id)
             ->where('parent_id', 0)
@@ -4818,7 +5843,7 @@ class ProductController extends Controller
         $module_form_parts = $this->moduleUtil->getModuleData('product_form_part');
 
         return view('product.bulkAdd')
-            ->with(compact('categories', 'suppliers', 'noRefferenceProducts', 'brands', 'refferenceCount', 'pnc', 'suppliers', 'sizes', 'sub_sizes', 'colors', 'units', 'taxes', 'barcode_types', 'default_profit_percent', 'tax_attributes', 'barcode_default', 'business_locations', 'duplicate_product', 'sub_categories', 'rack_details', 'selling_price_group_count', 'module_form_parts','dd_sizes'));
+            ->with(compact('categories', 'suppliers', 'noRefferenceProducts', 'brands', 'refferenceCount', 'pnc', 'suppliers', 'sizes', 'sub_sizes', 'colors', 'units', 'taxes', 'barcode_types', 'default_profit_percent', 'tax_attributes', 'barcode_default', 'business_locations', 'duplicate_product', 'sub_categories', 'rack_details', 'selling_price_group_count', 'module_form_parts', 'dd_sizes'));
     }
     /**
      * Add Color by Product Id 
@@ -4851,7 +5876,7 @@ class ProductController extends Controller
             ->orderBy('name', 'Asc')
             ->pluck('name', 'id');
 
-        $dd_sizes = Size::where('parent_id',0)->pluck('name','id');
+        $dd_sizes = Size::where('parent_id', 0)->pluck('name', 'id');
         // dd($dd_sizes);
         $sizes = Size::where('business_id', $business_id)
             ->where('parent_id', 0)
@@ -4942,7 +5967,7 @@ class ProductController extends Controller
         $module_form_parts = $this->moduleUtil->getModuleData('product_form_part');
 
         return view('product.addColor')
-            ->with(compact('categories', 'suppliers', 'noRefferenceProducts', 'brands', 'refferenceCount', 'pnc', 'suppliers', 'sizes', 'sub_sizes', 'colors', 'units', 'taxes', 'barcode_types', 'default_profit_percent', 'tax_attributes', 'barcode_default', 'business_locations', 'duplicate_product', 'sub_categories', 'rack_details', 'selling_price_group_count', 'module_form_parts','dd_sizes', 'product'));
+            ->with(compact('categories', 'suppliers', 'noRefferenceProducts', 'brands', 'refferenceCount', 'pnc', 'suppliers', 'sizes', 'sub_sizes', 'colors', 'units', 'taxes', 'barcode_types', 'default_profit_percent', 'tax_attributes', 'barcode_default', 'business_locations', 'duplicate_product', 'sub_categories', 'rack_details', 'selling_price_group_count', 'module_form_parts', 'dd_sizes', 'product'));
     }
 
     public function bulkAddStore(Request $request)
@@ -5120,7 +6145,7 @@ class ProductController extends Controller
                 'success' => 0,
                 'msg' => __("messages.something_went_wrong") .  "Line:" . $e->getLine() . "Message:" . $e->getMessage()
             ];
-            dd($output);
+            // dd($output);
             return redirect('products/bulk_add')->with('status', $output);
         }
 
@@ -5212,12 +6237,13 @@ class ProductController extends Controller
      * Show on Top Of POS 
      * 
      **/
-    public function showPos(Request $request){
+    public function showPos(Request $request)
+    {
         // dd($request);
         try {
             DB::beginTransaction();
             $product = explode(",", $request->input('product_id'));
-            $show_pos = Product::orderBy('show_pos','DESC')->first()->show_pos+1;
+            $show_pos = Product::orderBy('show_pos', 'DESC')->first()->show_pos + 1;
             foreach ($product as $key => $value) {
                 $product = Product::find($value);
                 $product_ids = Product::where('name', $product->name)->get();
@@ -5248,7 +6274,8 @@ class ProductController extends Controller
      * Show on Bottom Of POS 
      * 
      **/
-    public function showBottomPos(Request $request){
+    public function showBottomPos(Request $request)
+    {
         // dd($request);
         try {
             DB::beginTransaction();

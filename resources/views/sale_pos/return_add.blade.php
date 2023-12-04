@@ -459,7 +459,13 @@
     	$('#gift_card_0').focus();
 
     }
+	function openBonusPoint(){
+    	$('#modal_payment').modal('show');
+    	//method_0
+    	$('#method_0').val("bonus_points").change();
+    	$('#bonus_points_0').focus();
 
+    }
     function changePayment(obj,rowIndex)
     {
     	$("#amount_"+rowIndex).val(obj.value).change();

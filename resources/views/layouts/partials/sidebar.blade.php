@@ -172,6 +172,7 @@
           </a>
         </li>
         @endcan
+        
         <!--  @can( 'coupon.reports' )
                   <li class="{{ $request->segment(1) == 'gift' ? 'active active-sub' : '' }}">
                     <a href="{{action('GiftCardController@reports')}}">
@@ -275,6 +276,13 @@
         href="{{action('ReportController@getStockReport')}}"><i class="fa fa-hourglass-half"
           aria-hidden="true"></i>@lang('report.stock_report')</a></li>
     @endcan
+     @if (auth()->user()->getRoleNameAttribute() == 'Admin' || auth()->user()->getRoleNameAttribute() == 'admin
+    lalouviere' || auth()->user()->getRoleNameAttribute() == '
+    ADMIN DOUAIRE' || auth()->user()->getRoleNameAttribute() == 'ADMIN BELLE ILE')
+    <li class="{{ request()->is('reports/color-detail-report') ? 'active' : '' }}"><a
+      href="{{action('ReportController@getcolorDetailReport')}}"><i class="fa fa-hourglass-half"
+        aria-hidden="true"></i>Color Detail Report</a></li>
+    @endif
     {{-- @can('product.view')
                 <li class="{{ $request->segment(1) == 'labels' && $request->segment(2) == 'show' ? 'active' : '' }}"><a
       href="{{action('LabelsController@show')}}"><i class="fa fa-barcode"></i>@lang('barcode.print_labels')</a></li>
@@ -671,7 +679,13 @@
         href="{{action('ReportController@getStockReport')}}"><i class="fa fa-hourglass-half"
           aria-hidden="true"></i>@lang('report.stock_report')</a></li>
     @endcan
-
+    @if (auth()->user()->getRoleNameAttribute() == 'Admin' || auth()->user()->getRoleNameAttribute() == 'admin
+    lalouviere' || auth()->user()->getRoleNameAttribute() == '
+    ADMIN DOUAIRE' || auth()->user()->getRoleNameAttribute() == 'ADMIN BELLE ILE')
+    <li class="{{ request()->is('reports/color-detail-report') ? 'active' : '' }}"><a
+      href="{{action('ReportController@getcolorDetailReport')}}"><i class="fa fa-hourglass-half"
+        aria-hidden="true"></i>Color Detail Report</a></li>
+    @endif
     {{-- @can('stock_report.view')
                 <li class="{{ $request->segment(2) == 'lot-report' ? 'active' : '' }}" ><a
       href="{{action('ReportController@getLotReport')}}"><i class="fa fa-hourglass-half"
@@ -719,7 +733,21 @@
         href="{{action('ReportController@getRegisterReport')}}"><i
           class="fa fa-briefcase"></i>@lang('report.register_report')</a></li>
     @endcan
-
+    @can('stock_report.view')
+        <li class="{{ $request->segment(2) == 'product-second-report' ? 'active' : '' }}"><a
+            href="{{action('ReportController@getstockInOutReport')}}"><i class="fa fa-cart-plus"
+              aria-hidden="true"></i>
+          Stock In/Out
+          </a></li>
+        @endcan
+    
+        @can('coupon.reports')
+        <li class="{{  $request->segment(2) == 'coupon_report' ? 'active active-sub' : '' }}"><a
+            href="{{url('/reports/coupon_reports')}}"><i class="fa fa-barcode"
+              aria-hidden="true"></i>
+          Coupon Report
+          </a></li>
+        @endcan
     @can('sales_representative.view')
     <li class="{{ $request->segment(2) == 'sales-representative-report' ? 'active' : '' }}"><a
         href="{{action('ReportController@getSalesRepresentativeReport')}}"><i class="fa fa-user"
