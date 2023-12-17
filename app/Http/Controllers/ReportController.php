@@ -5701,7 +5701,7 @@ class ReportController extends Controller
     public function getproductSellGroupedReport(Request $request)
     {
         ini_set('memory_limit', '-1');
-        ini_set('max_execution_time', 300); //5 minutes
+        ini_set('max_execution_time', 180); //3 minutes
         if (!auth()->user()->can('purchase_n_sell_report.view')) {
             abort(403, 'Unauthorized action.');
         }
