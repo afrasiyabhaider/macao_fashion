@@ -1306,7 +1306,8 @@ class ReportController extends Controller
 
                 DB::raw('SUM(vld.qty_available) as current_stock')
             )->groupBy('variations.id')
-                ->having('current_stock', '>', 0)
+                // ->having('current_stock', '>', 0)
+                ->having('current_stock', '!=', 0)
                 ->orderBy('vld.product_updated_at', 'DESC');
 
 
