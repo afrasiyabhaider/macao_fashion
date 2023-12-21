@@ -398,7 +398,8 @@
             $('#product_purchase_date_filter').on('cancel.daterangepicker', function(ev, picker) {
                 $('#product_purchase_date_filter').val('');
             });
-            $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment().subtract(10, 'years'));
+            // $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment().subtract(10, 'years'));
+            $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment().subtract(6, 'd'));
             $('#product_purchase_date_filter').data('daterangepicker').setEndDate(moment());
         }
         $("input#product_purchase_date_filter,.location").on('change', function(e) {
