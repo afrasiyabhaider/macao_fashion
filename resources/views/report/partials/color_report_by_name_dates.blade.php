@@ -10,7 +10,7 @@
                         <div class="form-group">
                             {!! Form::label('location_id', __('purchase.business_location') . ':') !!}
                             {!! Form::select('location_id', $business_locations, request()->location_id, [
-                                'class' => 'form-control select2',
+                                'class' => 'form-control select2 location',
                                 'style' => 'width:100%',
                             ]) !!}
                         </div>
@@ -18,7 +18,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
 
-                            {!! Form::label('product_sr_date_filter', 'Purchase Date:') !!}
+                            {!! Form::label('product_sr_date_filter', 'Date:') !!}
                             {!! Form::text('date_range', null, [
                                 'placeholder' => __('lang_v1.select_a_date_range'),
                                 'class' => 'form-control',
@@ -401,10 +401,10 @@
             $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment().subtract(10, 'years'));
             $('#product_purchase_date_filter').data('daterangepicker').setEndDate(moment());
         }
-        $("input#product_purchase_date_filter,#location_id").on('change', function(e) {
+        $("input#product_purchase_date_filter,.location").on('change', function(e) {
             var start = '';
             var end = '';
-            var location = $('#location_id').val() != 0 ? $('#location_id').val() : ''
+            var location = $('.location').val() != 0 ? $('.location').val() : ''
             start = $('input#product_purchase_date_filter')
                 .data('daterangepicker')
                 .startDate.format('YYYY-MM-DD');
