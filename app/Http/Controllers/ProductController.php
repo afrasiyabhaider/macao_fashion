@@ -3913,6 +3913,15 @@ class ProductController extends Controller
             'query'
         ));
     }
+    public function generateSoldSubquery($location_filter, $dateInterval, $alias)
+    {
+        
+       return DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
+        JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
+        WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
+        AND TSL.product_refference = p.refference AND transactions.transaction_date > CURDATE() - INTERVAL $dateInterval day) as $alias");
+
+    }
     /**
      * View Color Detail of Product 
      * 
@@ -3927,10 +3936,17 @@ class ProductController extends Controller
 
             $vld_str = "AND vld.location_id=$location_id";
         }
+        $location_filter = '';
+        if (!empty($location_id)) {
+            $location_filter = "AND transactions.location_id=$location_id";
+            // $location_filter = "AND t.location_id=$location_id";
+        }
         $variation_id = request()->get('variation_id', null);
         $now = Carbon::now();
 
         // dd($now->today()->format('Y-m-d'));
+        $sevenDaySoldSubquery = $this->generateSoldSubquery($location_filter, 6, 'seven_day_sold');
+        $fifteenDaySoldSubquery = $this->generateSoldSubquery($location_filter, 14, 'fifteen_day_sold');
         $group_query =
             TransactionSellLine::join(
                 'transactions as t',
@@ -3973,12 +3989,19 @@ class ProductController extends Controller
                 't.id as transaction_id',
                 't.transaction_date as transaction_date',
                 DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
-                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id) as all_time_sold"),
-                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
-                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id) as all_time_sold"),
+                DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
+                JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
+                WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
+                AND TSL.product_refference = p.refference) as all_time_sold "),
+                DB::raw($sevenDaySoldSubquery),
+                DB::raw($fifteenDaySoldSubquery),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
                 DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at  >= DATE_FORMAT(now(), '%Y-%m-%d')  ) as today_sold"),
                 // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference $vld_str GROUP BY p.color_id) as current_stock"),
-                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference  $vld_str) as current_stock"),
                 DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
                 DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
                 DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
@@ -4031,11 +4054,19 @@ class ProductController extends Controller
                 't.transaction_date as transaction_date',
                 DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
                 // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference $vld_str GROUP BY p.color_id) as current_stock"),
-                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference  $vld_str) as current_stock"),
+
                 DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
-                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id) as all_time_sold"),
-                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
-                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id) as all_time_sold"),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
+                DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
+                        JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
+                        WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
+                        AND TSL.product_refference = p.refference) as all_time_sold "),
+                DB::raw($sevenDaySoldSubquery),
+                DB::raw($fifteenDaySoldSubquery),
                 DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at >= DATE_FORMAT(now(), '%Y-%m-%d') ) as today_sold"),
                 DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
                 DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
@@ -4162,10 +4193,17 @@ class ProductController extends Controller
 
             $vld_str = "AND vld.location_id=$location_id";
         }
+        $location_filter = '';
+        if (!empty($location_id)) {
+            $location_filter = "AND transactions.location_id=$location_id";
+            // $location_filter = "AND t.location_id=$location_id";
+        }
         $variation_id = request()->get('variation_id', null);
         $now = Carbon::now();
 
         // dd($now->today()->format('Y-m-d'));
+        $sevenDaySoldSubquery = $this->generateSoldSubquery($location_filter, 6, 'seven_day_sold');
+        $fifteenDaySoldSubquery = $this->generateSoldSubquery($location_filter, 14, 'fifteen_day_sold');
         $group_query =
             TransactionSellLine::join(
                 'transactions as t',
@@ -4208,12 +4246,20 @@ class ProductController extends Controller
                 't.id as transaction_id',
                 't.transaction_date as transaction_date',
                 DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
-                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id) as all_time_sold"),
-                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
-                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id) as all_time_sold"),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
+                DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
+                JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
+                WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
+                AND TSL.product_refference = p.refference) as all_time_sold "),
+        DB::raw($sevenDaySoldSubquery),
+        DB::raw($fifteenDaySoldSubquery),
                 DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at  >= DATE_FORMAT(now(), '%Y-%m-%d')  ) as today_sold"),
                 // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference $vld_str GROUP BY p.color_id) as current_stock"),
-                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference  $vld_str) as current_stock"),
+
                 DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
                 DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
                 DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
@@ -4266,11 +4312,19 @@ class ProductController extends Controller
                 't.transaction_date as transaction_date',
                 DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
                 // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference $vld_str GROUP BY p.color_id) as current_stock"),
-                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference  $vld_str) as current_stock"),
+
                 DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
-                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id) as all_time_sold"),
-                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
-                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id) as all_time_sold"),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
+                DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
+                        JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
+                        WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
+                        AND TSL.product_refference = p.refference) as all_time_sold "),
+                DB::raw($sevenDaySoldSubquery),
+                DB::raw($fifteenDaySoldSubquery),
                 DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at >= DATE_FORMAT(now(), '%Y-%m-%d') ) as today_sold"),
                 DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
                 DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
