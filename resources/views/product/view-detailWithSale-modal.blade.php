@@ -13,7 +13,11 @@
                               {{$product->sku }}<br>
                               {{-- <b>@lang('product.brand'): </b>
 						{{$product->brand->name or '--' }}<br> --}}
-                              <b>@lang('product.unit'): </b>
+                              <b>Refference:</b>
+                              {{ $product->refference }}<br>
+                              <b>Supplier:</b>
+                              {{ $product->supplier->name }}<br>
+                              {{-- <b>@lang('product.unit'): </b>
                               {{$product->unit->short_name or '--' }}<br>
                               <b>@lang('product.barcode_type'): </b>
                               {{$product->barcode_type or '--' }}
@@ -54,17 +58,23 @@
 
                               @endif
                               <b>Sub Size : </b>
-                              {{$product->sub_size()->first()->name or '---' }}<br>
+                              {{$product->sub_size()->first()->name or '---' }}<br> --}}
 
                          </div>
 
                          <div class="col-sm-4 invoice-col">
                               <b>@lang('product.category'): </b>
-                              {{$product->category->name or '--' }}<br>
+                              {{$product->category->name }}<br>
                               <b>@lang('product.sub_category'): </b>
-                              {{$product->sub_category->name or '--' }}<br>
+                              {{$product->sub_category->name }}<br>
+                              <b>First Date of register:</b>
+                              {{ $product->created_at->format('Y/m/d') }}<br>
+                              <b>Last Update:</b>
+                              @foreach($product->variations as $variation)
+                             {{ $variation->updated_at->format('Y/m/d') }}
+                             @endforeach
 
-                              <b>@lang('product.manage_stock'): </b>
+                              {{-- <b>@lang('product.manage_stock'): </b>
                               @if($product->enable_stock)
                               @lang('messages.yes')
                               @else
@@ -74,11 +84,21 @@
                               @if($product->enable_stock)
                               <b>@lang('product.alert_quantity'): </b>
                               {{$product->alert_quantity or '--' }}
-                              @endif
+                              @endif --}}
                          </div>
 
                          <div class="col-sm-4 invoice-col">
-                              <b>@lang('product.expires_in'): </b>
+                              <b>Purchase Price:</b>
+                              @foreach($product->variations as $variation)
+                              {{ $variation->default_purchase_price }}
+                              @endforeach
+                              <br>
+                              <b>Sell Price:</b>
+                              @foreach($product->variations as $variation)
+                              {{ $variation->sell_price_inc_tax }}
+                              @endforeach
+                              <br>
+                              {{-- <b>@lang('product.expires_in'): </b>
                               @php
                               $expiry_array = ['months'=>__('product.months'), 'days'=>__('product.days'), ''
                               =>__('product.not_applicable') ];
@@ -102,7 +122,7 @@
                               <b>@lang('product.selling_price_tax_type'): </b>
                               {{$tax_type[$product->tax_type]  }}<br>
                               <b>@lang('product.product_type'): </b>
-                              @lang('lang_v1.' . $product->type)
+                              @lang('lang_v1.' . $product->type) --}}
 
                          </div>
                          <div class="clearfix"></div>
