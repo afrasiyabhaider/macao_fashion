@@ -96,8 +96,7 @@
                               <b>Sell Price:</b>
                               @foreach($product->variations as $variation)
                               {{ $variation->sell_price_inc_tax }}
-                              @endforeach
-                              <br>
+                              @endforeach<br>
                               {{-- <b>@lang('product.expires_in'): </b>
                               @php
                               $expiry_array = ['months'=>__('product.months'), 'days'=>__('product.days'), ''
@@ -112,10 +111,10 @@
                               @if($product->weight)
                               <b>@lang('lang_v1.weight'): </b>
                               {{$product->weight }}<br>
-                              @endif
+                              @endif --}}
                               {{-- <b>@lang('product.applicable_tax'): </b>
 						{{$product->product_tax->name or __('lang_v1.none') }}<br> --}}
-                              @php
+                              {{-- @php
                               $tax_type = ['inclusive' => __('product.inclusive'), 'exclusive' =>
                               __('product.exclusive')];
                               @endphp
