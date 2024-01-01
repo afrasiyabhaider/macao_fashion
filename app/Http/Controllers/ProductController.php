@@ -3919,7 +3919,7 @@ class ProductController extends Controller
        return DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
         JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
         WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
-        AND TSL.product_refference = p.refference AND transactions.transaction_date > CURDATE() - INTERVAL $dateInterval day) as $alias");
+        AND TSL.product_id = p.id AND transactions.transaction_date > CURDATE() - INTERVAL $dateInterval day) as $alias");
 
     }
     public function generateSoldSubqueryforcolor($location_filter, $dateInterval, $alias)
