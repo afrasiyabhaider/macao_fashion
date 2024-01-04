@@ -3289,6 +3289,7 @@ class SellPosController extends Controller
                 $products = Product::where('products.name', 'LIKE', "%{$search_txt}%")
                     ->orWhere('products.description', 'LIKE', "%{$search_txt}%")
                     ->orWhere('products.sku', 'LIKE', "%{$search_txt}%")
+                    ->orWhere('products.refference', 'LIKE', "%{$search_txt}%")
                     ->join('sizes', 'products.sub_size_id', '=', 'sizes.id')
                     ->orWhere('sizes.name', 'LIKE', "%{$search_txt}%")
                     ->join('variations', 'products.id', '=', 'variations.product_id')

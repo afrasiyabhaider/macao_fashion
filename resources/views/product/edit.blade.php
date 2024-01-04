@@ -717,7 +717,7 @@
         $(document).ready(function() {
             // $("#refference_id").focus();
             // $(function() {
-            $(".newqty").focus();
+            // $(".newqty").focus();
             // $("#search").focus();
         // });
             url_get = document.URL;
@@ -730,7 +730,7 @@
                 $('select#location_id').val('1').trigger('change');
                 // var variation_id = $("#product_variation_id").val();
                 // pos_product_row(variation_id, location_id)
-                $(".newqty").focus();
+                // $(".newqty").focus();
 
             }
             if (myParam === 'all') {
@@ -739,7 +739,7 @@
                  $('select#location_id').val('all').trigger('change');
                 // var variation_id = $("#product_variation_id").val();
                 // pos_product_row(variation_id, location_id)
-                $(".newqty").focus();
+                // $(".newqty").focus();
             }
             $("#location_id").select().change();
             $("#category_id").select().change();
@@ -808,7 +808,7 @@
         $("#sub_category_id").change(function() {
             // $("#refference_id").focus();
             $("#print_qty_id").focus();
-            $(".newqty").focus();
+            // $(".newqty").focus();
         });
 
         function changeUnitPrice(obj) {
@@ -963,14 +963,14 @@
                     // $("#refference_id").val("");
                     // $("#refference_id").val(data + result);
                     $("#print_qty_id").focus();
-                    $(".newqty").focus();
+                    // $(".newqty").focus();
                     //
 
                 }
             });
 
             $("#print_qty_id").focus();
-            $(".newqty").focus();
+            // $(".newqty").focus();
         }
 
         function getSupplierDetailsOnload(id) {
@@ -988,7 +988,7 @@
                 }
             });
             $("#print_qty_id").focus();
-            $(".newqty").focus();
+            // $(".newqty").focus();
         }
 
         function updateRefference() {
