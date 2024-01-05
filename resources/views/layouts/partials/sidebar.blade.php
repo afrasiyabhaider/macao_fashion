@@ -602,6 +602,8 @@
     || auth()->user()->can('sales_representative.view')
     || auth()->user()->can('register_report.view')
     || auth()->user()->can('expense_report.view')
+    || auth()->user()->can('stock_in_out.view')
+    || auth()->user()->can('coupon_report.view')
     )
 
     <li class="treeview {{  in_array( $request->segment(1), ['reports']) ? 'active active-sub' : '' }}" id="tour_step8">
@@ -733,7 +735,7 @@
         href="{{action('ReportController@getRegisterReport')}}"><i
           class="fa fa-briefcase"></i>@lang('report.register_report')</a></li>
     @endcan
-    @can('stock_report.view')
+    @can('stock_in_out.view')
         <li class="{{ $request->segment(2) == 'product-second-report' ? 'active' : '' }}"><a
             href="{{action('ReportController@getstockInOutReport')}}"><i class="fa fa-cart-plus"
               aria-hidden="true"></i>
@@ -741,7 +743,7 @@
           </a></li>
         @endcan
     
-        @can('coupon.reports')
+        @can('coupon_report.view')
         <li class="{{  $request->segment(2) == 'coupon_report' ? 'active active-sub' : '' }}"><a
             href="{{url('/reports/coupon_reports')}}"><i class="fa fa-barcode"
               aria-hidden="true"></i>

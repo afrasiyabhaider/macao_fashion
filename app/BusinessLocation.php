@@ -60,6 +60,9 @@ class BusinessLocation extends Model
 
     public static function forDropdown($business_id, $show_all = false, $receipt_printer_type_attribute = false, $append_id = true)
     {
+        $user = auth()->user();
+        $roles = $user->getRoleNames();
+        
         $query = BusinessLocation::where('business_id', $business_id);
 
         $permitted_locations = auth()->user()->permitted_locations();
@@ -78,8 +81,10 @@ class BusinessLocation extends Model
 
         $locations = $result->pluck('name', 'id');
 
-        if ($show_all) {
-            $locations->prepend(__('report.all_locations'), 0);
+        if ($roles[0] == "Admin#1") {
+            if ($show_all) {
+                $locations->prepend(__('report.all_locations'), 0);
+            }
         }
 
         if ($receipt_printer_type_attribute) {

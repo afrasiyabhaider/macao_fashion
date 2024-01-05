@@ -7327,7 +7327,7 @@ class ReportController extends Controller
     public function getstockInOutReport(Request $request)
     {
 
-        if (!auth()->user()->can('stock_report.view')) {
+        if (!auth()->user()->can('stock_in_out.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -7752,7 +7752,7 @@ class ReportController extends Controller
     }
     public function getstockOutReport(Request $request)
     {
-        if (!auth()->user()->can('stock_report.view')) {
+        if (!auth()->user()->can('stock_in_out.view')) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -8132,7 +8132,7 @@ class ReportController extends Controller
     {
         ini_set('memory_limit', '-1');
         ini_set('max_execution_time', 180); //3 minutes
-        if (!auth()->user()->can('stock_report.view')) {
+        if (!auth()->user()->can('stock_in_out.view')) {
             abort(403, 'Unauthorized action.');
         }
 

@@ -1024,6 +1024,24 @@
               </label>
             </div>
           </div>
+
+          <div class="col-md-12">
+            <div class="checkbox">
+              <label>
+                {!! Form::checkbox('permissions[]', 'stock_in_out.view', in_array('stock_in_out.view', $role_permissions), 
+                [ 'class' => 'input-icheck']); !!} {{ __( 'role.stock_in_out.view' ) }}
+              </label>
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <div class="checkbox">
+              <label>
+                {!! Form::checkbox('permissions[]', 'coupon_report.view', in_array('coupon_report.view', $role_permissions), 
+                [ 'class' => 'input-icheck']); !!} {{ __( 'role.coupon_report.view' ) }}
+              </label>
+            </div>
+          </div>
         </div>
         </div>
         <hr>

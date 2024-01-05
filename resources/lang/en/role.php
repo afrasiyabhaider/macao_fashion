@@ -57,6 +57,8 @@ return [
     'register_report.view' => 'View register report',
     'sales_representative.view' => 'View sales representative report',
     'expense_report.view' => 'View expense report',
+    'stock_in_out.view' => 'View Stock in/out',
+    'coupon_report.view' => 'View coupon report',
 
     'business_settings.access' => 'Access business settings',
     'barcode_settings.access' => 'Access barcode settings',
