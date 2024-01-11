@@ -4561,7 +4561,8 @@ class ReportController extends Controller
                     return '<span class="display_currency discounted_amount" data-currency_symbol="true" data-orig-value="' . $row->discounted_amount / 2 . '">' . $row->discounted_amount  . '</span>';
                 })
                 ->addColumn('total_amount', function ($row) {
-                    $total = $row->cash + $row->card + $row->gift_card + $row->coupon + $row->discounted_amount;
+                    // $total = $row->cash + $row->card + $row->gift_card + $row->coupon + $row->discounted_amount;
+                    $total = $row->cash + $row->card + $row->gift_card + $row->coupon;
                     return '<span class="display_currency total_amount" data-currency_symbol="true" data-orig-value="' . $total . '">' . $total . '</span>';
                 })
                 ->editColumn('invoices', function ($row) {
