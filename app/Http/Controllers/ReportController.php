@@ -4312,7 +4312,7 @@ class ReportController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getRegisterReport(Request $request)
+    public function getRegisterReportOrignal(Request $request)
     {
         if (!auth()->user()->can('register_report.view')) {
             abort(403, 'Unauthorized action.');
@@ -4433,6 +4433,145 @@ class ReportController extends Controller
                 ->editColumn('created_at', function ($row) {
                     return Carbon::parse($row->created_at)->format('d-M-Y H:i A');
                     // return $this->productUtil->format_date($row->created_at, true);
+                })
+                // ->editColumn('closing_amount', function ($row) {
+                //     if ($row->status == 'close') {
+                //         return '<span class="display_currency" data-currency_symbol="true">' .
+                //             $row->closing_amount . '</span>';
+                //     } else {
+                //         return '';
+                //     }
+                // })
+                ->addColumn('action', '<button type="button" data-href="{{action(\'CashRegisterController@show\', [$register_id])}}" class="btn btn-xs btn-info btn-modal" 
+                    data-container=".view_register"><i class="fa fa-external-link" aria-hidden="true"></i> @lang("messages.view")</button>')
+                ->rawColumns(['action', 'cash', 'card', 'gift_card', 'coupon', 'discounted_amount', 'total_amount', 'invoices', 'items'])
+                ->make(true);
+        }
+
+        $users = User::forDropdown($business_id, false);
+        $business = BusinessLocation::forDropdown($business_id);
+
+
+        return view('report.register_report')
+            ->with(compact('users', 'business'));
+    }
+    public function getRegisterReport(Request $request)
+    {
+        // dd($request);
+        if (!auth()->user()->can('register_report.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+        $business_id = $request->session()->get('user.business_id');
+        //Return the details in ajax call
+        if ($request->ajax()) {
+            $registers = CashRegister::join(
+                'cash_register_transactions as ct',
+                'ct.cash_register_id',
+                '=',
+                'cash_registers.id'
+                )
+                ->join(
+                    'business_locations as bl',
+                    'bl.id',
+                    '=',
+                    'cash_registers.location_id'
+                )
+
+                ->join(
+                    'transaction_sell_lines as tsl',
+                    'tsl.transaction_id',
+                    '=',
+                    'ct.transaction_id'
+                )
+                ->join(
+                    'transactions as t',
+                    't.id',
+                    '=',
+                    'ct.transaction_id'
+                )
+                ->where('ct.transaction_type', 'sell');
+                $start_date = $request->get('start_date');
+                $end_date = $request->get('end_date');
+                $registers->select(
+                'cash_registers.id as register_id',
+                'cash_registers.created_at as created_at',
+                'cash_registers.location_id as location_id',
+                'bl.name as location_name',
+                'cash_registers.statusss as status',
+                DB::raw("
+                        (SELECT 
+                            SUM(
+                                IF(ct.pay_method = 'cash' AND ct.amount > 0, ct.amount, 0)
+                            ) 
+                            FROM cash_register_transactions as ct 
+                            WHERE ct.cash_register_id = cash_registers.id 
+                            AND ct.transaction_type = 'sell'
+                        ) as cash
+                    "),
+                DB::raw("
+                        (SELECT 
+                            SUM(
+                                IF(ct.pay_method = 'card' AND ct.amount > 0, ct.amount, 0)
+                            ) 
+                            FROM cash_register_transactions as ct 
+                            WHERE ct.cash_register_id = cash_registers.id 
+                            AND ct.transaction_type = 'sell'
+                        ) as card
+                    "),
+                DB::raw("COUNT(DISTINCT(ct.transaction_id)) as invoices"),
+                DB::raw("SUM(IF(ct.amount > 0, tsl.discounted_amount, 0)) as discounted_amount"),
+                DB::raw("SUM(IF(ct.amount > 0, tsl.quantity, 0)) as items"),
+
+
+                )
+                ->orderBy('created_at', 'DESC')
+                ->groupBy('register_id');
+                if (!empty($request->input('user_id'))) {
+                    $registers->where('cash_registers.user_id', $request->input('user_id'));
+                }
+                if (!empty($request->input('location_id'))) {
+                    $registers->where('cash_registers.location_id', $request->input('location_id'));
+                }
+                if (!empty($start_date) && !empty($end_date)) {
+                    $registers->whereBetween(DB::raw('date(cash_registers.created_at)'), [$start_date, $end_date]);
+                }
+                if (!empty($request->input('status'))) {
+                    $registers->where('cash_registers.status', $request->input('status'));
+                }
+                return Datatables::of($registers)
+                ->editColumn('cash', function ($row) {
+                    $cash = $row->cash;
+                    return '<span class="display_currency cash_amount" data-currency_symbol="true"  data-orig-value="' . $cash  / 2 . '">' .
+                        $cash  . '</span>';
+                })
+
+                ->editColumn('card', function ($row) {
+                    return '<span class="display_currency card_amount" data-currency_symbol="true"  data-orig-value="' . $row->card / 2 . '">' .
+                        $row->card  . '</span>';
+                })
+                ->editColumn('gift_card', function ($row) {
+                    return '<span class="display_currency giftcard_amount" data-currency_symbol="true" data-orig-value="' . $row->gift_card . '">' .
+                        $row->gift_card . '</span>';
+                })
+                ->editColumn('coupon', function ($row) {
+                    return '<span class="display_currency coupon_amount" data-currency_symbol="true" data-orig-value="' . $row->coupon . '">' .
+                        $row->coupon . '</span>';
+                })
+                ->editColumn('discounted_amount', function ($row) {
+                    return '<span class="display_currency discounted_amount" data-currency_symbol="true" data-orig-value="' . $row->discounted_amount / 2 . '">' . $row->discounted_amount  . '</span>';
+                })
+                ->addColumn('total_amount', function ($row) {
+                    $total = $row->cash + $row->card + $row->gift_card + $row->coupon + $row->discounted_amount;
+                    return '<span class="display_currency total_amount" data-currency_symbol="true" data-orig-value="' . $total . '">' . $total . '</span>';
+                })
+                ->editColumn('invoices', function ($row) {
+                    return '<span class="display_currency invoices" data-currency_symbol="false" data-orig-value="' . $row->invoices . '">' . $row->invoices . '</span>';
+                })
+                ->editColumn('items', function ($row) {
+                    return '<span class="display_currency items" data-currency_symbol="false" data-orig-value="' . $row->items / 2 . '">' . $row->items  . '</span>';
+                })
+                ->editColumn('created_at', function ($row) {
+                    return Carbon::parse($row->created_at)->format('d-M-Y H:i A');
                 })
                 // ->editColumn('closing_amount', function ($row) {
                 //     if ($row->status == 'close') {
@@ -5695,12 +5834,11 @@ class ReportController extends Controller
     }
     public function generateSoldSubquery($location_filter, $dateInterval, $alias)
     {
-        
-       return DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
+
+        return DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
         JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
         WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
         AND TSL.product_refference = p.refference AND transactions.transaction_date > CURDATE() - INTERVAL $dateInterval day) as $alias");
-
     }
     /**
      * Shows product sell report grouped by date
@@ -5756,55 +5894,55 @@ class ReportController extends Controller
                 ->where('t.business_id', $business_id)
                 ->where('t.type', 'sell')
                 ->where('t.status', 'final');
-                $start_date = $request->get('start_date');
-                $end_date = $request->get('end_date');
-                if (!empty($start_date) && !empty($end_date)) {
-                    // $query->whereBetween(DB::raw('date(transaction_date)'), [$start_date, $end_date]);
-                    $query->whereDate('t.transaction_date', '>=', $start_date)->whereDate('t.transaction_date', '<=', $end_date);
-                }
-               
-                
-                 $query->select(
-                    'p.id as product_id',
-                    'p.name as product_name',
-                    'p.image as image',
-                    'p.refference as refference',
-                    'p.sku as barcode',
-                    'p.supplier_id as supplier',
-                    'p.enable_stock',
-                    'p.type as product_type',
-                    'pv.name as product_variation',
-                    'v.name as variation_name',
-                    't.id as transaction_id',
-                    't.transaction_date as transaction_date',
-                    'transaction_sell_lines.unit_price_before_discount as unit_price',
-                    DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
-                    DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference  $vld_str) as current_stock"),
-                    // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference) as all_time_sold"),
-                    DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
+            $start_date = $request->get('start_date');
+            $end_date = $request->get('end_date');
+            if (!empty($start_date) && !empty($end_date)) {
+                // $query->whereBetween(DB::raw('date(transaction_date)'), [$start_date, $end_date]);
+                $query->whereDate('t.transaction_date', '>=', $start_date)->whereDate('t.transaction_date', '<=', $end_date);
+            }
+
+
+            $query->select(
+                'p.id as product_id',
+                'p.name as product_name',
+                'p.image as image',
+                'p.refference as refference',
+                'p.sku as barcode',
+                'p.supplier_id as supplier',
+                'p.enable_stock',
+                'p.type as product_type',
+                'pv.name as product_variation',
+                'v.name as variation_name',
+                't.id as transaction_id',
+                't.transaction_date as transaction_date',
+                'transaction_sell_lines.unit_price_before_discount as unit_price',
+                DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
+                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference  $vld_str) as current_stock"),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference) as all_time_sold"),
+                DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
                         JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
                         WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
                         AND TSL.product_refference = p.refference) as all_time_sold"),
-                        DB::raw($sevenDaySoldSubquery),
-                        DB::raw($fifteenDaySoldSubquery),
-                    // DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
-                    //     JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
-                    //     WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
-                    //     AND TSL.product_refference = p.refference AND transactions.transaction_date > CURDATE() - INTERVAL 6 day) as seven_day_sold"),
-                    // DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
-                    //     JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
-                    //     WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
-                    //     AND TSL.product_refference = p.refference AND TSL.updated_at > CURDATE() - INTERVAL 14 day) as fifteen_day_sold"),
-                    // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
-                    // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
-                    // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
-                    DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
-                    DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
-                    DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
-                    // 'p.product_updated_at as product_updated_at',
-                    'u.short_name as unit',
-                    DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
-                )
+                DB::raw($sevenDaySoldSubquery),
+                DB::raw($fifteenDaySoldSubquery),
+                // DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
+                //     JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
+                //     WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
+                //     AND TSL.product_refference = p.refference AND transactions.transaction_date > CURDATE() - INTERVAL 6 day) as seven_day_sold"),
+                // DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
+                //     JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
+                //     WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
+                //     AND TSL.product_refference = p.refference AND TSL.updated_at > CURDATE() - INTERVAL 14 day) as fifteen_day_sold"),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
+                // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
+                DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
+                DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
+                DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
+                // 'p.product_updated_at as product_updated_at',
+                'u.short_name as unit',
+                DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
+            )
                 // ->groupBy('v.id')
                 ->orderBy('total_qty_sold', 'DESC')
                 ->groupBy('transaction_sell_lines.product_refference');
@@ -5906,7 +6044,6 @@ class ReportController extends Controller
                     $end_date = request()->get('end_date');
                     // return '<a id="color-detail-modal" href="' . url("/product/color-detail/" . $row->product_name . '/' . $start_date . '/' . $end_date) . '" data-product-name="' . $row->product_name . '" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
                     return '<a  href="' . url("/product/color-detail/" . $row->product_name . '/' . $start_date . '/' . $end_date) . '" target="_blank" data-product-name="' . $row->product_name . '" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
-
                 })
                 ->addColumn('sale_percentage', function ($row) {
                     if ($row->refference && ($row->total_qty_sold > 0 || $row->current_stock > 0)) {
@@ -7444,7 +7581,7 @@ class ReportController extends Controller
             // $query->whereBetween('pq.created_at', [$from_date, $to_date])->where('pq.location_id', $permitted_locations);
 
             info($location_filterqty);
-            
+
             $products = $query->select(
                 // DB::raw("(SELECT SUM(quantity) FROM transaction_sell_lines LEFT JOIN transactions ON transaction_sell_lines.transaction_id=transactions.id WHERE transactions.status='final' $location_filter AND
                 //     transaction_sell_lines.product_id=products.id) as total_sold"),
@@ -7457,10 +7594,10 @@ class ReportController extends Controller
                     WHERE DATE(pq.created_at) BETWEEN '$from_date' AND '$to_date' $location_filterqty 
                     AND pq.variation_id = variations.id) as total_qty"),
 
-                
+
                 // DB::raw("SUM(CASE WHEN (DATE(pq.created_at) BETWEEN '$from_date' AND '$to_date') $location_filterqty THEN pq.quantity ELSE 0 END) as total_qty"),
                 // DB::raw("SUM(CASE WHEN (pq.location_id = 1) THEN pq.location_id ELSE 0 END) as total_qty"),
-                
+
                 // DB::raw("(SELECT pq.quantity FROM variation_location_details 
                 //         JOIN product_quantities AS pq ON variation_location_details.variation_id=variations.id
                 //         WHERE variation_location_details.product_id=pq.product_id
@@ -8178,7 +8315,7 @@ class ReportController extends Controller
                 ->join('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
                 ->where('p.business_id', $business_id)
                 ->whereIn('p.type', ['single', 'variable']);
-                // dd($query->toArray());
+            // dd($query->toArray());
             $permitted_locations = auth()->user()->permitted_locations();
             $location_filter = '';
             $location_filter2 = '';
@@ -8223,7 +8360,7 @@ class ReportController extends Controller
             // $start_date = $request->get('start_date');
             //     $end_date = $request->get('end_date');
             // if (!empty($to_date)) {
-                if (!empty($from_date) && !empty($to_date)) {
+            if (!empty($from_date) && !empty($to_date)) {
                 // dd($products->first());
                 $query->whereDate('vld.updated_at', '>=', $from_date)->whereDate('vld.updated_at', '<=', $to_date);
 
@@ -8254,14 +8391,14 @@ class ReportController extends Controller
             $selling_price_group_count = SellingPriceGroup::countSellingPriceGroups($business_id);
             // $query->join('product.color_id','=','color.id');
             $products = $query->select(
-               
+
 
                 // DB::raw("(SELECT SUM(quantity) FROM product_quantities 
                 // JOIN product_quantities AS pq ON variations.id=pq.variation_id
                 // WHERE (DATE(pq.updated_at) BETWEEN '$from_date' AND '$to_date') $location_filterqty) as total_qty"),           
                 // DB::raw("SUM(CASE WHEN (DATE(pq.updated_at) BETWEEN '$from_date' AND '$to_date') $location_filterqty  THEN pq.quantity ELSE 0 END) as total_qty"),    
-               
-        
+
+
                 DB::raw("SUM(CASE WHEN (DATE(transfered_on) BETWEEN '$from_date' AND '$to_date') $location_filter2  THEN ltd2.quantity ELSE 0 END) as total_transfered"),
 
                 // DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal'),
@@ -8326,7 +8463,7 @@ class ReportController extends Controller
                 'vld.updated_at',
                 // 'vld.qty_available as stock',
                 // DB::raw("SUM(CASE WHEN (DATE(transfered_on) BETWEEN '$from_date' AND '$to_date') $location_filter2  THEN ltd2.quantity ELSE 0 END) * variations.default_purchase_price) as total_buying_amount"),
-                   DB::raw("(SUM(CASE WHEN (DATE(transfered_on) BETWEEN '$from_date' AND '$to_date') $location_filter2 THEN ltd2.quantity ELSE 0 END) * variations.default_purchase_price ) as total_buying_amount"),
+                DB::raw("(SUM(CASE WHEN (DATE(transfered_on) BETWEEN '$from_date' AND '$to_date') $location_filter2 THEN ltd2.quantity ELSE 0 END) * variations.default_purchase_price ) as total_buying_amount"),
 
                 DB::raw('SUM(vld.qty_available) as current_stock'),
                 DB::raw('COUNT(DISTINCT(p.refference)) as total_refference'),
@@ -8337,12 +8474,12 @@ class ReportController extends Controller
                 ->groupBy('variations.id')
                 ->orderBy('vld.updated_at', 'DESC');
 
-                // ->groupBy('variations.id')
-                // ->having('current_stock', '>', 0)
-                // ->orderBy('vld.product_updated_at', 'DESC');
+            // ->groupBy('variations.id')
+            // ->having('current_stock', '>', 0)
+            // ->orderBy('vld.product_updated_at', 'DESC');
 
-                // ->orderBy('total_sold', 'DESC')
-                // ->groupBy('transaction_sell_lines.product_refference');
+            // ->orderBy('total_sold', 'DESC')
+            // ->groupBy('transaction_sell_lines.product_refference');
             // dd($products->first());
             // dd($products->first()->product()->first()->image_url);
 
@@ -8417,13 +8554,13 @@ class ReportController extends Controller
                 ->editColumn('total_sale_price', function ($row) {
                     // $html = '';
                     $total_sale_price = 0;
-                    if($row->total_sale_price){
+                    if ($row->total_sale_price) {
                         $total_sale_price =  $row->total_sale_price;
                     }
                     return '<span class="display_currency total_sale_price" data-currency_symbol = true data-orig-value="' . $row->total_sale_price . '">' . $row->total_sale_price . '</span>';
                     // return '<span data-is_quantity="true" class="display_currency total_sale_price" data-currency_symbol=false data-orig-value="' . $total_sale_price . '" data-unit="' . $row->unit . '" >' . $total_sale_price . '</span> ' . $row->unit;
                 })
-                
+
                 ->editColumn('total_refference', function ($row) {
                     $total_refference = 0;
                     if ($row->total_refference) {
@@ -8452,13 +8589,12 @@ class ReportController extends Controller
                 ->editColumn('purchase_price', function ($row) {
                     $html = '';
                     $html .= '<span class="display_currency" data-currency_symbol=true >'
-                    . $row->purchase_price . '</span>';
+                        . $row->purchase_price . '</span>';
                     return $html;
-                   
                 })
                 ->editColumn('total_buying_amount', function ($row) {
                     $total_buying_amount = 0;
-                    if($row->total_buying_amount){
+                    if ($row->total_buying_amount) {
                         $total_buying_amount =  (float) $row->total_buying_amount;
                     }
                     return '<span class="display_currency row_subtotal" data-currency_symbol=true data-orig-value="' . $row->total_buying_amount . '">' . $row->total_buying_amount . '</span>';
@@ -8495,7 +8631,7 @@ class ReportController extends Controller
 
                 //     return '<span data-is_quantity="true" class="display_currency total_adjusted" data-currency_symbol=false  data-orig-value="' . $total_adjusted . '" data-unit="' . $row->unit . '" >' . $total_adjusted . '</span> ' . $row->unit;
                 // })
-               
+
                 ->editColumn('unit_price', function ($row) use ($allowed_selling_price_group) {
                     $html = '';
                     if (auth()->user()->can('access_default_selling_price')) {
@@ -8522,7 +8658,7 @@ class ReportController extends Controller
                 //     }
                 // ])
                 ->removeColumn('id')
-                ->rawColumns(['mass_delete', 'printing_qty', 'unit_price', 'total_transfered','total_buying_amount', 'refference', 'total_refference', 'location_name', 'total_sold', 'front_total_sold', 'purchase_price','total_adjusted', 'stock', 'actions', 'image', 'detail', 'total_qty','total_sale_price'])
+                ->rawColumns(['mass_delete', 'printing_qty', 'unit_price', 'total_transfered', 'total_buying_amount', 'refference', 'total_refference', 'location_name', 'total_sold', 'front_total_sold', 'purchase_price', 'total_adjusted', 'stock', 'actions', 'image', 'detail', 'total_qty', 'total_sale_price'])
                 ->make(true);
         }
 
@@ -8586,39 +8722,39 @@ class ReportController extends Controller
                 ->where('t.business_id', $business_id)
                 ->where('t.type', 'sell')
                 ->where('t.status', 'final');
-                $start_date = $request->get('start_date');
-                $end_date = $request->get('end_date');
-                if (!empty($start_date) && !empty($end_date)) {
-                    // $query->whereBetween(DB::raw('date(transaction_date)'), [$start_date, $end_date]);
-                    $query->whereDate('t.transaction_date', '>=', $start_date)->whereDate('t.transaction_date', '<=', $end_date);
-                }
-               
-                
-                 $query->select(
-                    'p.id as product_id',
-                    'p.name as product',
-                    'p.image as image',
-                    'bl.name as location_name',
-                    'p.refference as refference',
-                    'p.sku as barcode',
-                    'p.supplier_id as supplier',
-                    'p.enable_stock',
-                    'p.type as product_type',
-                    'pv.name as product_variation',
-                    'v.name as variation_name',
-                    't.id as transaction_id',
-                    't.transaction_date as transaction_date',
-                    'transaction_sell_lines.unit_price_before_discount as unit_price',
-                    DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
-                    DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference  $vld_str) as current_stock"),
-                    DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_sold'),
-                    DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
-                    // DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
-                    DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
-                    // 'p.product_updated_at as product_updated_at',
-                    'u.short_name as unit',
-                    DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
-                )
+            $start_date = $request->get('start_date');
+            $end_date = $request->get('end_date');
+            if (!empty($start_date) && !empty($end_date)) {
+                // $query->whereBetween(DB::raw('date(transaction_date)'), [$start_date, $end_date]);
+                $query->whereDate('t.transaction_date', '>=', $start_date)->whereDate('t.transaction_date', '<=', $end_date);
+            }
+
+
+            $query->select(
+                'p.id as product_id',
+                'p.name as product',
+                'p.image as image',
+                'bl.name as location_name',
+                'p.refference as refference',
+                'p.sku as barcode',
+                'p.supplier_id as supplier',
+                'p.enable_stock',
+                'p.type as product_type',
+                'pv.name as product_variation',
+                'v.name as variation_name',
+                't.id as transaction_id',
+                't.transaction_date as transaction_date',
+                'transaction_sell_lines.unit_price_before_discount as unit_price',
+                DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
+                DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference  $vld_str) as current_stock"),
+                DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_sold'),
+                DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
+                // DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
+                DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
+                // 'p.product_updated_at as product_updated_at',
+                'u.short_name as unit',
+                DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
+            )
                 // ->groupBy('v.id')
                 ->orderBy('total_qty_sold', 'DESC')
                 ->groupBy('transaction_sell_lines.product_refference');
@@ -8636,7 +8772,7 @@ class ReportController extends Controller
             if (!empty($location_id)) {
                 $query->where('t.location_id', $location_id);
             }
-            
+
 
             // $supplier_id = $request->get('supplier_id', null);
             // if (!empty($supplier_id)) {
@@ -8651,7 +8787,7 @@ class ReportController extends Controller
             //     $query->where('p.sub_category_id', $sub_category_id);
             // }
             return Datatables::of($query)
-            ->addIndexColumn()
+                ->addIndexColumn()
                 ->editColumn('refference', function ($row) {
                     if ($row->refference) {
                         return $row->refference;
@@ -8691,7 +8827,7 @@ class ReportController extends Controller
                         return 'All Locations';
                     }
                 })
-                
+
                 ->editColumn('current_stock', function ($row) {
                     if ($row->enable_stock) {
                         return '<span data-is_quantity="true" class="display_currency current_stock" data-currency_symbol=false data-orig-value="' . (float) $row->current_stock . '" data-unit="' . $row->unit . '" >' . (float) $row->current_stock . '</span> ' . $row->unit;
@@ -8731,12 +8867,12 @@ class ReportController extends Controller
                         }
                     }
                 ])
-                ->rawColumns(['image', 'total_sold', 'unit_price', 'current_stock', 'subtotal', 'total_qty_sold', 'detail','location_name', 'refference', 'all_time_purchased', ])
+                ->rawColumns(['image', 'total_sold', 'unit_price', 'current_stock', 'subtotal', 'total_qty_sold', 'detail', 'location_name', 'refference', 'all_time_purchased',])
                 ->make(true);
         }
         $categories = Category::where('business_id', $business_id)
-        ->where('parent_id', 0)
-        ->pluck('name', 'id');
+            ->where('parent_id', 0)
+            ->pluck('name', 'id');
         $suppliers = Supplier::orderBy('name', 'ASC')->pluck('name', 'id');
 
         $units = Unit::where('business_id', $business_id)
