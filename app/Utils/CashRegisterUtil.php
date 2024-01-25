@@ -4,9 +4,11 @@ namespace App\Utils;
 
 use App\CashRegister;
 use App\CashRegisterTransaction;
+use App\Coupon;
 use App\Transaction;
 
 use DB;
+use Illuminate\Support\Facades\Log;
 
 class CashRegisterUtil extends Util
 {
@@ -35,7 +37,7 @@ class CashRegisterUtil extends Util
      *
      * @return boolean
      */
-    public function addSellPayments($transaction, $payments, $leftAmount_total = 0 , $request)
+    public function addSellPayments($transaction, $payments, $leftAmount_total = 0, $request)
     {
         $user_id = auth()->user()->id;
         $location_id = request()->session()->get('user.business_location_id');
@@ -48,6 +50,14 @@ class CashRegisterUtil extends Util
         foreach ($payments as $payment) {
             // dd($payment);
             // dd($this->num_uf($payment['amount']) - $this->num_uf($leftAmount_total));
+            $coupons = Coupon::where('barcode', $payment['coupon'])->where('coupon_type', 'product_return')->first();
+            // dd($coupons);
+            if ($coupons) {
+                $c_value = 1;
+            } else {
+                $c_value = null;
+            }
+
             $direct_cash = $request->direct_cash;
             if ($direct_cash != '0') {
                 $amount = $payment['amount'] != 0.00 ? $payment['amount'] - $leftAmount_total : $payment['amount'];
@@ -60,20 +70,73 @@ class CashRegisterUtil extends Util
             $payments_formatted[] = new CashRegisterTransaction([
                 // orignal one
                 // 'amount' => (isset($payment['is_return']) && $payment['is_return'] == 1) ? (-1*$this->num_uf($amount)) :(float)$amount, 
+                // 'amount' => $amount,
                 'amount' => (isset($payment['is_return']) && $payment['is_return'] == 1) ? (-1 * (float)$amount) : (float)$amount,
                 // 'amount' => (isset($payment['is_return']) && $payment['is_return'] == 1) ? (-1*$amount) :$amount, 
                 // 'amount' => (isset($payment['is_return']) && $payment['is_return'] == 1) ? (-1*$this->num_uf($payment['amount'])) :(float)$payment['amount'],
                 'pay_method' => (isset($payment['method']) && $payment['method']) ? $payment['method'] : '',
                 'type' => 'credit',
                 'transaction_type' => 'sell',
-                'transaction_id' => $transaction->id
+                'transaction_id' => $transaction->id,
+                'return_coupon'  => $c_value,
             ]);
         }
+        // dd(-$amount);
+
         // dd($payments_formatted);
         if (!empty($payments_formatted)) {
             $register->cash_register_transactions()->saveMany($payments_formatted);
+            // Log::info([$payments_formatted]);
+            foreach ($payments_formatted as $payment) {
+                $getCashRegister = CashRegisterTransaction::where('transaction_id', $payment->transaction_id)->get();
+    
+                foreach ($getCashRegister as $transaction) {
+                    // Check if pay_method is not "coupon" and amount is negative
+                    if ($transaction->pay_method != 'coupon' && $transaction->amount < 0) {
+    
+                        // Find the record with pay_method "coupon" for the same transaction_id
+                        $couponRecord = CashRegisterTransaction::where('transaction_id', $transaction->transaction_id)
+                            ->where('pay_method', 'coupon')
+                            ->where('return_coupon', null)
+                            ->first();
+                        if ($couponRecord && !$couponRecord->updated) {
+                            $price = $couponRecord->amount - abs($transaction->amount);
+            
+                            $couponRecord->update([
+                                'amount' => $price,
+                                'updated' => true,
+                            ]);
+                        }
+                        $couponRecord1 = CashRegisterTransaction::where('transaction_id', $transaction->transaction_id)
+                            ->where('pay_method', 'coupon')
+                            ->where('return_coupon', 1)
+                            ->first();
+                        if ($couponRecord1 && !$couponRecord1->updated) {
+                            $price = $couponRecord1->amount - abs($transaction->amount);
+                            $couponRecord1->update([
+                                'amount' => -1 * $price,
+                                'updated' => true,
+                            ]);
+                            // Log::info([$price]);
+                        }
+                    }
+                    if ($transaction->pay_method != 'coupon' && $transaction->amount > 0) {
+                        $couponRecord1 = CashRegisterTransaction::where('transaction_id', $transaction->transaction_id)
+                            ->where('pay_method', 'coupon')
+                            ->where('return_coupon', 1)
+                            ->first();
+                            // dd($couponRecord1->amount);
+                        if ($couponRecord1 && !$couponRecord1->updated) {
+                            $couponRecord1->update([
+                                'amount' => -1 * $couponRecord1->amount,
+                                'updated' => true,
+                            ]);
+                        }
+                    }
+                }
+            }
         }
-
+        
         return true;
     }
 

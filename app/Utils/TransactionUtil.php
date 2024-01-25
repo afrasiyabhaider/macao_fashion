@@ -1039,7 +1039,10 @@ class TransactionUtil extends Util
                             $dataUpdate['value'] = $leftAmount;
                             $dataUpdate['isActive'] = "consumed";
                             $dataUpdate['isUsed'] = $objCoupon->isUsed + 1;
-
+                            if ($objCoupon->name == " Sell Return") {
+                                $coupon_type = "product_return";
+                            }else{
+                                $coupon_type = "buy";                            }
                             $crCoupon = array(
                                 "name" => $objCoupon->name . " - Re ",
                                 // "barcode" => $this->RandomId(),
@@ -1053,7 +1056,10 @@ class TransactionUtil extends Util
                                 "start_date" => date("Y-m-d H:i:s"),
                                 "created_by" => request()->session()->get('user.id'),
                                 "details" => $objCoupon->barcode . " Used and Generated New Coupon <br/> ",
-                                "isUsed" => "0"
+                                "isUsed" => "0",
+                                "transaction_id" => "," . $transaction->id,
+                                "coupon_type" => $coupon_type,
+                                "location_id" => $transaction->location_id
                             );
                             $new_coupon = Coupon::create($crCoupon);
                             //for auto barcode 
@@ -1076,7 +1082,8 @@ class TransactionUtil extends Util
                             'is_convert' => 'coupon',
                         ];
                         // dd($new_coupon);
-                    } else if ($payment['method'] === "bonus_points") {
+                    } 
+                    else if ($payment['method'] === "bonus_points") {
                         // dd($payment);
                         $objContact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
                         $discount = config('app.discount_amount');
@@ -1268,7 +1275,7 @@ class TransactionUtil extends Util
                     $payment_ref_no = $this->generateReferenceNumber($prefix_type, $ref_count, $business_id);
                     // dd($payment);
                     if ($payment['method'] === 'cash') {
-
+                        // dd('cash');
                         $payment_data = [
                             // 'amount' => $transaction->final_total,
                             'amount' => $payment_amount != 0.00 ? $payment_amount - $leftAmount_total : $payment_amount,
@@ -1397,6 +1404,7 @@ class TransactionUtil extends Util
                         $payment_data['is_convert'] = 'gift_card';
                     } 
                     else if ($payment['method'] === "coupon") {
+                        // dd($payment);
                         $getCoupon = $payment['coupon'];
                         $attributes = ['name' => $getCoupon, 'barcode' => $getCoupon];
                         $objCoupon = Coupon::where(function ($query) use ($attributes) {
@@ -1446,7 +1454,8 @@ class TransactionUtil extends Util
                                 "start_date" => date("Y-m-d H:i:s"),
                                 "created_by" => request()->session()->get('user.id'),
                                 "details" => $objCoupon->barcode . " Used and Generated New Coupon <br/> ",
-                                "isUsed" => "0"
+                                "isUsed" => "0",
+                                "coupon_type" => "product_return"
                             );
                             $new_coupon = Coupon::create($crCoupon);
                             //for auto barcode 
@@ -1524,7 +1533,9 @@ class TransactionUtil extends Util
                                 "start_date" => date("Y-m-d H:i:s"),
                                 "created_by" => request()->session()->get('user.id'),
                                 // "details" => $objCoupon->barcode . " Used and Generated New Coupon <br/> ",
-                                "isUsed" => "0"
+                                "isUsed" => "0",
+                                "coupon_type" => "product_return",
+                                "location_id" => $transaction->location_id
                             );
                             $new_coupon = Coupon::create($crCoupon);
                             //for auto barcode 

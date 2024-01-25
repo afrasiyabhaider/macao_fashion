@@ -118,7 +118,7 @@ class RoleController extends Controller
         if (!auth()->user()->can('roles.create')) {
             abort(403, 'Unauthorized action.');
         }
-
+        
         try {
             $role_name = $request->input('name');
             $permissions = $request->input('permissions');
@@ -233,7 +233,7 @@ class RoleController extends Controller
         if (!auth()->user()->can('roles.update')) {
             abort(403, 'Unauthorized action.');
         }
-
+        // dd($request);
         try {
             $role_name = $request->input('name');
             $permissions = $request->input('permissions');

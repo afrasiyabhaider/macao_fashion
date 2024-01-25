@@ -152,76 +152,14 @@ class CashRegisterController extends Controller
             ->select('transactions.*')
             ->with(['contact'])
             ->get();
-            // dd($transactions);
-        // ->limit(10)
-        // dd($transactions);
-        // dd($register_details,$details,$transactions);
         $location_id = request()->session()->get('user.business_location_id');
 
-        // $registers = CashRegister::join(
-        //     'cash_register_transactions as ct',
-        //     'ct.cash_register_id',
-        //     '=',
-        //     'cash_registers.id'
-        // )
-        //     ->join(
-        //         'business_locations as bl',
-        //         'bl.id',
-        //         '=',
-        //         'cash_registers.location_id'
-        //     )
-        //     ->join(
-        //         'transaction_sell_lines as tsl',
-        //         'tsl.transaction_id',
-        //         '=',
-        //         'ct.transaction_id'
-        //     )
-        //     ->join(
-        //         'transaction_payments as tp',
-        //         'tp.transaction_id',
-        //         '=',
-        //         'ct.transaction_id'
-        //     )
-        //     ->join(
-        //         'transactions as t',
-        //         't.id',
-        //         '=',
-        //         'ct.transaction_id'
-        //     )
-        //     ->where('transactions.location_id', $location_id)
-        //     ->where('cash_registers.id','=',$id)
-        //     ->select(
-        //         'cash_registers.id as register_id',
-        //         'cash_registers.created_at as created_at',
-        //         'cash_registers.location_id as location_id',
-        //         'bl.name as location_name',
-        //         'cash_registers.statusss as status',
-        //         // DB::raw("SUM(IF(ct.pay_method = 'cash' AND ct.amount > 0, ct.amount, 0)) as cash"),
-        //         DB::raw("SUM(IF(ct.pay_method = 'cash' AND ct.amount > 0 ,tp.amount, 0)) as cash"),
-        //         // DB::raw("SUM(IF(tp.method = 'cash' AND ct.amount > 0,t.final_total, 0)) as cash"),
-        //         DB::raw("SUM(IF(tp.method = 'card' AND ct.amount > 0,t.final_total, 0)) as card"),
-        //         DB::raw("SUM(IF(tp.is_convert = 'gift_card' AND ct.amount > 0, t.final_total, 0)) as gift_card"),
-        //         DB::raw("SUM(IF(tp.is_convert = 'coupon' AND ct.amount > 0, t.final_total, 0)) as coupon"),
-        //         // DB::raw("SUM(IF(ct.pay_method = 'gift_card', amount, 0)) as gift_card"),
-        //         // DB::raw("SUM(IF(ct.pay_method = 'coupon', amount, 0)) as coupon"),
-        //         DB::raw("SUM(IF(ct.amount > 0, tsl.discounted_amount, 0)) as discounted_amount"),
-
-        //         DB::raw("COUNT(DISTINCT(ct.transaction_id)) as invoices"),
-        //         // DB::raw("(SELECT COUNT(tr.invoice_no) FROM transactions as tr WHERE tr.id=t.transaction_id) as invoice"),
-        //         DB::raw("SUM(IF(ct.amount > 0, tsl.quantity, 0)) as items"),
-        //         // DB::raw("SUM(tsl.quantity) as items"),
-        //         // DB::raw("SUM(IF(DISTINCT(ct.transaction_id), t.quanity, 0)) as items"),
-        //         // DB::raw('(SELECT SUM(cts.amount) FROM cash_register_transactions as cts WHERE cts.cash_register_id=cash_registers.id AND cts.pay_method="cash") as cash_payment')
-        //     )
-        //     ->orderBy('created_at', 'DESC')
-        //     ->groupBy('register_id');
-        // // dd($register);
         $prices = CashRegister::join(
             'cash_register_transactions as ct',
             'ct.cash_register_id',
             '=',
             'cash_registers.id'
-        )
+            )
             ->join(
                 'business_locations as bl',
                 'bl.id',
@@ -241,8 +179,6 @@ class CashRegisterController extends Controller
                 'ct.transaction_id'
             )
             ->where('cash_registers.id', $id);
-            // ->where('cash_registers.location_id', $location_id)
-            // ->where('cash_registers.statusss', 'open');
 
         $transaction_ids = $prices->distinct('ct.transaction_id')->pluck('ct.transaction_id');
         // dd($transaction_ids);
@@ -263,18 +199,26 @@ class CashRegisterController extends Controller
         // $gift_card = $payment_methods->where('method','gift_card')->sum('amount');
 
         $coupon_method = TransactionPayment::whereIn('transaction_id', $transaction_ids)->where('is_convert', 'coupon')->pluck('transaction_id');
+        // $coupon = Transaction::whereIn('id', $coupon_method)->sum('final_total');
+        // $coupon = CashRegisterTransaction::where('cash_register_id', $register['id'])->where('pay_method', 'coupon')->get()->sum('amount');
+        $coupon = CashRegisterTransaction::whereIn('transaction_id', $transaction_ids)
+        ->where('cash_register_id', $id)->where('pay_method', 'coupon')
+        ->groupBy('transaction_id')
+        ->get()
+        ->sum('amount');
 
-        $coupon = Transaction::whereIn('id', $coupon_method)->sum('final_total');
         // $coupon = $payment_methods->where('method','coupon')->sum('amount');
         // dd($coupon);
 
         $card_id = TransactionPayment::whereIn('transaction_id', $transaction_ids)->where('method', 'card')->pluck('transaction_id');
         // $card = $query->sum('final_total');
         // $card = Transaction::whereIn('id',$card_id)->get()->sum('final_total');
-        $card = CashRegisterTransaction::where('cash_register_id', $id)->where('pay_method', 'card')->get()->sum('amount');
+        // $card = CashRegisterTransaction::where('cash_register_id', $id)->where('pay_method', 'card')->get()->sum('amount');
 
-        $cash = CashRegisterTransaction::where('cash_register_id', $id)->where('pay_method', 'cash')->get()->sum('amount');
-
+        // $cash = CashRegisterTransaction::where('cash_register_id', $id)->where('pay_method', 'cash')->get()->sum('amount');
+        $card = CashRegisterTransaction::where('cash_register_id', $id)->where('transaction_type', 'sell')->where('pay_method', 'card')->where('amount', '>', 0)->get()->sum('amount');
+        $cash = CashRegisterTransaction::where('cash_register_id', $id)->where('transaction_type', 'sell')->where('pay_method', 'cash')->where('amount', '>', 0)->get()->sum('amount');
+                // dd($cash);
         // $cash_in_hand = CashRegisterTransaction::where('transaction_type','initial')->where('amount','>',0)->orderBy('id','DESC')->first()->amount;
         $cash_in_hand = CashRegisterTransaction::where('cash_register_id',$id)->first()->amount;
         // $cash_in_hand = $register->cash_register_transactions()->first()->amount;
@@ -385,9 +329,10 @@ class CashRegisterController extends Controller
             )->where('cash_registers.location_id', $location_id)
             ->where('cash_registers.statusss', 'open');
 
+        // $transaction_ids = $prices->distinct('ct.transaction_id')->pluck('ct.transaction_id');
         $transaction_ids = $prices->distinct('ct.transaction_id')->pluck('ct.transaction_id');
         // $register_prices = TransactionSellLine::whereIn('transaction_id',$transaction_ids)->where('line_discount_amount','>',0)->get()->unique('created_at');
-
+                // dd($transaction_ids);
         // $discount = $register_prices->sum('line_discount_amount');
 
         $register_prices = TransactionSellLine::whereIn('transaction_id', $transaction_ids)->where('discounted_amount', '>', 0)->get();
@@ -403,20 +348,20 @@ class CashRegisterController extends Controller
         $gift_card = Transaction::whereIn('id', $giftcard_method)->sum('final_total');
         // $gift_card = $payment_methods->where('method','gift_card')->sum('amount');
 
-        $coupon_method = TransactionPayment::whereIn('transaction_id', $transaction_ids)->where('is_convert', 'coupon')->pluck('transaction_id');
-
-        $coupon = Transaction::whereIn('id', $coupon_method)->sum('final_total');
+        // $coupon_method = TransactionPayment::whereIn('transaction_id', $transaction_ids)->where('is_convert', 'coupon')->pluck('transaction_id');
+        // orignal one
+        // $coupon = Transaction::whereIn('id', $coupon_method)->sum('final_total');
+        $coupon = CashRegisterTransaction::where('cash_register_id', $register['id'])->where('pay_method', 'coupon')->groupBy('transaction_id')->get()->sum('amount');
         // $coupon = $payment_methods->where('method','coupon')->sum('amount');
+        // $coupon = 1;
         // dd($coupon);
 
         $card_id = $payment_methods->where('method', 'card')->unique('created_at')->pluck('transaction_id');
         // $card = $query->sum('final_total');
         // $card = Transaction::whereIn('id',$card_id)->get()->sum('final_total');
-        $card = CashRegisterTransaction::where('cash_register_id', $register['id'])->where('pay_method', 'card')->get()->sum('amount');
-
-        $cash = CashRegisterTransaction::where('cash_register_id', $register['id'])->where('pay_method', 'cash')->get()->sum('amount');
-
-
+        $card = CashRegisterTransaction::where('cash_register_id', $register['id'])->where('transaction_type', 'sell')->where('pay_method', 'card')->where('amount', '>', 0)->get()->sum('amount');
+        $cash = CashRegisterTransaction::where('cash_register_id', $register['id'])->where('transaction_type', 'sell')->where('pay_method', 'cash')->where('amount', '>', 0)->get()->sum('amount');
+        // dd($cash);
         // $cash_in_hand = CashRegisterTransaction::where('transaction_type','initial')->where('amount','>',0)->orderBy('id','DESC')->first()->amount;
         $cash_in_hand = $register->cash_register_transactions()->first()->amount;
 

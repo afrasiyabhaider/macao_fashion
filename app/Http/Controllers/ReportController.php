@@ -30,6 +30,7 @@ use App\Utils\TransactionUtil;
 use App\Variation;
 use App\VariationLocationDetails;
 use App\WebsiteProducts;
+use App\CashRegisterTransaction;
 use Carbon\Carbon;
 use Charts;
 use Datatables;
@@ -4312,8 +4313,9 @@ class ReportController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getRegisterReportOrignal(Request $request)
+    public function getRegisterReportorignal(Request $request)
     {
+        // dd($request);
         if (!auth()->user()->can('register_report.view')) {
             abort(403, 'Unauthorized action.');
         }
@@ -4321,6 +4323,44 @@ class ReportController extends Controller
 
         //Return the details in ajax call
         if ($request->ajax()) {
+
+            // $registers = CashRegister::join(
+            //     'cash_register_transactions as ct',
+            //     'ct.cash_register_id',
+            //     '=',
+            //     'cash_registers.id'
+            //     )
+            //     ->join(
+            //         'business_locations as bl',
+            //         'bl.id',
+            //         '=',
+            //         'cash_registers.location_id'
+            //     )
+
+            //     ->join(
+            //         'transaction_sell_lines as tsl',
+            //         'tsl.transaction_id',
+            //         '=',
+            //         'ct.transaction_id'
+            //     )
+            //     ->join(
+            //         'transaction_payments as tp',
+            //         'tp.transaction_id',
+            //         '=',
+            //         'ct.transaction_id'
+            //     )
+            //     ->join(
+            //         'transactions as t',
+            //         't.id',
+            //         '=',
+            //         'ct.transaction_id'
+            //     )
+            // ->join(
+            //     'business_locations AS bl',
+            //     't.location_id',
+            //     '=',
+            //     'bl.id'
+            // )
             $registers = CashRegister::join(
                 'cash_register_transactions as ct',
                 'ct.cash_register_id',
@@ -4334,46 +4374,69 @@ class ReportController extends Controller
                     'cash_registers.location_id'
                 )
                 ->join(
-                    'transaction_sell_lines as tsl',
-                    'tsl.transaction_id',
+                    'users as u',
+                    'u.id',
                     '=',
-                    'ct.transaction_id'
+                    'cash_registers.user_id'
                 )
                 ->join(
-                    'transaction_payments as tp',
-                    'tp.transaction_id',
+                    'transaction_sell_lines as t',
+                    't.transaction_id',
                     '=',
                     'ct.transaction_id'
                 )
-                ->join(
-                    'transactions as t',
-                    't.id',
-                    '=',
-                    'ct.transaction_id'
-                )
-                ->select(
-                    'cash_registers.id as register_id',
-                    'cash_registers.created_at as created_at',
-                    'cash_registers.location_id as location_id',
-                    'bl.name as location_name',
-                    'cash_registers.statusss as status',
-                    // DB::raw("SUM(IF(ct.pay_method = 'cash' AND ct.amount > 0, ct.amount, 0)) as cash"),
-                    DB::raw("SUM(IF(ct.pay_method = 'cash' AND ct.amount > 0 ,tp.amount, 0)) as cash"),
-                    // DB::raw("SUM(IF(tp.method = 'cash' AND ct.amount > 0,t.final_total, 0)) as cash"),
-                    DB::raw("SUM(IF(tp.method = 'card' AND ct.amount > 0,t.final_total, 0)) as card"),
-                    DB::raw("SUM(IF(tp.is_convert = 'gift_card' AND ct.amount > 0, t.final_total, 0)) as gift_card"),
-                    DB::raw("SUM(IF(tp.is_convert = 'coupon' AND ct.amount > 0, t.final_total, 0)) as coupon"),
-                    // DB::raw("SUM(IF(ct.pay_method = 'gift_card', amount, 0)) as gift_card"),
-                    // DB::raw("SUM(IF(ct.pay_method = 'coupon', amount, 0)) as coupon"),
-                    DB::raw("SUM(IF(ct.amount > 0, tsl.discounted_amount, 0)) as discounted_amount"),
+                ->where('ct.transaction_type', 'sell');
+            // $transaction_ids = $registers->distinct('ct.transaction_id')->pluck('ct.transaction_id');
+            // dd($transaction_ids);
+            $start_date = $request->get('start_date');
+            $end_date = $request->get('end_date');
+            $discount = TransactionSellLine::where('discounted_amount', '>', 0)->get()->sum('discounted_amount');
 
-                    DB::raw("COUNT(DISTINCT(ct.transaction_id)) as invoices"),
-                    // DB::raw("(SELECT COUNT(tr.invoice_no) FROM transactions as tr WHERE tr.id=t.transaction_id) as invoice"),
-                    DB::raw("SUM(IF(ct.amount > 0, tsl.quantity, 0)) as items"),
-                    // DB::raw("SUM(tsl.quantity) as items"),
-                    // DB::raw("SUM(IF(DISTINCT(ct.transaction_id), t.quanity, 0)) as items"),
-                    // DB::raw('(SELECT SUM(cts.amount) FROM cash_register_transactions as cts WHERE cts.cash_register_id=cash_registers.id AND cts.pay_method="cash") as cash_payment')
-                )
+            $registers->select(
+                'cash_registers.id as register_id',
+                'cash_registers.created_at as created_at',
+                'cash_registers.location_id as location_id',
+                'bl.name as location_name',
+                'cash_registers.statusss as status',
+                // 'discount as discounted_amount',
+                // DB::raw("discount as discounted_amount"),
+                //Orignal one 
+                // DB::raw("SUM(IF(ct.pay_method = 'cash' AND ct.amount > 0 ,tp.amount, 0)) as cash"),
+                DB::raw("SUM(IF(ct.pay_method = 'cash' AND ct.amount > 0 , ct.amount, 0)) as cash"),
+                //orignal one 
+                // DB::raw("SUM(IF(tp.method = 'card' AND ct.amount > 0, t.final_total, 0)) as card"),
+                DB::raw("SUM(IF(ct.pay_method = 'card' AND ct.amount > 0, ct.amount, 0)) as card"),
+
+                // DB::raw("SUM(ct.pay_method = 'card') as card"),
+                //orignal one
+                // DB::raw("SUM(IF(tp.is_convert = 'gift_card' AND ct.amount > 0, t.final_total, 0)) as gift_card"),
+                // DB::raw("SUM(IF(tp.is_convert = 'coupon' AND ct.amount > 0, t.final_total, 0)) as coupon"),
+                //orignal one
+                // DB::raw('SUM(IF(tp.is_convert="coupon",t.final_total,0)) as coupon'),
+                // DB::raw("SUM(IF(ct.pay_method = 'gift_card', amount, 0)) as gift_card"),
+                // DB::raw("SUM(IF(ct.pay_method = 'coupon', amount, 0)) as coupon"),
+                //orignal one
+                // DB::raw("SUM(IF(ct.amount > 0, tsl.discounted_amount, 0)) as discounted_amount"),
+
+                DB::raw("COUNT(DISTINCT(ct.transaction_id)) as invoices"),
+                // DB::raw("(SELECT COUNT(tr.invoice_no) FROM transactions as tr WHERE tr.id=t.transaction_id) as invoice"),
+                //orignal one
+                //  DB::raw("SUM(IF(ct.amount > 0, tsl.quantity, 0)) as items"),
+                //  DB::raw("SUM(IF(ct.amount > 0, tsl.quantity, 0)) as items"),
+                // DB::raw("(SELECT SUM(IF(ct.amount > 0, tsl.quantity, 0)) FROM cash_registers
+                // JOIN cash_register_transactions AS ct ON cash_registers.id = ct.cash_register_id
+                // JOIN business_locations AS bl ON bl.id = cash_registers.location_id
+                // JOIN transaction_sell_lines AS tsl ON tsl.transaction_id = ct.transaction_id
+                // JOIN transaction_payments AS tp ON tp.transaction_id = ct.transaction_id
+                // JOIN transactions AS t ON t.id = ct.transaction_id
+                // WHERE tsl.transaction_id = ct.transaction_id ) as items"),
+
+
+
+                // DB::raw("SUM(tsl.quantity) as items"),
+                // DB::raw("SUM(IF(DISTINCT(ct.transaction_id), t.quanity, 0)) as items"),
+                // DB::raw('(SELECT SUM(cts.amount) FROM cash_register_transactions as cts WHERE cts.cash_register_id=cash_registers.id AND cts.pay_method="cash") as cash_payment')
+            )
                 ->orderBy('created_at', 'DESC')
                 ->groupBy('register_id');
 
@@ -4388,8 +4451,7 @@ class ReportController extends Controller
                 $registers->where('cash_registers.location_id', $request->input('location_id'));
             }
 
-            $start_date = $request->get('start_date');
-            $end_date = $request->get('end_date');
+
 
             if (!empty($start_date) && !empty($end_date)) {
                 $registers->whereBetween(DB::raw('date(cash_registers.created_at)'), [$start_date, $end_date]);
@@ -4402,11 +4464,12 @@ class ReportController extends Controller
                 ->editColumn('cash', function ($row) {
                     $cash = $row->cash;
                     // $cash = $row->cash - $row->card - $row->coupon - $row->gift_card;
-                    return '<span class="display_currency cash_amount" data-currency_symbol="true"  data-orig-value="' . $cash . '">' .
+                    return '<span class="display_currency cash_amount" data-currency_symbol="true"  data-orig-value="' . $cash  / 2 . '">' .
                         $cash . '</span>';
                 })
+
                 ->editColumn('card', function ($row) {
-                    return '<span class="display_currency card_amount" data-currency_symbol="true"  data-orig-value="' . $row->card . '">' .
+                    return '<span class="display_currency card_amount" data-currency_symbol="true"  data-orig-value="' . $row->card / 2 . '">' .
                         $row->card . '</span>';
                 })
                 ->editColumn('gift_card', function ($row) {
@@ -4429,6 +4492,7 @@ class ReportController extends Controller
                 })
                 ->editColumn('items', function ($row) {
                     return '<span class="display_currency items" data-currency_symbol="false" data-orig-value="' . $row->items / 2 . '">' . $row->items / 2 . '</span>';
+                    // return '<span class="display_currency items" data-currency_symbol="false" data-orig-value="' . $row->items . '">' . $row->items . '</span>';
                 })
                 ->editColumn('created_at', function ($row) {
                     return Carbon::parse($row->created_at)->format('d-M-Y H:i A');
@@ -4462,6 +4526,7 @@ class ReportController extends Controller
             abort(403, 'Unauthorized action.');
         }
         $business_id = $request->session()->get('user.business_id');
+
         //Return the details in ajax call
         if ($request->ajax()) {
             $registers = CashRegister::join(
@@ -4469,7 +4534,7 @@ class ReportController extends Controller
                 'ct.cash_register_id',
                 '=',
                 'cash_registers.id'
-                )
+            )
                 ->join(
                     'business_locations as bl',
                     'bl.id',
@@ -4483,21 +4548,96 @@ class ReportController extends Controller
                     '=',
                     'ct.transaction_id'
                 )
+                // ->join(
+                //     'transaction_payments as tp',
+                //     'tp.transaction_id',
+                //     '=',
+                //     'ct.transaction_id'
+                // )
                 ->join(
                     'transactions as t',
                     't.id',
                     '=',
                     'ct.transaction_id'
                 )
+                // $registers = CashRegister::join(
+                //     'cash_register_transactions as ct',
+                //     'ct.cash_register_id',
+                //     '=',
+                //     'cash_registers.id'
+                // )
+                // ->join(
+                //     'business_locations as bl',
+                //     'bl.id',
+                //     '=',
+                //     'cash_registers.location_id'
+                // )
+                // ->join(
+                //     'transaction_payments as tp',
+                //     'tp.transaction_id',
+                //     '=',
+                //     'ct.transaction_id'
+                // )
+                // ->leftJoin(
+                //     'transaction_sell_lines as tsl_items',
+                //     function ($join) {
+                //         $join->on('tsl_items.transaction_id', '=', 'ct.transaction_id')
+                //             ->where('ct.transaction_type', '=', 'sell');
+                //     }
+                // )
+                // ->leftJoin(
+                //     'transaction_sell_lines as tsl_discounted',
+                //     function ($join) {
+                //         $join->on('tsl_discounted.transaction_id', '=', 'ct.transaction_id')
+                //             ->where('ct.transaction_type', '=', 'sell');
+                //     }
+                // )
+                // ->where('ct.transaction_type', 'sell');
+                // if ($request->ajax()) {
+                //     $registers->join(
+                //         'transaction_sell_lines as tsl',
+                //         'tsl.transaction_id',
+                //         '=',
+                //         'ct.transaction_id'
+                //     )
+                //     ->join(
+                //         'transaction_payments as tp',
+                //         'tp.transaction_id',
+                //         '=',
+                //         'ct.transaction_id'
+                //     );
+                // }
+
+                // ->join(
+                //     'transaction_sell_lines as tsl',
+                //     'tsl.transaction_id',
+                //     '=',
+                //     'ct.transaction_id'
+                // )
+                // ->join(
+                //     'transaction_payments as tp',
+                //     'tp.transaction_id',
+                //     '=',
+                //     'ct.transaction_id'
+                // )
+
                 ->where('ct.transaction_type', 'sell');
-                $start_date = $request->get('start_date');
-                $end_date = $request->get('end_date');
-                $registers->select(
+            $start_date = $request->get('start_date');
+            $end_date = $request->get('end_date');
+            $registers->select(
                 'cash_registers.id as register_id',
                 'cash_registers.created_at as created_at',
                 'cash_registers.location_id as location_id',
                 'bl.name as location_name',
                 'cash_registers.statusss as status',
+                // 'discount as discounted_amount',
+                // DB::raw("discount as discounted_amount"),
+                //Orignal one 
+                // DB::raw("SUM(IF(tp.method = 'cash' AND ct.amount > 0 ,tp.amount, 0)) as cash"),
+
+                // DB::raw("SUM(ct.pay_method = 'card') as card"),
+                // DB::raw("SUM(IF(ct.pay_method = 'cash' AND ct.amount > 0 , ct.amount, 0)) as cash"),
+                // DB::raw("(SELECT SUM(IF(ct.pay_method = 'cash' AND ct.amount > 0, ct.amount, 0)) FROM cash_register_transactions as ct WHERE ct.cash_register_id = cash_registers.id AND ct.transaction_type = 'sell') as cash"),
                 DB::raw("
                         (SELECT 
                             SUM(
@@ -4508,6 +4648,9 @@ class ReportController extends Controller
                             AND ct.transaction_type = 'sell'
                         ) as cash
                     "),
+                //orignal one 
+                // DB::raw("SUM(IF(tp.method = 'card' AND ct.amount > 0, t.final_total, 0)) as card"),
+                // DB::raw("SUM(IF(ct.pay_method = 'card' AND ct.amount > 0, ct.amount, 0)) as card"),
                 DB::raw("
                         (SELECT 
                             SUM(
@@ -4518,29 +4661,77 @@ class ReportController extends Controller
                             AND ct.transaction_type = 'sell'
                         ) as card
                     "),
+                DB::raw("
+                        (SELECT 
+                            SUM(
+                                IF(ct.pay_method = 'coupon', ct.amount, 0)
+                            ) 
+                            FROM cash_register_transactions as ct 
+                            WHERE ct.cash_register_id = cash_registers.id 
+                            AND ct.transaction_type = 'sell'
+                        ) as coupon
+                    "),
+                //orignal one
+                // DB::raw("SUM(IF(tp.is_convert = 'gift_card' AND ct.amount > 0, t.final_total, 0)) as gift_card"),
+                // DB::raw("SUM(IF(tp.is_convert = 'coupon' AND ct.amount > 0, t.final_total, 0)) as coupon"),
+                //orignal one
+                // DB::raw('SUM(IF(tp.is_convert="coupon",t.final_total,0)) as coupon'),
+                // DB::raw("SUM(IF(ct.pay_method = 'gift_card', amount, 0)) as gift_card"),
+                // DB::raw("SUM(IF(ct.pay_method = 'coupon', amount, 0)) as coupon"),
+
+
                 DB::raw("COUNT(DISTINCT(ct.transaction_id)) as invoices"),
+                // DB::raw("(SELECT COUNT(tr.invoice_no) FROM transactions as tr WHERE tr.id=t.transaction_id) as invoice"),
+                //orignal one
                 DB::raw("SUM(IF(ct.amount > 0, tsl.discounted_amount, 0)) as discounted_amount"),
+                //orignal one
                 DB::raw("SUM(IF(ct.amount > 0, tsl.quantity, 0)) as items"),
 
+                // 'items' calculation
+                // DB::raw('SUM(IF(ct.amount > 0, tsl_items.quantity, 0)) as items'),
 
-                )
+                // 'discounted_amount' calculation
+                // DB::raw('SUM(IF(ct.amount > 0, tsl_discounted.discounted_amount, 0)) as discounted_amount'),
+
+                //    // 'items' calculation
+                //     DB::raw('(SELECT SUM(IF(ct.amount > 0, tsl_items.quantity, 0)) FROM transaction_sell_lines as tsl_items WHERE tsl_items.transaction_id = ct.transaction_id) as items'),
+
+                //     // 'discounted_amount' calculation
+                //     DB::raw('(SELECT SUM(IF(ct.amount > 0, tsl_discounted.discounted_amount, 0)) FROM transaction_sell_lines as tsl_discounted WHERE tsl_discounted.transaction_id = ct.transaction_id) as discounted_amount'),
+
+
+                // DB::raw("SUM(tsl.quantity) as items"),
+                // DB::raw("SUM(IF(DISTINCT(ct.transaction_id), t.quanity, 0)) as items"),
+                // DB::raw('(SELECT SUM(cts.amount) FROM cash_register_transactions as cts WHERE cts.cash_register_id=cash_registers.id AND cts.pay_method="cash") as cash_payment')
+            )
+
                 ->orderBy('created_at', 'DESC')
                 ->groupBy('register_id');
-                if (!empty($request->input('user_id'))) {
-                    $registers->where('cash_registers.user_id', $request->input('user_id'));
-                }
-                if (!empty($request->input('location_id'))) {
-                    $registers->where('cash_registers.location_id', $request->input('location_id'));
-                }
-                if (!empty($start_date) && !empty($end_date)) {
-                    $registers->whereBetween(DB::raw('date(cash_registers.created_at)'), [$start_date, $end_date]);
-                }
-                if (!empty($request->input('status'))) {
-                    $registers->where('cash_registers.status', $request->input('status'));
-                }
-                return Datatables::of($registers)
+
+            // dd($registers->get()[195], $registers->get()[196], $registers->get()[197]);
+
+
+            if (!empty($request->input('user_id'))) {
+                $registers->where('cash_registers.user_id', $request->input('user_id'));
+            }
+
+            if (!empty($request->input('location_id'))) {
+                $registers->where('cash_registers.location_id', $request->input('location_id'));
+            }
+
+
+
+            if (!empty($start_date) && !empty($end_date)) {
+                $registers->whereBetween(DB::raw('date(cash_registers.created_at)'), [$start_date, $end_date]);
+            }
+
+            if (!empty($request->input('status'))) {
+                $registers->where('cash_registers.status', $request->input('status'));
+            }
+            return Datatables::of($registers)
                 ->editColumn('cash', function ($row) {
                     $cash = $row->cash;
+                    // $cash = $row->cash - $row->card - $row->coupon - $row->gift_card;
                     return '<span class="display_currency cash_amount" data-currency_symbol="true"  data-orig-value="' . $cash  / 2 . '">' .
                         $cash  . '</span>';
                 })
@@ -4570,9 +4761,11 @@ class ReportController extends Controller
                 })
                 ->editColumn('items', function ($row) {
                     return '<span class="display_currency items" data-currency_symbol="false" data-orig-value="' . $row->items / 2 . '">' . $row->items  . '</span>';
+                    // return '<span class="display_currency items" data-currency_symbol="false" data-orig-value="' . $row->items . '">' . $row->items . '</span>';
                 })
                 ->editColumn('created_at', function ($row) {
                     return Carbon::parse($row->created_at)->format('d-M-Y H:i A');
+                    // return $this->productUtil->format_date($row->created_at, true);
                 })
                 // ->editColumn('closing_amount', function ($row) {
                 //     if ($row->status == 'close') {
@@ -5833,6 +6026,9 @@ class ReportController extends Controller
         return view('report.product_sell_report')
             ->with(compact('business_locations', 'customers', 'suppliers', 'categories', 'sub_categories'));
     }
+
+    // test sub function
+
     public function generateSoldSubquery($location_filter, $dateInterval, $alias)
     {
 
@@ -5841,6 +6037,8 @@ class ReportController extends Controller
         WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
         AND TSL.product_refference = p.refference AND transactions.transaction_date > CURDATE() - INTERVAL $dateInterval day) as $alias");
     }
+
+
     /**
      * Shows product sell report grouped by date
      *
@@ -5849,7 +6047,7 @@ class ReportController extends Controller
     public function getproductSellGroupedReport(Request $request)
     {
         ini_set('memory_limit', '-1');
-        ini_set('max_execution_time', 180); //3 minutes
+        ini_set('max_execution_time', 280); //3 minutes
         if (!auth()->user()->can('purchase_n_sell_report.view')) {
             abort(403, 'Unauthorized action.');
         }
@@ -5860,6 +6058,7 @@ class ReportController extends Controller
         $location_filter = '';
         if (!empty($location_id)) {
             $location_filter = "AND transactions.location_id=$location_id";
+            // $location_filter = "AND t.location_id=$location_id";
         }
 
         $vld_str = '';
@@ -5869,10 +6068,12 @@ class ReportController extends Controller
         // $start_date = $request->get('start_date');
         // $end_date = $request->get('end_date');
         if ($request->ajax()) {
-
-
+            // $sevenDaySoldSubquery = $this->generateSoldSubquery($location_filter, 6, 'seven_day_sold');
+            // $fifteenDaySoldSubquery = $this->generateSoldSubquery($location_filter, 14, 'fifteen_day_sold');
+            // $allTimeSoldSubquery = $this->generateSoldSubquery($location_filter,null , 'all_time_sold');
             $sevenDaySoldSubquery = $this->generateSoldSubquery($location_filter, 6, 'seven_day_sold');
             $fifteenDaySoldSubquery = $this->generateSoldSubquery($location_filter, 14, 'fifteen_day_sold');
+
 
             $variation_id = $request->get('variation_id', null);
             $query = TransactionSellLine::join(
@@ -5901,6 +6102,7 @@ class ReportController extends Controller
                 // $query->whereBetween(DB::raw('date(transaction_date)'), [$start_date, $end_date]);
                 $query->whereDate('t.transaction_date', '>=', $start_date)->whereDate('t.transaction_date', '<=', $end_date);
             }
+            // Usage
 
 
             $query->select(
@@ -5917,24 +6119,29 @@ class ReportController extends Controller
                 't.id as transaction_id',
                 't.transaction_date as transaction_date',
                 'transaction_sell_lines.unit_price_before_discount as unit_price',
+
                 DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
                 DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference  $vld_str) as current_stock"),
                 // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference) as all_time_sold"),
                 DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
                         JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
                         WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
-                        AND TSL.product_refference = p.refference) as all_time_sold"),
+                        AND TSL.product_refference = p.refference) as all_time_sold "),
+                // DB::raw($allTimeSoldSubquery),
                 DB::raw($sevenDaySoldSubquery),
                 DB::raw($fifteenDaySoldSubquery),
+
                 // DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
                 //     JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
                 //     WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
                 //     AND TSL.product_refference = p.refference AND transactions.transaction_date > CURDATE() - INTERVAL 6 day) as seven_day_sold"),
+
                 // DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
                 //     JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
                 //     WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
                 //     AND TSL.product_refference = p.refference AND TSL.updated_at > CURDATE() - INTERVAL 14 day) as fifteen_day_sold"),
-                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
+
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference $location_filter AND transaction_sell_lines.updated_at > now() - INTERVAL 6 day) as seven_day_sold"),
                 // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_refference = p.refference AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
                 // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
                 DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
@@ -5944,6 +6151,8 @@ class ReportController extends Controller
                 'u.short_name as unit',
                 DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
             )
+
+
                 // ->groupBy('v.id')
                 ->orderBy('total_qty_sold', 'DESC')
                 ->groupBy('transaction_sell_lines.product_refference');
@@ -7052,7 +7261,7 @@ class ReportController extends Controller
      * Daily Sales
      * 
      **/
-    public function dailySales(Request $request)
+    public function dailySales1(Request $request)
     {
         $business_id = request()->session()->get('user.business_id');
 
@@ -7073,67 +7282,124 @@ class ReportController extends Controller
                 )
                 ->where('transactions.business_id', $business_id)
                 ->where('transactions.type', 'sell')
-                ->where('transactions.status', '!=', 'hide')
-                // ->leftJoin(
-                //     'transaction_sell_lines as tsl',
-                //     'transactions.id',
-                //     '=',
-                //     'tsl.transaction_id'
-                // )
-                ->select(
-                    'transactions.id',
+                ->where('transactions.status', '!=', 'hide');
+            // ->leftJoin(
+            //     'transaction_sell_lines as tsl',
+            //     'transactions.id',
+            //     '=',
+            //     'tsl.transaction_id'
+            // )
+            // $transaction_ids = CashRegisterTransaction::where('transaction_id', 'transactions.id')
+            // ->pluck('transaction_id')
+            // ->toArray();
+            // dd($transaction_ids);
+            // $transaction_ids = CashRegisterTransaction::where('cash_register_id',$id)->pluck('transaction_id')->toArray();
+            $start_date = $request->get('start_date');
+            $end_date = $request->get('end_date');
 
-                    'bl.name as location_name',
+            $permitted_locations = auth()->user()->permitted_locations();
 
-                    'bl.id as location_id',
-                    // DB::raw('COUNT(transactions.invoice_no) as items'),
+            // dd($permitted_locations);
+            // $location_filter = '';
+            // if ($permitted_locations != 'all') {
+            //     $working = $query->whereIn('transactions.location_id', $permitted_locations);
 
-                    // DB::raw('SUM(tsl.quantity/2) as items'),
+            //     $locations_imploded = implode(', ', $permitted_locations);
+            //     dd($working);
+            //     $location_filter .= "AND t.location_id IN ($locations_imploded) ";
+            // }
+            // dd($request->input('location_id'));
+            if (!empty($request->get('location_id'))) {
+                $query->where('transactions.location_id', $request->input('location_id'));
+            }
+            $query->select(
+                'transactions.id',
 
-                    // DB::raw('(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl GROUP BY DATE(tsl.created_at))'),
-                    // DB::raw('(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE DATE_FORMAT(transactions.created_at, "%Y-%m-%d") = DATE_FORMAT(tsl.created_at, "%Y-%m-%d")) as items'),
-                    // DB::raw('(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.created_at = transactions.created_at) as items'),
+                'bl.name as location_name',
 
-                    DB::raw('COUNT(DISTINCT(transactions.invoice_no)) as invoices'),
+                'bl.id as location_id',
+                // DB::raw('COUNT(transactions.invoice_no) as items'),
 
-                    DB::raw('SUM(IF(tp.is_return = 1,-1*tp.amount,tp.amount)) as cash'),
+                // DB::raw('SUM(tsl.quantity/2) as items'),
 
-                    DB::raw('SUM(IF(tp.is_return = 1,-1*transactions.final_total,transactions.final_total)) as final_total'),
+                // DB::raw('(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl GROUP BY DATE(tsl.created_at))'),
+                // DB::raw('(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE DATE_FORMAT(transactions.created_at, "%Y-%m-%d") = DATE_FORMAT(tsl.created_at, "%Y-%m-%d")) as items'),
+                // DB::raw('(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.created_at = transactions.created_at) as items'),
 
-                    DB::raw('SUM(IF(tp.method="card",tp.amount,0)) as card'),
+                DB::raw('COUNT(DISTINCT(transactions.invoice_no)) as invoices'),
+                // orignal one
+                // DB::raw('SUM(IF(tp.is_return = 1,-1*tp.amount,tp.amount)) as cash'),
+                //     DB::raw("(SELECT SUM(
+                //         IF(ct.pay_method = 'cash' AND ct.amount > 0, ct.amount, 0)
+                //     ) 
+                //     FROM cash_register_transactions as ct  
+                //     WHERE DATE(ct.created_at) BETWEEN '$start_date' AND '$end_date'
+                //     AND ct.transaction_type = 'sell'
+                // ) as cash"),
+                // DB::raw("(SELECT SUM(
+                //     IF(ct.pay_method = 'cash' AND ct.amount > 0, ct.amount, 0)
+                // ) 
+                // FROM cash_register_transactions as ct  
+                // JOIN transactions as t ON t.id = ct.transaction_id
+                // WHERE DATE(ct.created_at) BETWEEN '$start_date' AND '$end_date'
+                // AND ct.transaction_type = 'sell'
+                // ) as cash"),
+                DB::raw("(SELECT SUM(
+                    IF(ct.pay_method = 'cash' AND ct.amount > 0, ct.amount, 0)
+                ) 
+                FROM cash_register_transactions as ct  
+                JOIN transactions as t ON t.id = ct.transaction_id
+                WHERE DATE(ct.created_at) BETWEEN '$start_date' AND '$end_date'
+                AND ct.transaction_type = 'sell'
+                ) as cash"),
 
-                    DB::raw('SUM(IF(tp.is_convert="coupon",transactions.final_total,0)) as coupon'),
+                DB::raw('SUM(IF(tp.is_return = 1,-1*transactions.final_total,transactions.final_total)) as final_total'),
+                // orignal one
+                // DB::raw('SUM(IF(tp.method="card",tp.amount,0)) as card'),
+                DB::raw("(SELECT SUM(
+                        IF(ct.pay_method = 'card' AND ct.amount > 0, ct.amount, 0)
+                    ) 
+                    FROM cash_register_transactions as ct  
+                    WHERE DATE(ct.created_at) BETWEEN '$start_date' AND '$end_date'
+                    AND ct.transaction_type = 'sell'
+                ) as card"),
+                // orignal one 
+                // DB::raw('SUM(IF(tp.is_convert="coupon",transactions.final_total,0)) as coupon'),
+                DB::raw("(SELECT SUM(
+                        IF(ct.pay_method = 'coupon', ct.amount, 0)
+                    ) 
+                    FROM cash_register_transactions as ct  
+                    WHERE DATE(ct.created_at) BETWEEN '$start_date' AND '$end_date'
+                    AND ct.transaction_type = 'sell'
+                ) as coupon"),
 
-                    DB::raw('SUM(IF(tp.is_convert="gift_card",transactions.final_total,0)) as gift_card'),
+                DB::raw('SUM(IF(tp.is_convert="gift_card",transactions.final_total,0)) as gift_card'),
 
-                    DB::raw("DATE_FORMAT(transactions.created_at, '%Y-%m-%d')as date"),
+                DB::raw("DATE_FORMAT(transactions.created_at, '%Y-%m-%d')as date"),
 
-                    // DB::raw('SUM(tsl.discounted_amount/2) as discount'),
+                // DB::raw('SUM(tsl.discounted_amount/2) as discount'),
 
-                    // DB::raw('(SELECT DATE(tsl.created_at) tsl_date , SUM(tsl.discounted_amount) discount FROM transaction_sell_lines as tsl WHERE tsl.discounted_amount GROUP BY tsl_date LIMIT 0,1)% 10'),
-                    // DB::raw('(SELECT SUM(tsl.discounted_amount) FROM transaction_sell_lines as tsl WHERE tsl.transaction_id = transactions.id AND tp.is_return=0) as discount'),
+                // DB::raw('(SELECT DATE(tsl.created_at) tsl_date , SUM(tsl.discounted_amount) discount FROM transaction_sell_lines as tsl WHERE tsl.discounted_amount GROUP BY tsl_date LIMIT 0,1)% 10'),
+                // DB::raw('(SELECT SUM(tsl.discounted_amount) FROM transaction_sell_lines as tsl WHERE tsl.transaction_id = transactions.id AND tp.is_return=0) as discount'),
 
-                    // DB::raw('(SELECT SUM(tsl.discounted_amount) FROM transaction_sell_lines as tsl JOIN transactions as tr WHERE tr.created_at = tsl.created_at ) as discount'),
-                    // DB::raw('(SELECT SUM(tsl.discounted_amount) FROM transaction_sell_lines as tsl WHERE DATE_FORMAT(transactions.created_at, "%Y-%m-%d") = DATE_FORMAT(tsl.created_at, "%Y-%m-%d")) as discount'),
+                // DB::raw('(SELECT SUM(tsl.discounted_amount) FROM transaction_sell_lines as tsl JOIN transactions as tr WHERE tr.created_at = tsl.created_at ) as discount'),
+                // DB::raw('(SELECT SUM(tsl.discounted_amount) FROM transaction_sell_lines as tsl WHERE DATE_FORMAT(transactions.created_at, "%Y-%m-%d") = DATE_FORMAT(tsl.created_at, "%Y-%m-%d")) as discount'),
 
-                    // DB::raw('SUM(IF(tp.is_return = 1,transactions.discount_amount,transactions.discount_amount)) as discount'),
+                // DB::raw('SUM(IF(tp.is_return = 1,transactions.discount_amount,transactions.discount_amount)) as discount'),
 
-                    DB::raw('COUNT(SR.id) as return_exists'),
-                    DB::raw('(SELECT SUM(TP2.amount) FROM transaction_payments AS TP2 WHERE
+                DB::raw('COUNT(SR.id) as return_exists'),
+                DB::raw('(SELECT SUM(TP2.amount) FROM transaction_payments AS TP2 WHERE
                         TP2.transaction_id=SR.id ) as return_paid'),
-                    DB::raw('COALESCE(SR.final_total, 0) as amount_return'),
-                    'SR.id as return_transaction_id'
-                )->orderBy('transactions.created_at', 'DESC')
+                DB::raw('COALESCE(SR.final_total, 0) as amount_return'),
+                'SR.id as return_transaction_id'
+            )->orderBy('transactions.created_at', 'DESC')
                 ->groupBy(
                     DB::raw("DATE_FORMAT(transactions.created_at, '%Y-%m-%d')")
                 );
             // dd($query->first());
-            if (!empty($request->get('location_id'))) {
-                $query->where('transactions.location_id', $request->input('location_id'));
-            }
 
-            $start_date = $request->get('start_date');
-            $end_date = $request->get('end_date');
+
+
 
             if (!empty($start_date) && !empty($end_date)) {
                 $query->whereBetween(DB::raw('date(transactions.created_at)'), [$start_date, $end_date]);
@@ -7141,7 +7407,7 @@ class ReportController extends Controller
             // dd($query->get());
             return Datatables::of($query)
                 ->addColumn('total', function ($row) {
-                    $total = $row->cash;
+                    $total = $row->cash + $row->card + $row->coupon + $row->gift_card;
                     // $total = ($row->cash - $row->coupon) + $row->card + $row->coupon + $row->gift_card;
 
                     return '<span class="display_currency total_amount" data-currency_symbol="true"  data-orig-value="' . $total . '">' .
@@ -7163,10 +7429,11 @@ class ReportController extends Controller
                         $row->card . '</span>';
                 })
                 ->editColumn('cash', function ($row) {
-                    $total = $row->cash - $row->card;
-                    if ($total < 0) {
-                        $total = $total * -1;
-                    }
+                    $total = $row->cash;
+                    // $total = $row->cash - $row->card;
+                    // if ($total < 0) {
+                    //     $total = $total * -1;
+                    // }
                     return '<span class="display_currency cash_amount" data-currency_symbol="true"  data-orig-value="' . $total . '">' .
                         $total . '</span>';
                 })
@@ -7196,6 +7463,166 @@ class ReportController extends Controller
                 ->rawColumns(['cash', 'card', 'coupon', 'total', 'gift_card', 'discount', 'invoices', 'items'])
                 ->make(true);
         }
+
+        $business = BusinessLocation::forDropdown($business_id, true);
+        return view('report.daily_sales', compact('business'));
+    }
+    public function dailySales(Request $request)
+    {
+        if (!auth()->user()->can('register_report.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+        $business_id = $request->session()->get('user.business_id');
+        //Return the details in ajax call
+        if ($request->ajax()) {
+            $registers = CashRegister::join(
+                'cash_register_transactions as ct',
+                'ct.cash_register_id',
+                '=',
+                'cash_registers.id'
+            )
+                ->join(
+                    'business_locations as bl',
+                    'bl.id',
+                    '=',
+                    'cash_registers.location_id'
+                )
+
+                ->join(
+                    'transaction_sell_lines as tsl',
+                    'tsl.transaction_id',
+                    '=',
+                    'ct.transaction_id'
+                )
+                ->join(
+                    'transactions as t',
+                    't.id',
+                    '=',
+                    'ct.transaction_id'
+                )
+                ->where('ct.transaction_type', 'sell');
+            // ->where('t.business_id', $business_id);
+            $start_date = $request->get('start_date');
+            $end_date = $request->get('end_date');
+            $registers->select(
+                'cash_registers.id as register_id',
+                'cash_registers.created_at as created_at',
+                'cash_registers.location_id as location_id',
+                // 'bl.name as location_name',
+                'bl.name as location_name',
+                'cash_registers.statusss as status',
+                //Orignal one 
+                // DB::raw("SUM(IF(tp.method = 'cash' AND ct.amount > 0 ,tp.amount, 0)) as cash"),
+
+                DB::raw("
+                        (SELECT 
+                            SUM(
+                                IF(ct.pay_method = 'cash' AND ct.amount > 0, ct.amount, 0)
+                            ) 
+                            FROM cash_register_transactions as ct 
+                            WHERE ct.cash_register_id = cash_registers.id 
+                            AND ct.transaction_type = 'sell'
+                        ) as cash
+                    "),
+                //orignal one 
+                // DB::raw("SUM(IF(tp.method = 'card' AND ct.amount > 0, t.final_total, 0)) as card"),
+                // DB::raw("SUM(IF(ct.pay_method = 'card' AND ct.amount > 0, ct.amount, 0)) as card"),
+                DB::raw("
+                        (SELECT 
+                            SUM(
+                                IF(ct.pay_method = 'card' AND ct.amount > 0, ct.amount, 0)
+                            ) 
+                            FROM cash_register_transactions as ct 
+                            WHERE ct.cash_register_id = cash_registers.id 
+                            AND ct.transaction_type = 'sell'
+                        ) as card
+                    "),
+                DB::raw("
+                        (SELECT 
+                            SUM(
+                                IF(ct.pay_method = 'coupon', ct.amount, 0)
+                            ) 
+                            FROM cash_register_transactions as ct 
+                            WHERE ct.cash_register_id = cash_registers.id 
+                            AND ct.transaction_type = 'sell'
+                        ) as coupon
+                    "),
+                //orignal one
+                // DB::raw("SUM(IF(tp.is_convert = 'gift_card' AND ct.amount > 0, t.final_total, 0)) as gift_card"),
+                // DB::raw("SUM(IF(tp.is_convert = 'coupon' AND ct.amount > 0, t.final_total, 0)) as coupon"),
+                //orignal one
+                // DB::raw('SUM(IF(tp.is_convert="coupon",t.final_total,0)) as coupon'),
+                // DB::raw("SUM(IF(ct.pay_method = 'gift_card', amount, 0)) as gift_card"),
+                // DB::raw("SUM(IF(ct.pay_method = 'coupon', amount, 0)) as coupon"),
+
+
+                DB::raw("COUNT(DISTINCT(ct.transaction_id)) as invoices"),
+                //orignal one
+                DB::raw("SUM(IF(ct.amount > 0, tsl.discounted_amount, 0)) as discounted_amount"),
+                //orignal one
+                DB::raw("SUM(IF(ct.amount > 0, tsl.quantity, 0)) as items"),
+                DB::raw("DATE_FORMAT(t.created_at, '%Y-%m-%d')as date"),
+
+            )
+
+                ->orderBy('created_at', 'DESC')
+                ->groupBy('register_id');
+
+            if (!empty($request->input('user_id'))) {
+                $registers->where('cash_registers.user_id', $request->input('user_id'));
+            }
+
+            if (!empty($request->input('location_id'))) {
+                $registers->where('cash_registers.location_id', $request->input('location_id'));
+            }
+
+
+
+            if (!empty($start_date) && !empty($end_date)) {
+                $registers->whereBetween(DB::raw('date(cash_registers.created_at)'), [$start_date, $end_date]);
+            }
+
+            if (!empty($request->input('status'))) {
+                $registers->where('cash_registers.status', $request->input('status'));
+            }
+            return Datatables::of($registers)
+
+                ->addColumn('total', function ($row) {
+                    $total = $row->cash + $row->card + $row->coupon + $row->gift_card;
+                    return '<span class="display_currency total_amount" data-currency_symbol="true"  data-orig-value="' . $total . '">' .
+                        $total . '</span>';
+                })
+                ->editColumn('cash', function ($row) {
+                    $cash = $row->cash;
+                    // $cash = $row->cash - $row->card - $row->coupon - $row->gift_card;
+                    return '<span class="display_currency cash_amount" data-currency_symbol="true"  data-orig-value="' . $cash . '">' .
+                        $cash  . '</span>';
+                })
+
+                ->editColumn('card', function ($row) {
+                    return '<span class="display_currency card_amount" data-currency_symbol="true"  data-orig-value="' . $row->card . '">' .
+                        $row->card  . '</span>';
+                })
+                ->editColumn('gift_card', function ($row) {
+                    return '<span class="display_currency giftcard_amount" data-currency_symbol="true" data-orig-value="' . $row->gift_card . '">' .
+                        $row->gift_card . '</span>';
+                })
+                ->editColumn('coupon', function ($row) {
+                    return '<span class="display_currency coupon_amount" data-currency_symbol="true" data-orig-value="' . $row->coupon . '">' .
+                        $row->coupon . '</span>';
+                })
+
+                ->editColumn('invoices', function ($row) {
+                    return '<span class="display_currency invoices" data-currency_symbol="false" data-orig-value="' . $row->invoices . '">' . $row->invoices . '</span>';
+                })
+                ->editColumn('date', function ($row) {
+                    return  Carbon::parse($row->date)->format('d-M-Y');
+                })
+                ->rawColumns(['action', 'cash', 'card', 'gift_card', 'coupon', 'discounted_amount', 'total', 'invoices', 'items'])
+                ->make(true);
+        }
+
+        $users = User::forDropdown($business_id, false);
 
         $business = BusinessLocation::forDropdown($business_id, true);
         return view('report.daily_sales', compact('business'));
@@ -8970,9 +9397,9 @@ class ReportController extends Controller
         $user_id = request()->session()->get('user.id');
 
         if (request()->ajax()) {
-            // $products = Coupon::leftjoin('transactions', 'coupons.transaction_id', '=', 'transactions.id')
-            $products = Coupon::leftJoin('transactions', DB::raw("TRIM(LEADING ',' FROM coupons.transaction_id)"), '=', 'transactions.id')
-                ->leftjoin('business_locations as bl', 'bl.id', '=', 'transactions.location_id')
+            $products = Coupon::leftjoin('transactions', 'coupons.transaction_id', '=', 'transactions.id')
+                // $products = Coupon::leftJoin('transactions', DB::raw("TRIM(LEADING ',' FROM coupons.transaction_id)"), '=', 'transactions.id')
+                ->leftjoin('business_locations as bl', 'bl.id', '=', 'coupons.location_id')
                 // leftJoin('gift_cards', 'coupons.gift_card_id', '=', 'gift_cards.id')
                 ->where('coupons.business_id', $business_id)
                 ->where('coupons.created_by', $user_id);
@@ -8989,13 +9416,14 @@ class ReportController extends Controller
             if (!empty($request->input('location_id'))) {
                 $location_id = $request->input('location_id');
 
-                $products->where('transactions.location_id', $location_id);
+                $products->where('coupons.location_id', $location_id);
             };
             $from_date = request()->get('start_date', null);
             $to_date = request()->get('end_date', null);
             if (!empty($to_date)) {
                 $products->whereDate('coupons.created_at', '>=', $from_date)->whereDate('coupons.created_at', '<=', $to_date);
             }
+
             $products->select(
                 'coupons.id',
                 'coupons.name',
@@ -9008,7 +9436,8 @@ class ReportController extends Controller
                 'coupons.isActive',
                 'coupons.details',
                 'coupons.isUsed',
-                'transactions.location_id',
+                // 'transactions.location_id',
+                'coupons.location_id',
                 'transactions.created_at as usedDate',
             )
                 ->groupBy('coupons.barcode');

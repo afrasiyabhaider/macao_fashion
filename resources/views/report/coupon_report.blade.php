@@ -36,6 +36,12 @@
                             ]) !!}
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('isActive', 'Status' . ':') !!}
+                            {!! Form::select('isActive', ['active' => 'Active', 'inactive' => 'Inactive', 'expired'=> 'Expired', 'consumed'=> 'Consumeded', 'cancell'=> 'Cancelled'], null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'product_list_filter_type', 'placeholder' => __('lang_v1.all')]); !!}
+                        </div>
+                    </div>
                     {!! Form::close() !!}
                 @endcomponent
             </div>
@@ -110,6 +116,7 @@
                     d.location_id = $('#location_id').val();
                     d.category_id = $('#category_id').val();
                     d.sub_category_id = $('#sub_category_id').val();
+                    d.type = $('#product_list_filter_type').val();
                     // d.supplier_id = $('#suppliers').val();
                     // d.from_date = $('#product_list_from_date').val();
                     // d.to_date = $('#product_list_to_date').val();
@@ -134,8 +141,8 @@
                     name: 'barcode'
                 },
                 {
-                    data: 'value',
-                    name: 'value',
+                    data: 'orig_value',
+                    name: 'orig_value',
                     orderable: false,
                     searchable: false
                 }, 
@@ -218,7 +225,7 @@
             $('#product_purchase_date_filter').data('daterangepicker').setEndDate(moment());
         }
         $(
-            '#stock_report_filter_form #location_id, #stock_report_filter_form #category_id, #stock_report_filter_form #sub_category_id, #stock_report_filter_form #brand,#stock_report_filter_form #suppliers, #stock_report_filter_form #unit,#stock_report_filter_form #view_stock_filter,#product_list_to_date, #product_list_from_date#product_sr_date_filter'
+            '#stock_report_filter_form #location_id, #product_list_filter_type, #stock_report_filter_form #category_id, #stock_report_filter_form #sub_category_id, #stock_report_filter_form #brand,#stock_report_filter_form #suppliers, #stock_report_filter_form #unit,#stock_report_filter_form #view_stock_filter,#product_list_to_date, #product_list_from_date#product_sr_date_filter'
         ).change(function() {
             stock_in_table.ajax.reload();
 

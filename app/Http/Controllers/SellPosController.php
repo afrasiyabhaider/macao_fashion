@@ -458,7 +458,8 @@ class SellPosController extends Controller
 
 
                 $checkGift = $this->GiftCardCheck($input['products']);
-                $checkCoupon = $this->CouponCheck($input['products']);
+                $checkCoupon = $this->CouponCheck($input['products'],$request);
+                // dd($checkCoupon);
 
                 DB::beginTransaction();
 
@@ -519,6 +520,7 @@ class SellPosController extends Controller
                     // dd($input['payment'][0]['method']);
                     $new_coupon = $this->transactionUtil->createOrUpdatePaymentLines2($transaction, $input['payment'], $request);
                 }
+                // dd($transaction);
                 // ADD BONUS POINTS 
                 // if ($transaction->contact_id != '1') {
                 //     $objContact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
@@ -1926,13 +1928,17 @@ class SellPosController extends Controller
             }
         }
     }
-    public function CouponCheck($products)
+    public function CouponCheck($products, Request $request)
     {
         foreach ($products as $product) {
             $objProduct = Product::where("id", $product['product_id'])->first();
             // print_r($objProduct);die();
             if (strcmp($objProduct->p_type, "coupon") == 0) {
-                Coupon::where('id', $objProduct->coupon)->update(['isActive' => 'active']);
+                Coupon::where('id', $objProduct->coupon)->update([
+                        'isActive' => 'active',
+                        'location_id' => $request->location_id,
+                    ]
+                );
 
                 Product::where('id', $product['product_id'])->update(['is_inactive' => '1']);
                 return true;

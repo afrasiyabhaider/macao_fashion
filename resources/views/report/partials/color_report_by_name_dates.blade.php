@@ -23,7 +23,7 @@
                                 'placeholder' => __('lang_v1.select_a_date_range'),
                                 'class' => 'form-control',
                                 'id' => 'product_purchase_date_filter',
-                                'readonly',
+                                
                             ]) !!}
                         </div>
                     </div>
@@ -70,7 +70,7 @@
                                                     <th>
                                                         All Time Purchase
                                                     </th>
-                                                    {{-- <th>Current Stock</th> --}}
+                                                    <th>Current Stock</th>
                                                     <th>Purchase Date</th>
                                                     <th>Last Update Date</th>
                                                 </tr>
@@ -81,6 +81,7 @@
                                                         </td>
                                                         <td>
                                                             {{ $item->product_name }}
+                                                            {{-- {{ $item->product_id }} --}}
                                                         </td>
                                                         <td>
                                                             {{ $item->color }}
@@ -106,9 +107,9 @@
                                                         <td>
                                                             {{ (int) $item->all_time_sold + (int) $item->current_stock }}
                                                         </td>
-                                                        {{-- <td>
+                                                        <td>
                                                               {{ (int)$item->current_stock }}
-                                                         </td> --}}
+                                                         </td>
                                                         <td>
                                                             {{ $item->purchase_date }}
                                                         </td>
@@ -153,6 +154,7 @@
                                                         </td>
                                                         <td>
                                                             {{ $item->product_name }}
+                                                            {{-- {{ $item->product_id }} --}}
                                                         </td>
                                                         <td>
                                                             {{ $item->color }}
@@ -398,7 +400,7 @@
             $('#product_purchase_date_filter').on('cancel.daterangepicker', function(ev, picker) {
                 $('#product_purchase_date_filter').val('');
             });
-            // $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment().subtract(10, 'years'));
+            // $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment());
             $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment().subtract(6, 'd'));
             $('#product_purchase_date_filter').data('daterangepicker').setEndDate(moment());
         }
@@ -406,6 +408,7 @@
             var start = '';
             var end = '';
             var location = $('.location').val() != 0 ? $('.location').val() : ''
+
             start = $('input#product_purchase_date_filter')
                 .data('daterangepicker')
                 .startDate.format('YYYY-MM-DD');

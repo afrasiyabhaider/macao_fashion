@@ -32,7 +32,8 @@
               </th>
               <td>
                 <span class="display_currency" data-currency_symbol="true">
-                  {{$just_cash_sale}}
+                  {{-- {{$just_cash_sale}} --}}
+                  {{$cash}}
                 </span>
                 {{-- <span class="display_currency" data-currency_symbol="true">{{ $register_details->total_cash }}</span> --}}
               </td>
@@ -139,7 +140,9 @@
                 @lang('cash_register.total_cash')
               </td>
               <td>
-                <span class="display_currency" data-currency_symbol="true">{{$just_cash_sale + $cash_in_hand}}</span>
+                {{-- orignal one --}}
+                {{-- <span class="display_currency" data-currency_symbol="true">{{$just_cash_sale + $cash_in_hand}}</span> --}}
+                <span class="display_currency" data-currency_symbol="true">{{$cash + $cash_in_hand}}</span>
                 {{-- <b><span class="display_currency" data-currency_symbol="true">{{ $register_details->cash_in_hand + $register_details->total_cash - $register_details->total_cash_refund }}</span></b> --}}
               </td>
               
@@ -192,7 +195,8 @@
               </th>
               <td>
                 {{-- <span class="display_currency" data-currency_symbol="true">{{ ($card + $register_details->total_cash) }}</span> --}}
-                <b class="display_currency" data-currency_symbol="true">{{ $transactions->sum('final_total') }}</b>
+                {{-- <b class="display_currency" data-currency_symbol="true">{{ $transactions->sum('final_total') }}</b> --}}
+                <b class="display_currency" data-currency_symbol="true">{{ $cash + $card + $coupon }}</b>
               </td>
             </tr>
           </table>
