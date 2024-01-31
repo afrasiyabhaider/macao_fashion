@@ -57,6 +57,18 @@
                             ]) !!}
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('Product Type', __('Product Type') . ':') !!}
+                            {!! Form::select('P_type', ['1' => 'Known Product', 
+                            '2' => 'Unknown Product'], null, [
+                                // 'placeholder' => __('messages.all'),
+                                'class' => 'form-control select2',
+                                'style' => 'width:100%',
+                                'id' => 'product_type',
+                            ]) !!}
+                        </div>
+                    </div>
                     {!! Form::close() !!}
                 @endcomponent
             </div>
@@ -91,6 +103,8 @@
                                         <h4>Total amount buying: <span class="total_buying_amount" data-currency_symbol="false"></span></h4>
                                         <h4>Total amount sale price: <span class="total_sell_price" data-currency_symbol="false"></span></h4>
                                         <h4>Total reference added: <span class="total_refference"data-currency_symbol="false"></span></h4>
+                                        <h4>Total Discount Amount : <span class="discount_amount"data-currency_symbol="false"></span></h4>
+                                        {{-- <h4>Total unknown product sold : <span class="unknown_sold"data-currency_symbol="false"></span></h4> --}}
                                         @include('report.partials.stock_group_table')
 
                                     </div>
@@ -119,8 +133,6 @@
     </section>
 @endsection
 @section('javascript')
-    {{-- <script src="{{ asset('js/product.js?v=' . $asset_v) }}"></script> --}}
-    {{-- <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script> --}}
     <script>
          stock_in_out_grouped_report_table = $('#stock_in_out_grouped_report_table').DataTable({
             processing: true,
@@ -132,11 +144,6 @@
                     var end = '';
                     var start = $.datepicker.formatDate('yy-mm-dd', new Date());
                     var end = $.datepicker.formatDate('yy-mm-dd', new Date());
-                    // var start1 = new Date();
-                    // var end1 = new Date();
-                    // start1.setDate(end1.getDate() - 6);
-                    // var start = $.datepicker.formatDate('yy-mm-dd', start1);
-                    // var end = $.datepicker.formatDate('yy-mm-dd', end1);
                     if ($('#product_purchase_date_filter').val()) {
                         start = $('input#product_purchase_date_filter')
                             .data('daterangepicker')
@@ -144,13 +151,6 @@
                         end = $('input#product_purchase_date_filter')
                             .data('daterangepicker')
                             .endDate.format('YYYY-MM-DD');
-                        // if ($('#product_purchase_date_filter').val()) {
-                        // start = $('input#product_purchase_date_filter')
-                        //         .data('daterangepicker')
-                        //         .moment().subtract(1, 'month').format('YYYY-MM-DD');
-                        //     end = $('input#product_purchase_date_filter')
-                        //         .data('daterangepicker')
-                        //         .endDate.format('YYYY-MM-DD');
                     }
                     d.start_date = start;
                     d.end_date = end;
@@ -159,12 +159,11 @@
                     d.category_id = $('#category_id').val();
                     d.sub_category_id = $('#sub_category_id').val();
                     d.supplier_id = $('#suppliers').val();
-                    // d.from_date = $('#product_list_from_date').val();
-                    // d.to_date = $('#product_list_to_date').val();
+                    d.product_type = $('#product_type').val();
                     d.unit_id = $('#unit').val();
                 },
             },
-            pageLength: 30,
+            pageLength: -1,
             lengthMenu: [
                 [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, -1],
                 [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, 'All'],
@@ -184,14 +183,9 @@
                     data: 'product',
                     name: 'p.name'
                 },
-                // {
-                //     data: 'detail',
-                //     orderable: false,
-                //     searchable: false
-                // },
                 {
                     data: 'refference',
-                    name: 'p.refference'
+                    name: 'refference'
                 },
                 {
                     data: 'location_name',
@@ -201,11 +195,32 @@
                     data: 'unit_price',
                     name: 'v.sell_price_inc_tax'
                 },
+              
+                {
+                    data: 'main_transfered',
+                    name: 'main_transfered',
+                    searchable: false
+                },  
+                {
+                    data: 'subshop_transfered',
+                    name: 'subshop_transfered',
+                    searchable: false
+                },
                 {
                     data: 'total_transfered',
                     name: 'total_transfered',
                     searchable: false
                 },  
+                {
+                    data: 'total_qty',
+                    name: 'total_qty',
+                    searchable: false
+                },  
+                {
+                    data: 'stock_in',
+                    name: 'stock_in',
+                    searchable: false
+                }, 
                 // 
                 {
                     data: 'total_sold',
@@ -224,6 +239,11 @@
                 searchable: false
             },
             {
+                data: 'discount_amount',
+                name: 'discount_amount',
+                searchable: false
+            },
+            {
                 data: 'purchase_price',
                 name: 'purchase_price',
                 searchable: false
@@ -237,22 +257,19 @@
             fnDrawCallback: function(oSettings) {
                 let api = this.api();
                 $('.total_stock').html(sum_table_col($('#stock_in_out_grouped_report_table'),
-                    'total_transfered'));
+                    'stock_in'));
                 $('.total_stock_out').html(sum_table_col($('#stock_in_out_grouped_report_table'),
                     'total_sold'));
                 $('.total').html(__sum_stock($('#stock_in_out_grouped_report_table'),
                     'current_stock'));
                 $('.total_sell_price').text(sum_table_col($('#stock_in_out_grouped_report_table'),
-                    'total_sale_price'));
+                    'total_sale_price').toFixed(2));
                 $('.total_buying_amount').text(sum_table_col($('#stock_in_out_grouped_report_table'),
-                    'row_subtotal'));
-                    // $('#footer_total_sold').html(__sum_stock($('#stock_report_table'), 'total_sold'));
-                    // $('.current_stock').html(__sum_stock($('#stock_report_table'), 'current_stock'));
-                // $('.total_qty').html(sum_table_col($('#stock_in_out_grouped_report_table'),
-                //     'total_qty'));
+                    'row_subtotal').toFixed(2));
+                $('.discount_amount').text(sum_table_col($('#stock_in_out_grouped_report_table'),
+                    'discount_amount').toFixed(2));
                
                 let total_refference = 0;
-                // let total_buying_amount = 0;
                 $.each([4], function(index, value) {
                     api.column(value) .data()
                             .reduce(function(a, b) {
@@ -261,19 +278,6 @@
                 });
                 $('.total_refference').html(total_refference);
                 __currency_convert_recursively($('#stock_in_out_grouped_report_table'));
-
-                // $.each([7], function(index, value) {
-                //     api
-                //     .column(value) 
-                //     .data()
-                //     .reduce(function(a, b) {
-                //         console.log(a, b);
-                //         // return a+b;
-                //         total_qty += 1;
-                //     }, 0)
-                // });
-                // $('.total_qty').html(total_qty);
-               
             },
         });
 
@@ -288,18 +292,7 @@
                     var end = '';
                     var start = $.datepicker.formatDate('yy-mm-dd', new Date());
                     var end = $.datepicker.formatDate('yy-mm-dd', new Date());
-                    // var start1 = new Date();
-                    // var end1 = new Date();
-                    // start1.setDate(end1.getDate() - 6);
-                    // var start = $.datepicker.formatDate('yy-mm-dd', start1);
-                    // var end = $.datepicker.formatDate('yy-mm-dd', end1);
                     if ($('#product_purchase_date_filter').val()) {
-                        // start = $('input#product_purchase_date_filter')
-                        //     .data('daterangepicker')
-                        //     .moment().subtract(10, 'years').format('YYYY-MM-DD');
-                        // end = $('input#product_purchase_date_filter')
-                        //     .data('daterangepicker')
-                        //     .endDate.format('YYYY-MM-DD');
                         start = $('input#product_purchase_date_filter')
                             .data('daterangepicker')
                             .startDate.format('YYYY-MM-DD');
@@ -313,10 +306,6 @@
                     d.location_id = $('#location_id').val();
                     d.category_id = $('#category_id').val();
                     d.sub_category_id = $('#sub_category_id').val();
-                    // d.supplier_id = $('#suppliers').val();
-                    // d.from_date = $('#product_list_from_date').val();
-                    // d.to_date = $('#product_list_to_date').val();
-                    // d.unit_id = $('#unit').val();
                 },
             },
             pageLength: 300,
@@ -324,25 +313,12 @@
                 [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, -1],
                 [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, 'All'],
             ],
-            // aaSorting: [21, 'desc'],
             columns: [{
                     data: 'DT_Row_Index',
                     name: 'DT_Row_Index',
                     searchable: false,
                     orderable: false
                 },
-                // {
-                //     data: 'mass_delete',
-                //     name: 'mass_delete',
-                //     orderable: false,
-                //     searchable: false
-                // },
-                // {
-                //     data: 'printing_qty',
-                //     name: 'printing_qty',
-                //     orderable: false,
-                //     searchable: false
-                // },
                 {
                     data: 'image',
                     name: 'image',
@@ -353,12 +329,6 @@
                     data: 'sku',
                     name: 'variations.sub_sku'
                 },
-                // {
-                //     data: 'show_pos',
-                //     name: 'show_pos',
-                //     orderable: false,
-                //     searchable: false
-                // },
                 {
                     data: 'product',
                     name: 'p.name'
@@ -371,12 +341,6 @@
                     data: 'location_name',
                     name: 'bl.name'
                 },
-                // {
-                //     data: 'actions',
-                //     name: 'actions',
-                //     searchable: false,
-                //     orderable: false
-                // },
                 {
                     data: 'unit_price',
                     name: 'variations.sell_price_inc_tax'
@@ -397,24 +361,6 @@
                     data: 'size_name',
                     name: 'sizes.name'
                 },
-                // {
-                //     data: 'description',
-                //     name: 'p.description'
-                // },
-                // {
-                //     data: 'sale_percent',
-                //     name: 'sale_percent'
-                // },
-                // {
-                //     data: 'stock',
-                //     name: 'stock',
-                //     searchable: false
-                // },
-                // {
-                //     data: 'total_sold',
-                //     name: 'total_sold',
-                //     searchable: false
-                // },
                 {
                     data: 'total_transfered',
                     name: 'total_transfered',
@@ -425,21 +371,10 @@
                     name: 'total_qty',
                     searchable: false
                 },
-                // {
-                //     data: 'supplier_name',
-                //     name: 'suppliers.name'
-                // },
-                // {
-                //     data: 'product_date',
-                //     name: 'vld.product_updated_at'
-                // },
                 {
                     data: 'product_date',
                     name: 'vld.updated_at'
                 },
-
-                // { data: 'updated_at', name: 'updated_at' },
-                // { data: 'total_adjusted', name: 'total_adjusted', searchable: false },
             ],
             fnDrawCallback: function(oSettings) {
                 //     $('#footer_total_stock').html(__sum_stock($('#stock_in_table'), 'current_stock'));
@@ -464,19 +399,7 @@
                     var end = '';
                     var start = $.datepicker.formatDate('yy-mm-dd', new Date());
                     var end = $.datepicker.formatDate('yy-mm-dd', new Date());
-                    // Get the current date
-                    // var start1 = new Date();
-                    // var end1 = new Date();
-                    // start1.setDate(end1.getDate() - 6);
-                    // var start = $.datepicker.formatDate('yy-mm-dd', start1);
-                    // var end = $.datepicker.formatDate('yy-mm-dd', end1);
                     if ($('#product_purchase_date_filter').val()) {
-                        // start = $('input#product_purchase_date_filter')
-                        //     .data('daterangepicker')
-                        //     .moment().subtract(10, 'years').format('YYYY-MM-DD');
-                        // end = $('input#product_purchase_date_filter')
-                        //     .data('daterangepicker')
-                        //     .endDate.format('YYYY-MM-DD');
                         start = $('input#product_purchase_date_filter')
                             .data('daterangepicker')
                             .startDate.format('YYYY-MM-DD');
@@ -491,10 +414,6 @@
                     d.location_id = $('#location_id').val();
                     d.category_id = $('#category_id').val();
                     d.sub_category_id = $('#sub_category_id').val();
-                    // d.supplier_id = $('#suppliers').val();
-                    // d.from_date = $('#product_list_from_date').val();
-                    // d.to_date = $('#product_list_to_date').val();
-                    // d.unit_id = $('#unit').val();
                 },
             },
             pageLength: 300,
@@ -502,25 +421,12 @@
                 [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, -1],
                 [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, 'All'],
             ],
-            // aaSorting: [21, 'desc'],
             columns: [{
                     data: 'DT_Row_Index',
                     name: 'DT_Row_Index',
                     searchable: false,
                     orderable: false
                 },
-                // {
-                //     data: 'mass_delete',
-                //     name: 'mass_delete',
-                //     orderable: false,
-                //     searchable: false
-                // },
-                // {
-                //     data: 'printing_qty',
-                //     name: 'printing_qty',
-                //     orderable: false,
-                //     searchable: false
-                // },
                 {
                     data: 'image',
                     name: 'image',
@@ -531,12 +437,6 @@
                     data: 'sku',
                     name: 'variations.sub_sku'
                 },
-                // {
-                //     data: 'show_pos',
-                //     name: 'show_pos',
-                //     orderable: false,
-                //     searchable: false
-                // },
                 {
                     data: 'product',
                     name: 'p.name'
@@ -549,12 +449,6 @@
                     data: 'location_name',
                     name: 'bl.name'
                 },
-                // {
-                //     data: 'actions',
-                //     name: 'actions',
-                //     searchable: false,
-                //     orderable: false
-                // },
                 {
                     data: 'unit_price',
                     name: 'variations.sell_price_inc_tax'
@@ -575,19 +469,6 @@
                     data: 'size_name',
                     name: 'sizes.name'
                 },
-                // {
-                //     data: 'description',
-                //     name: 'p.description'
-                // },
-                // {
-                //     data: 'sale_percent',
-                //     name: 'sale_percent'
-                // },
-                // {
-                //     data: 'stock',
-                //     name: 'stock',
-                //     searchable: false
-                // },
                 {
                     data: 'total_sold',
                     name: 'total_sold',
@@ -598,21 +479,10 @@
                     name: 'total_transfered',
                     searchable: false
                 },
-                // {
-                //     data: 'supplier_name',
-                //     name: 'suppliers.name'
-                // },
-                // {
-                //     data: 'product_date',
-                //     name: 'vld.product_updated_at'
-                // },
                 {
                     data: 'product_date',
                     name: 'vld.updated_at'
                 },
-
-                // { data: 'updated_at', name: 'updated_at' },
-                // { data: 'total_adjusted', name: 'total_adjusted', searchable: false },
             ],
             fnDrawCallback: function(oSettings) {
                 $('#footer_total_stock').html(__sum_stock($('#stock_out_table'), 'current_stock'));
@@ -633,10 +503,6 @@
                 ranges: ranges,
                 startDate: moment().subtract(365, 'days'),
                 endDate: moment(),
-                // startDate: moment().subtract(6, 'd').format('MM/DD/YYYY'),
-                // endDate: moment().format('MM/DD/YYYY'),
-                // endDate = moment().format('MM/DD/YYYY'),
-                // startDate = moment().subtract(6, 'd').format('MM/DD/YYYY'),
                 locale: {
                     cancelLabel: LANG.clear,
                     applyLabel: LANG.apply,
@@ -662,11 +528,10 @@
 
             });
             $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment());
-            // $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment().subtract(6, 'd'));
             $('#product_purchase_date_filter').data('daterangepicker').setEndDate(moment());
         }
         $(
-            '#stock_report_filter_form #location_id, #stock_report_filter_form #category_id, #stock_report_filter_form #sub_category_id, #stock_report_filter_form #brand,#stock_report_filter_form #suppliers, #stock_report_filter_form #unit,#stock_report_filter_form #view_stock_filter,#product_list_to_date, #product_list_from_date#product_sr_date_filter'
+            '#stock_report_filter_form #location_id, #product_type, #stock_report_filter_form #category_id, #stock_report_filter_form #sub_category_id, #stock_report_filter_form #brand,#stock_report_filter_form #suppliers, #stock_report_filter_form #unit,#stock_report_filter_form #view_stock_filter,#product_list_to_date, #product_list_from_date#product_sr_date_filter'
         ).change(function() {
             stock_in_table.ajax.reload();
             stock_out_table.ajax.reload();
