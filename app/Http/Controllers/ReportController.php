@@ -8883,7 +8883,7 @@ class ReportController extends Controller
                     if ($row->discount_amount) {
                         $discount_amount =  $row->discount_amount;
                     }
-                    return '<span class="display_currency discount_amount" data-currency_symbol = true data-orig-value="' . $row->discount_amount . '">' . $row->discount_amount . '</span>';
+                    return '<span class="display_currency discount_amount" data-currency_symbol = true data-orig-value="' . $discount_amount . '">' . $discount_amount . '</span>';
                 })
 
                 ->editColumn('total_refference', function ($row) {

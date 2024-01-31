@@ -103,7 +103,7 @@
                                         <h4>Total amount buying: <span class="total_buying_amount" data-currency_symbol="false"></span></h4>
                                         <h4>Total amount sale price: <span class="total_sell_price" data-currency_symbol="false"></span></h4>
                                         <h4>Total reference added: <span class="total_refference"data-currency_symbol="false"></span></h4>
-                                        <h4>Total Discount Amount : <span class="discount_amount"data-currency_symbol="false"></span></h4>
+                                        <h4>Total Discount Amount : <span class="discount_amount1"data-currency_symbol="false"></span></h4>
                                         {{-- <h4>Total unknown product sold : <span class="unknown_sold"data-currency_symbol="false"></span></h4> --}}
                                         @include('report.partials.stock_group_table')
 
@@ -266,7 +266,7 @@
                     'total_sale_price').toFixed(2));
                 $('.total_buying_amount').text(sum_table_col($('#stock_in_out_grouped_report_table'),
                     'row_subtotal').toFixed(2));
-                $('.discount_amount').text(sum_table_col($('#stock_in_out_grouped_report_table'),
+                $('.discount_amount1').text(sum_table_col($('#stock_in_out_grouped_report_table'),
                     'discount_amount').toFixed(2));
                
                 let total_refference = 0;
