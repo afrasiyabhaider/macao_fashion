@@ -227,11 +227,11 @@
                     name: 'total_sold',
                     searchable: false
                 },
-                {
-                data: 'stock',
-                name: 'stock',
-                searchable: false
-            },
+            //     {
+            //     data: 'stock',
+            //     name: 'stock',
+            //     searchable: false
+            // },
                
             {
                 data: 'total_sale_price',

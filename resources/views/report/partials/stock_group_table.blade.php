@@ -16,7 +16,7 @@
                     <th>Update Qty</th>
                     <th>Stock In</th>
                     <th>Total Sale</th>
-                     <th>Total Stock</th>
+                     {{-- <th>Total Stock</th> --}}
                      <th>Total Sale Price</th>
                      <th>Discount Amount</th>
                      <th>Purchase Price</th>
@@ -32,7 +32,7 @@
                      <td></td>
                      <td></td>
                      <td></td>
-                     <td></td>
+                     {{-- <td></td> --}}
                      <td class="total_stock"></td>
                      <td class="total_stock_out"></td>
                      <td class="current_stock"></td>
