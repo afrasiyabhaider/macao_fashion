@@ -32,10 +32,10 @@
                      <td></td>
                      <td></td>
                      <td></td>
-                     {{-- <td></td> --}}
+                     <td></td>
                      <td class="total_stock"></td>
                      <td class="total_stock_out"></td>
-                     <td class="current_stock"></td>
+                     {{-- <td class="current_stock"></td> --}}
                      <td class="total_sell_price"></td>
                      <td class="discount_amount1"></td>
                      <td class=""></td>
