@@ -7950,7 +7950,336 @@ class ReportController extends Controller
         AND  TSL.product_refference IS NULL
         AND DATE(transactions.created_at) BETWEEN '$from_date' AND '$to_date') as discount_amount");
     }
+    public function getstockInOutGroupedReportTotalKnow(Request $request)
+    {
+        ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', 180); //3 minutes
+        if (!auth()->user()->can('stock_in_out.view')) {
+            abort(403, 'Unauthorized action.');
+        }
 
+        $business_id = $request->session()->get('user.business_id');
+
+        $selling_price_groups = SellingPriceGroup::where('business_id', $business_id)
+            ->get();
+        $allowed_selling_price_group = false;
+        foreach ($selling_price_groups as $selling_price_group) {
+            if (auth()->user()->can('selling_price_group.' . $selling_price_group->id)) {
+                $allowed_selling_price_group = true;
+                break;
+            }
+        }
+        //Return the details in ajax call
+        if ($request->ajax()) {
+
+            $query = Variation::join('products as p', 'p.id', '=', 'variations.product_id')
+                ->leftjoin('units', 'p.unit_id', '=', 'units.id')
+                ->leftjoin('colors', 'p.color_id', '=', 'colors.id')
+                ->leftjoin('sizes', 'p.sub_size_id', '=', 'sizes.id')
+                ->leftjoin('suppliers', 'p.supplier_id', '=', 'suppliers.id')
+                ->leftjoin('categories', 'p.category_id', '=', 'categories.id')
+                ->leftjoin('categories as sub_cat', 'p.sub_category_id', '=', 'sub_cat.id')
+                ->leftjoin('variation_location_details as vld', 'variations.id', '=', 'vld.variation_id')
+                ->leftjoin('location_transfer_details as ltd2', 'variations.id', '=', 'ltd2.variation_id')
+                ->join('business_locations as bl', 'bl.id', '=', 'vld.location_id')
+                ->join('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
+                ->where('p.business_id', $business_id)
+                ->whereIn('p.type', ['single', 'variable']);
+            $permitted_locations = auth()->user()->permitted_locations();
+            $location_filter = '';
+            $location_filter2 = '';
+            $location_filterqty = '';
+
+            if ($permitted_locations != 'all') {
+                $query->whereIn('vld.location_id', $permitted_locations);
+
+                $locations_imploded = implode(', ', $permitted_locations);
+                $location_filter .= "AND transactions.location_id IN ($locations_imploded) ";
+                $location_filter2 .= "AND ltd2.location_id  IN ($locations_imploded) ";
+                $location_filterqty .= "AND pq.location_id  IN ($locations_imploded) ";
+            }
+
+            if (!empty($request->input('location_id'))) {
+                $location_id = $request->input('location_id');
+
+                $query->where('vld.location_id', $location_id);
+
+                $location_filter .= "AND transactions.location_id=$location_id";
+                $location_filter2 .= "AND ltd2.location_id =$location_id";
+                $location_filterqty .= "AND pq.location_id =$location_id";
+            }
+            $from_date = $request->get('start_date');
+
+            $to_date = $request->get('end_date');
+            if (!empty($from_date) && !empty($to_date)) {
+                $query->whereDate('vld.updated_at', '>=', $from_date)->whereDate('vld.updated_at', '<=', $to_date);
+            }
+
+            if (!empty($request->input('unit_id'))) {
+                $query->where('p.unit_id', $request->input('unit_id'));
+            }
+
+            $tax_id = request()->get('tax_id', null);
+            if (!empty($tax_id)) {
+                $query->where('p.tax', $tax_id);
+            }
+
+            $type = request()->get('type', null);
+            if (!empty($type)) {
+                $query->where('p.type', $type);
+            }
+            $product_type = $request->get('product_type');
+            if ($product_type == 1) {
+                $query->where('p.refference', '!=', null);
+                $qtySubquery = $this->knowQtySubquery($location_filter, $from_date, $to_date);
+                $priceSubquery = $this->knowPriceSubquery($location_filter, $from_date, $to_date);
+                $discountSubquery = $this->knowDiscountSubquery($location_filter, $from_date, $to_date);
+            } else {
+                $query->where('p.refference', null);
+                $qtySubquery = $this->unknowQtySubquery($location_filter, $from_date, $to_date);
+                $priceSubquery = $this->unknowPriceSubquery($location_filter, $from_date, $to_date);
+                $discountSubquery = $this->unknowDiscountSubquery($location_filter, $from_date, $to_date);
+            }
+            $selling_price_group_count = SellingPriceGroup::countSellingPriceGroups($business_id);
+            $products = $query->select(
+                DB::raw("SUM(CASE WHEN (DATE(transfered_on) BETWEEN '$from_date' AND '$to_date') AND transfered_from = 1 $location_filter2 THEN ltd2.quantity ELSE 0 END) as main_transfered"),
+                DB::raw("SUM(CASE WHEN (DATE(transfered_on) BETWEEN '$from_date' AND '$to_date') AND transfered_from != 1 $location_filter2 THEN ltd2.quantity ELSE 0 END) as subshop_transfered"),
+                DB::raw("(SELECT SUM(quantity) 
+                FROM product_quantities as pq 
+                WHERE DATE(pq.created_at) BETWEEN '$from_date' AND '$to_date' $location_filterqty 
+                AND pq.refference = p.refference) as total_qty"),
+                DB::raw($qtySubquery),
+                DB::raw($priceSubquery),
+                DB::raw($discountSubquery),
+                DB::raw("SUM(vld.qty_available) as stock"),
+                // 'pq.quantity as total_qty',
+                'variations.sub_sku as sku',
+                'p.id as product_id',
+                'bl.name as location_name',
+                'vld.location_id as location_id',
+                'p.created_at',
+                'p.name as product',
+                'p.image as image',
+                // 'p.description as description',
+                'p.type',
+                'p.refference as refference',
+                'colors.name as color_name',
+                // 'suppliers.name as supplier_name',
+                // 'categories.name as category_name',
+                // 'sub_cat.name as sub_category_name',
+                'sizes.name as size_name',
+                'units.short_name as unit',
+                'p.enable_stock as enable_stock',
+                // 'variations.sell_price_inc_tax as unit_price',
+                'vld.sell_price as unit_price',
+                'pv.name as product_variation',
+                'vld.updated_at as product_date',
+                'vld.location_print_qty as printing_qty',
+                'variations.name as variation_name',
+                'variations.default_purchase_price as purchase_price',
+                'vld.updated_at',
+                // 'vld.qty_available as stock',
+                DB::raw("(SUM(CASE WHEN (DATE(transfered_on) BETWEEN '$from_date' AND '$to_date') $location_filter2 THEN ltd2.quantity ELSE 0 END) * variations.default_purchase_price ) as total_buying_amount"),
+                DB::raw('SUM(vld.qty_available) as current_stock'),
+                DB::raw('COUNT(DISTINCT(p.refference)) as total_refference'),
+                // DB::raw('SUM(total_sold) as total_sold1')
+            )
+                // // ->having('total_sold', '>', 0)
+                ->groupBy('p.refference')
+                ->orderBy('vld.updated_at', 'DESC')
+                ->get();
+                $results = $products;
+                // dd($results);
+                $totalBuyingAmountValues = $results->pluck('total_buying_amount');
+                $totaldiscount = $results->pluck('discount_amount');
+                $totalSellPrice = $results->pluck('total_sale_price');
+                $totalSold = $results->pluck('total_sold');
+                $totalReffernce = $results->pluck('total_refference');
+                $totalBuyingAmountSum = $totalBuyingAmountValues->sum();
+                $totalDiscountSum = $totaldiscount->sum();
+                $totalSoldSum = $totalSold->sum();
+                $totalReffernceSum = $totalReffernce->sum();
+                $totalSellPriceSum = $totalSellPrice->sum();
+                // dd($totalBuyingAmountSum);
+
+        }
+       // Prepare the data for the AJAX response
+        $ajaxResponse = [
+            'totalBuyingAmountSum' => $totalBuyingAmountSum,
+            'totalDiscountSum' => $totalDiscountSum,
+            'totalSoldSum' => $totalSoldSum,
+            'totalReffernce' => $totalReffernceSum,
+            'totalSellPriceSum' => $totalSellPriceSum,
+        ];
+
+        // Return the response as JSON
+        return response()->json($ajaxResponse);
+    }
+    public function getstockInOutGroupedReportTotal(Request $request)
+    {
+        ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', 180); //3 minutes
+        if (!auth()->user()->can('stock_in_out.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = $request->session()->get('user.business_id');
+
+        $selling_price_groups = SellingPriceGroup::where('business_id', $business_id)
+            ->get();
+        $allowed_selling_price_group = false;
+        foreach ($selling_price_groups as $selling_price_group) {
+            if (auth()->user()->can('selling_price_group.' . $selling_price_group->id)) {
+                $allowed_selling_price_group = true;
+                break;
+            }
+        }
+        //Return the details in ajax call
+        if ($request->ajax()) {
+
+            $query = Variation::join('products as p', 'p.id', '=', 'variations.product_id')
+                ->leftjoin('units', 'p.unit_id', '=', 'units.id')
+                ->leftjoin('colors', 'p.color_id', '=', 'colors.id')
+                ->leftjoin('sizes', 'p.sub_size_id', '=', 'sizes.id')
+                ->leftjoin('suppliers', 'p.supplier_id', '=', 'suppliers.id')
+                ->leftjoin('categories', 'p.category_id', '=', 'categories.id')
+                ->leftjoin('categories as sub_cat', 'p.sub_category_id', '=', 'sub_cat.id')
+                ->leftjoin('variation_location_details as vld', 'variations.id', '=', 'vld.variation_id')
+                ->leftjoin('location_transfer_details as ltd2', 'variations.id', '=', 'ltd2.variation_id')
+                ->join('business_locations as bl', 'bl.id', '=', 'vld.location_id')
+                ->join('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
+                ->where('p.business_id', $business_id)
+                ->whereIn('p.type', ['single', 'variable']);
+            $permitted_locations = auth()->user()->permitted_locations();
+            $location_filter = '';
+            $location_filter2 = '';
+            $location_filterqty = '';
+
+            if ($permitted_locations != 'all') {
+                $query->whereIn('vld.location_id', $permitted_locations);
+
+                $locations_imploded = implode(', ', $permitted_locations);
+                $location_filter .= "AND transactions.location_id IN ($locations_imploded) ";
+                $location_filter2 .= "AND ltd2.location_id  IN ($locations_imploded) ";
+                $location_filterqty .= "AND pq.location_id  IN ($locations_imploded) ";
+            }
+
+            if (!empty($request->input('location_id'))) {
+                $location_id = $request->input('location_id');
+
+                $query->where('vld.location_id', $location_id);
+
+                $location_filter .= "AND transactions.location_id=$location_id";
+                $location_filter2 .= "AND ltd2.location_id =$location_id";
+                $location_filterqty .= "AND pq.location_id =$location_id";
+            }
+            $from_date = $request->get('start_date');
+
+            $to_date = $request->get('end_date');
+            if (!empty($from_date) && !empty($to_date)) {
+                $query->whereDate('vld.updated_at', '>=', $from_date)->whereDate('vld.updated_at', '<=', $to_date);
+            }
+
+            if (!empty($request->input('unit_id'))) {
+                $query->where('p.unit_id', $request->input('unit_id'));
+            }
+
+            $tax_id = request()->get('tax_id', null);
+            if (!empty($tax_id)) {
+                $query->where('p.tax', $tax_id);
+            }
+
+            $type = request()->get('type', null);
+            if (!empty($type)) {
+                $query->where('p.type', $type);
+            }
+            $product_type = $request->get('product_type');
+            if ($product_type == 1) {
+                $query->where('p.refference', '!=', null);
+                $qtySubquery = $this->knowQtySubquery($location_filter, $from_date, $to_date);
+                $priceSubquery = $this->knowPriceSubquery($location_filter, $from_date, $to_date);
+                $discountSubquery = $this->knowDiscountSubquery($location_filter, $from_date, $to_date);
+            } else {
+                $query->where('p.refference', null);
+                $qtySubquery = $this->unknowQtySubquery($location_filter, $from_date, $to_date);
+                $priceSubquery = $this->unknowPriceSubquery($location_filter, $from_date, $to_date);
+                $discountSubquery = $this->unknowDiscountSubquery($location_filter, $from_date, $to_date);
+            }
+            $selling_price_group_count = SellingPriceGroup::countSellingPriceGroups($business_id);
+            $products = $query->select(
+                DB::raw("SUM(CASE WHEN (DATE(transfered_on) BETWEEN '$from_date' AND '$to_date') AND transfered_from = 1 $location_filter2 THEN ltd2.quantity ELSE 0 END) as main_transfered"),
+                DB::raw("SUM(CASE WHEN (DATE(transfered_on) BETWEEN '$from_date' AND '$to_date') AND transfered_from != 1 $location_filter2 THEN ltd2.quantity ELSE 0 END) as subshop_transfered"),
+                DB::raw("(SELECT SUM(quantity) 
+                FROM product_quantities as pq 
+                WHERE DATE(pq.created_at) BETWEEN '$from_date' AND '$to_date' $location_filterqty 
+                AND pq.refference = p.refference) as total_qty"),
+                DB::raw($qtySubquery),
+                DB::raw($priceSubquery),
+                DB::raw($discountSubquery),
+                DB::raw("SUM(vld.qty_available) as stock"),
+                // 'pq.quantity as total_qty',
+                'variations.sub_sku as sku',
+                'p.id as product_id',
+                'bl.name as location_name',
+                'vld.location_id as location_id',
+                'p.created_at',
+                'p.name as product',
+                'p.image as image',
+                // 'p.description as description',
+                'p.type',
+                'p.refference as refference',
+                'colors.name as color_name',
+                // 'suppliers.name as supplier_name',
+                // 'categories.name as category_name',
+                // 'sub_cat.name as sub_category_name',
+                'sizes.name as size_name',
+                'units.short_name as unit',
+                'p.enable_stock as enable_stock',
+                // 'variations.sell_price_inc_tax as unit_price',
+                'vld.sell_price as unit_price',
+                'pv.name as product_variation',
+                'vld.updated_at as product_date',
+                'vld.location_print_qty as printing_qty',
+                'variations.name as variation_name',
+                'variations.default_purchase_price as purchase_price',
+                'vld.updated_at',
+                // 'vld.qty_available as stock',
+                DB::raw("(SUM(CASE WHEN (DATE(transfered_on) BETWEEN '$from_date' AND '$to_date') $location_filter2 THEN ltd2.quantity ELSE 0 END) * variations.default_purchase_price ) as total_buying_amount"),
+                DB::raw('SUM(vld.qty_available) as current_stock'),
+                DB::raw('COUNT(DISTINCT(p.refference)) as total_refference'),
+                // DB::raw('SUM(total_sold) as total_sold1')
+            )
+                // // ->having('total_sold', '>', 0)
+                ->groupBy('p.refference')
+                ->orderBy('vld.updated_at', 'DESC')
+                ->get();
+                $results = $products;
+                // dd($results);
+                $totalBuyingAmountValues = $results->pluck('total_buying_amount');
+                $totaldiscount = $results->pluck('discount_amount');
+                $totalSellPrice = $results->pluck('total_sale_price');
+                $totalSold = $results->pluck('total_sold');
+                $totalReffernce = $results->pluck('total_refference');
+                $totalBuyingAmountSum = $totalBuyingAmountValues->sum();
+                $totalDiscountSum = $totaldiscount->sum();
+                $totalSoldSum = $totalSold->sum();
+                $totalReffernceSum = $totalReffernce->sum();
+                $totalSellPriceSum = $totalSellPrice->sum();
+                // dd($totalBuyingAmountSum);
+
+        }
+       // Prepare the data for the AJAX response
+        $ajaxResponse = [
+            'totalBuyingAmountSum' => $totalBuyingAmountSum,
+            'totalDiscountSum' => $totalDiscountSum,
+            'totalSoldSum' => $totalSoldSum,
+            'totalReffernce' => $totalReffernceSum,
+            'totalSellPriceSum' => $totalSellPriceSum,
+        ];
+
+        // Return the response as JSON
+        return response()->json($ajaxResponse);
+    }
     public function getstockInOutReport(Request $request)
     {
    

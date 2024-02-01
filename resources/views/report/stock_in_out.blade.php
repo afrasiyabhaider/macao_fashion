@@ -134,6 +134,94 @@
 @endsection
 @section('javascript')
     <script>
+
+$(document).ready(function() {
+            getCount()
+            getCountUnKnown()
+        });
+
+        function getCount() {
+            var start = null;
+            var end = null;
+            if ($('#product_purchase_date_filter').val()) {
+                start = $('input#product_purchase_date_filter')
+                    .data('daterangepicker')
+                    .startDate.format('YYYY-MM-DD');
+                end = $('input#product_purchase_date_filter')
+                    .data('daterangepicker')
+                    .endDate.format('YYYY-MM-DD');
+            }
+            $.ajax({
+                url: '/reports/stock-in-out-grouped-report-total',
+                type: 'POST',
+                data: {
+                    location_id: $('#location_id').val(),
+                    product_type: $('#product_type').val(),
+                    start_date: start,
+                    end_date: end,
+                },
+                success: function(response) {
+                    $('.total_stock1').text(response.totalStock);
+                    $('.total_stock_out1').text(response.totalSoldSum);
+                    $('.total_buying_amount1').text(Number(response.totalBuyingAmountSum).toFixed(
+                        2));
+                    $('.total_sell_price1').text(Number(response.totalSellPriceSum).toFixed(2));
+                    $('.total_refference1').text(response.totalReffernce);
+                    $('.discount_amount11').text(Number(response.totalDiscountSum).toFixed(2));
+                    calculations();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Ajax call failed. Status: ' + status + ', Error: ' + error);
+                }
+            });
+        }
+
+        function getCountUnKnown() {
+            var start = null;
+            var end = null;
+            if ($('#product_purchase_date_filter').val()) {
+                start = $('input#product_purchase_date_filter')
+                    .data('daterangepicker')
+                    .startDate.format('YYYY-MM-DD');
+                end = $('input#product_purchase_date_filter')
+                    .data('daterangepicker')
+                    .endDate.format('YYYY-MM-DD');
+            }
+            $.ajax({
+                url: '/reports/stock-in-out-grouped-report-total-unknown',
+                type: 'POST',
+                data: {
+                    location_id: $('#location_id').val(),
+                    // product_type: $('#product_type').val(),
+                    start_date: start,
+                    end_date: end,
+                },
+                success: function(response) {
+                    $('.unknown_soldUnknown').text(response.totalSoldSum);
+                    $('.unknown_sold_price').text(Number(response.totalSellPriceSum).toFixed(2));
+                    $('.total_refferenceUnknown').text(response.totalReffernce);
+                    $('.discount_amountUnknown').text(Number(response.totalDiscountSum).toFixed(2));
+                    calculations();
+                    
+                },
+                error: function(xhr, status, error) {
+                    console.error('Ajax call failed. Status: ' + status + ', Error: ' + error);
+                }
+            });
+        }
+
+        function calculations() {
+            var unknown_sold_price = parseFloat(document.querySelector('.unknown_sold_price').innerText);
+            var total_sell_price1 = parseFloat(document.querySelector('.total_sell_price1').innerText);
+            var unknown_soldUnknown = parseFloat(document.querySelector('.unknown_soldUnknown').innerText);
+            var total_stock_out1 = parseFloat(document.querySelector('.total_stock_out1').innerText);
+            // Sum the values
+            var sold_price = unknown_sold_price + total_sell_price1;
+            var stockOUT = unknown_soldUnknown + total_stock_out1;
+            $('.sold_price').text(Number(sold_price).toFixed(2));
+            $('.stockOUT').text(Number(stockOUT));
+            // console.log(sold_price);
+        }
          stock_in_out_grouped_report_table = $('#stock_in_out_grouped_report_table').DataTable({
             processing: true,
             serverSide: true,
@@ -518,6 +606,8 @@
                 stock_in_table.ajax.reload();
                 stock_out_table.ajax.reload();
                 stock_in_out_grouped_report_table.ajax.reload();
+                getCount();
+                getCountUnKnown();
 
             });
             $('#product_purchase_date_filter').on('cancel.daterangepicker', function(ev, picker) {
@@ -525,6 +615,8 @@
                 stock_in_table.ajax.reload();
                 stock_out_table.ajax.reload();
                 stock_in_out_grouped_report_table.ajax.reload();
+                getCount();
+                getCountUnKnown();
 
             });
             $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment());
@@ -536,6 +628,8 @@
             stock_in_table.ajax.reload();
             stock_out_table.ajax.reload();
             stock_in_out_grouped_report_table.ajax.reload();
+            getCount();
+            getCountUnKnown();
         });
     </script>
 @endsection
