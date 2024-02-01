@@ -99,12 +99,22 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <h4>Total stock in: <span class="total_stock" data-currency_symbol="false"></span></h4>
-                                        <h4>Total stock out: <span class="total_stock_out" data-currency_symbol="false"></span></h4>
-                                        <h4>Total amount buying: <span class="total_buying_amount" data-currency_symbol="false"></span></h4>
-                                        <h4>Total amount sale price: <span class="total_sell_price" data-currency_symbol="false"></span></h4>
-                                        <h4>Total reference added: <span class="total_refference"data-currency_symbol="false"></span></h4>
-                                        <h4>Total Discount Amount : <span class="discount_amount1"data-currency_symbol="false"></span></h4>
-                                        {{-- <h4>Total unknown product sold : <span class="unknown_sold"data-currency_symbol="false"></span></h4> --}}
+                                        <h4>Total stock out: <span class="stockOUT" data-currency_symbol="false"></span></h4>
+                                        <h4 hidden>Total stock out: <span class="total_stock_out1"
+                                                data-currency_symbol="false"></span></h4>
+                                        <h4>Total amount buying: <span class="total_buying_amount"
+                                                data-currency_symbol="false"></span></h4>
+                                        <h4>Total sale price: <span class="sold_price" data-currency_symbol="false"></span></h4>
+                                        <h4 hidden>Total sale price: <span class="total_sell_price1"
+                                                data-currency_symbol="false"></span></h4>
+                                        <h4>Total reference: <span class="total_refference1"data-currency_symbol="false"></span>
+                                        </h4>
+                                        <h4>Total Discount Amount : <span
+                                                class="discount_amount11"data-currency_symbol="false"></span></h4>
+                                        <h4>Total unknown product sold : <span
+                                                class="unknown_soldUnknown"data-currency_symbol="false"></span></h4>
+                                        <h4 hidden>Total unknown price : <span
+                                                class="unknown_sold_price"data-currency_symbol="false"></span></h4>
                                         @include('report.partials.stock_group_table')
 
                                     </div>
