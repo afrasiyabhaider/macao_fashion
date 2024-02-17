@@ -60,8 +60,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('Product Type', __('Product Type') . ':') !!}
-                            {!! Form::select('P_type', ['1' => 'Known Product', 
-                            '2' => 'Unknown Product'], null, [
+                            {!! Form::select('P_type', ['1' => 'Known Product', '2' => 'Unknown Product'], null, [
                                 // 'placeholder' => __('messages.all'),
                                 'class' => 'form-control select2',
                                 'style' => 'width:100%',
@@ -98,7 +97,7 @@
                             <div class="tab-pane active" id="psr_grouped_tab">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <h4>Total stock in: <span class="total_stock" data-currency_symbol="false"></span></h4>
+                                        <h4>Total stock in: <span class="totalPurchaseSum" data-currency_symbol="false"></span></h4>
                                         <h4>Total stock out: <span class="stockOUT" data-currency_symbol="false"></span></h4>
                                         <h4 hidden>Total stock out: <span class="total_stock_out1"
                                                 data-currency_symbol="false"></span></h4>
@@ -115,8 +114,7 @@
                                                 class="unknown_soldUnknown"data-currency_symbol="false"></span></h4>
                                         <h4 hidden>Total unknown price : <span
                                                 class="unknown_sold_price"data-currency_symbol="false"></span></h4>
-                                        @include('report.partials.stock_group_table')
-
+                                        {{-- @include('report.partials.stock_group_table') --}}
                                     </div>
                                 </div>
                             </div>
@@ -144,10 +142,12 @@
 @endsection
 @section('javascript')
     <script>
-
-$(document).ready(function() {
+        $(document).ready(function() {
             getCount()
             getCountUnKnown()
+            getselltotal()
+            getpurchasetotal()
+            // calculations() 
         });
 
         function getCount() {
@@ -186,6 +186,66 @@ $(document).ready(function() {
             });
         }
 
+        function getselltotal() {
+            var start = null;
+            var end = null;
+            if ($('#product_purchase_date_filter').val()) {
+                start = $('input#product_purchase_date_filter')
+                    .data('daterangepicker')
+                    .startDate.format('YYYY-MM-DD');
+                end = $('input#product_purchase_date_filter')
+                    .data('daterangepicker')
+                    .endDate.format('YYYY-MM-DD');
+            }
+            $.ajax({
+                url: '/reports/stock-in-out-grouped-report-total-sell',
+                type: 'POST',
+                data: {
+                    location_id: $('#location_id').val(),
+                    start_date: start,
+                    end_date: end,
+                },
+                success: function(response) {
+                    $('.stockOUT').text(response.totalQtySold);
+                    $('.sold_price').text(Number(response.totalSoldSum).toFixed(2));
+                    calculations();
+                    
+                },
+                error: function(xhr, status, error) {
+                    console.error('Ajax call failed. Status: ' + status + ', Error: ' + error);
+                }
+            });
+        } 
+        function getpurchasetotal() {
+            var start = null;
+            var end = null;
+            if ($('#product_purchase_date_filter').val()) {
+                start = $('input#product_purchase_date_filter')
+                    .data('daterangepicker')
+                    .startDate.format('YYYY-MM-DD');
+                end = $('input#product_purchase_date_filter')
+                    .data('daterangepicker')
+                    .endDate.format('YYYY-MM-DD');
+            }
+            $.ajax({
+                url: '/reports/stock-in-out-grouped-report-total-purchase',
+                type: 'POST',
+                data: {
+                    location_id: ($('#location_id').val() === '0') ? '' : $('#location_id').val(),
+                    start_date: start,
+                    end_date: end,
+                },
+                success: function(response) {
+                    $('.totalPurchaseSum').text(response.totalPurchaseSum);
+                    $('.total_buying_amount').text(Number(response.totalPurchasePrice).toFixed(2));
+                    calculations();
+                    
+                },
+                error: function(xhr, status, error) {
+                    console.error('Ajax call failed. Status: ' + status + ', Error: ' + error);
+                }
+            });
+        }
         function getCountUnKnown() {
             var start = null;
             var end = null;
@@ -208,8 +268,8 @@ $(document).ready(function() {
                 },
                 success: function(response) {
                     $('.unknown_soldUnknown').text(response.totalSoldSum);
-                    $('.unknown_sold_price').text(Number(response.totalSellPriceSum).toFixed(2));
-                    $('.total_refferenceUnknown').text(response.totalReffernce);
+                    // $('.unknown_sold_price').text(Number(response.totalSellPriceSum).toFixed(2));
+                    // $('.total_refferenceUnknown').text(response.totalReffernce);
                     $('.discount_amountUnknown').text(Number(response.totalDiscountSum).toFixed(2));
                     calculations();
                     
@@ -224,15 +284,18 @@ $(document).ready(function() {
             var unknown_sold_price = parseFloat(document.querySelector('.unknown_sold_price').innerText);
             var total_sell_price1 = parseFloat(document.querySelector('.total_sell_price1').innerText);
             var unknown_soldUnknown = parseFloat(document.querySelector('.unknown_soldUnknown').innerText);
-            var total_stock_out1 = parseFloat(document.querySelector('.total_stock_out1').innerText);
+            // var total_stock_out1 = parseFloat(document.querySelector('.total_stock_out1').innerText);
             // Sum the values
-            var sold_price = unknown_sold_price + total_sell_price1;
-            var stockOUT = unknown_soldUnknown + total_stock_out1;
+            // var sold_price = unknown_sold_price + total_sell_price1;
+            // var sold_price =  total_sell_price1;
+            // var stockOUT = unknown_soldUnknown + total_stock_out1;
             $('.sold_price').text(Number(sold_price).toFixed(2));
-            $('.stockOUT').text(Number(stockOUT));
+            // $('.stockOUT').text(Number(stockOUT));
             // console.log(sold_price);
         }
-         stock_in_out_grouped_report_table = $('#stock_in_out_grouped_report_table').DataTable({
+
+
+        stock_in_out_grouped_report_table = $('#stock_in_out_grouped_report_table').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
@@ -293,12 +356,12 @@ $(document).ready(function() {
                     data: 'unit_price',
                     name: 'v.sell_price_inc_tax'
                 },
-              
+
                 {
                     data: 'main_transfered',
                     name: 'main_transfered',
                     searchable: false
-                },  
+                },
                 {
                     data: 'subshop_transfered',
                     name: 'subshop_transfered',
@@ -308,49 +371,49 @@ $(document).ready(function() {
                     data: 'total_transfered',
                     name: 'total_transfered',
                     searchable: false
-                },  
+                },
                 {
                     data: 'total_qty',
                     name: 'total_qty',
                     searchable: false
-                },  
+                },
                 {
                     data: 'stock_in',
                     name: 'stock_in',
                     searchable: false
-                }, 
+                },
                 // 
                 {
                     data: 'total_sold',
                     name: 'total_sold',
                     searchable: false
                 },
-            //     {
-            //     data: 'stock',
-            //     name: 'stock',
-            //     searchable: false
-            // },
-               
-            {
-                data: 'total_sale_price',
-                name: 'total_sale_price',
-                searchable: false
-            },
-            {
-                data: 'discount_amount',
-                name: 'discount_amount',
-                searchable: false
-            },
-            {
-                data: 'purchase_price',
-                name: 'purchase_price',
-                searchable: false
-            },
-            {
-                data: 'total_buying_amount',
-                name: 'total_buying_amount',
-                searchable: false
-            },
+                //     {
+                //     data: 'stock',
+                //     name: 'stock',
+                //     searchable: false
+                // },
+
+                {
+                    data: 'total_sale_price',
+                    name: 'total_sale_price',
+                    searchable: false
+                },
+                {
+                    data: 'discount_amount',
+                    name: 'discount_amount',
+                    searchable: false
+                },
+                {
+                    data: 'purchase_price',
+                    name: 'purchase_price',
+                    searchable: false
+                },
+                {
+                    data: 'total_buying_amount',
+                    name: 'total_buying_amount',
+                    searchable: false
+                },
             ],
             fnDrawCallback: function(oSettings) {
                 let api = this.api();
@@ -366,13 +429,13 @@ $(document).ready(function() {
                     'row_subtotal').toFixed(2));
                 $('.discount_amount1').text(sum_table_col($('#stock_in_out_grouped_report_table'),
                     'discount_amount').toFixed(2));
-               
+
                 let total_refference = 0;
                 $.each([4], function(index, value) {
-                    api.column(value) .data()
-                            .reduce(function(a, b) {
-                                total_refference += 1;
-                            }, 0)
+                    api.column(value).data()
+                        .reduce(function(a, b) {
+                            total_refference += 1;
+                        }, 0)
                 });
                 $('.total_refference').html(total_refference);
                 __currency_convert_recursively($('#stock_in_out_grouped_report_table'));
@@ -463,7 +526,7 @@ $(document).ready(function() {
                     data: 'total_transfered',
                     name: 'total_transfered',
                     searchable: false
-                }, 
+                },
                 {
                     data: 'total_qty',
                     name: 'total_qty',
@@ -618,6 +681,9 @@ $(document).ready(function() {
                 stock_in_out_grouped_report_table.ajax.reload();
                 getCount();
                 getCountUnKnown();
+                getselltotal();
+                getpurchasetotal();
+
 
             });
             $('#product_purchase_date_filter').on('cancel.daterangepicker', function(ev, picker) {
@@ -627,6 +693,9 @@ $(document).ready(function() {
                 stock_in_out_grouped_report_table.ajax.reload();
                 getCount();
                 getCountUnKnown();
+                getselltotal();
+                getpurchasetotal();
+
 
             });
             $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment());
@@ -640,6 +709,9 @@ $(document).ready(function() {
             stock_in_out_grouped_report_table.ajax.reload();
             getCount();
             getCountUnKnown();
+            getselltotal();
+            getpurchasetotal();
+
         });
     </script>
 @endsection

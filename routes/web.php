@@ -260,6 +260,8 @@ Route::get('/sells/pos/transationhistory', 'SellPosController@getTransationHisto
     Route::get('/reports/adjust-product-stock', 'ReportController@adjustProductStock');
     Route::get('/reports/get-profit/{by?}', 'ReportController@getProfit');
     Route::post('/reports/stock-in-out-grouped-report-total-unknown', 'ReportController@getstockInOutGroupedReportTotalKnow');
+    Route::post('/reports/stock-in-out-grouped-report-total-sell', 'ReportController@getstockInOutGroupedReportSell');
+    Route::post('/reports/stock-in-out-grouped-report-total-purchase', 'ReportController@getstockInOutGroupedReportPurchase');
     Route::post('/reports/stock-in-out-grouped-report-total', 'ReportController@getstockInOutGroupedReportTotal');
     Route::get('/reports/stock-in-out-grouped-report', 'ReportController@getstockInOutGroupedReport');
     Route::get('/reports/stock-in-out', 'ReportController@getstockInOutReport');
