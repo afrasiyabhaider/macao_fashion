@@ -102,9 +102,9 @@
                                         <h4>Total stock out: <span class="stockOUT" data-currency_symbol="false"></span></h4>
                                         <h4 hidden>Total stock out: <span class="total_stock_out1"
                                                 data-currency_symbol="false"></span></h4>
-                                        <h4>Total amount buying: <span class="total_buying_amount"
+                                        <h4>Total Purchase Amount: <span class="total_buying_amount"
                                                 data-currency_symbol="false"></span></h4>
-                                        <h4>Total sale price: <span class="sold_price" data-currency_symbol="false"></span></h4>
+                                        <h4>Total Sell Amount: <span class="sold_price" data-currency_symbol="false"></span></h4>
                                         <h4 hidden>Total sale price: <span class="total_sell_price1"
                                                 data-currency_symbol="false"></span></h4>
                                         {{-- <h4>Total reference: <span class="total_refference1"data-currency_symbol="false"></span>
