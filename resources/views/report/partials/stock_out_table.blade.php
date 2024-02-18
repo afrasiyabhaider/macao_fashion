@@ -39,6 +39,10 @@
                 </th>
                 {{-- <th>@lang('report.current_stock')</th> --}}
                 <th>Unit Price</th>
+                <th>Color</th>
+            <th>Category</th>
+            <th>Sub-Category</th>
+            <th>Size</th>
                 <th>Total</th>
             </tr>
         </thead>
@@ -46,6 +50,10 @@
             <tr class="bg-gray font-10 footer-total text-center">
                 <td colspan="3"><strong>@lang('sale.total'):</strong></td>
                 <td id="footer_total_grouped_sold"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
                 <td></td>
                 {{-- <td></td>
                 

@@ -847,6 +847,22 @@
                     data: 'unit_price',
                     name: 'unit_price'
                 },
+                {
+                    data: 'color_name',
+                    name: 'colors.name'
+                },
+                {
+                    data: 'category_name',
+                    name: 'categories.name'
+                },
+                {
+                    data: 'sub_category_name',
+                    name: 'sub_cat.name'
+                },
+                {
+                    data: 'size_name',
+                    name: 'sizes.name'
+                },
                 // { data: 'total_sold', searchable: false, orderable: false },
                 // { data: 'barcode', name: 'p.sku' },
                 // { data: 'transaction_date', name: 't.transaction_date' },

@@ -10360,6 +10360,11 @@ class ReportController extends Controller
                 )
                 ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
                 ->join('products as p', 'pv.product_id', '=', 'p.id')
+                ->leftjoin('colors', 'p.color_id', '=', 'colors.id')
+                ->leftjoin('sizes', 'p.sub_size_id', '=', 'sizes.id')
+                ->leftjoin('suppliers', 'p.supplier_id', '=', 'suppliers.id')
+                ->leftjoin('categories', 'p.category_id', '=', 'categories.id')
+                ->leftjoin('categories as sub_cat', 'p.sub_category_id', '=', 'sub_cat.id')
                 ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
                 ->where('t.business_id', $business_id)
                 ->where('t.type', 'sell')
@@ -10381,19 +10386,26 @@ class ReportController extends Controller
                 'pv.name as product_variation',
                 'v.name as variation_name',
                 't.id as transaction_id',
+                'colors.name as color_name',
+                'suppliers.name as supplier_name',
+                'categories.name as category_name',
+                'sub_cat.name as sub_category_name',
+                'sizes.name as size_name',
                 't.transaction_date as transaction_date',
                 'transaction_sell_lines.unit_price_before_discount as unit_price',
 
                 DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
 
                 DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
-                DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
+                // DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
+                DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_id = p.id) as total_sold"),
                 DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
                 'u.short_name as unit',
                 DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
             )
                 ->orderBy('total_qty_sold', 'DESC')
-                ->groupBy('transaction_sell_lines.product_refference');
+                // ->groupBy('transaction_sell_lines.product_refference');
+                ->groupBy('transaction_sell_lines.product_id');
 
             if (!empty($variation_id)) {
                 $query->where('transaction_sell_lines.variation_id', $variation_id);
@@ -10433,6 +10445,30 @@ class ReportController extends Controller
                     } else {
                         return '<span>-</span>';
                     }
+                })->editColumn('color_name', function ($row) {
+                    if ($row->color_name) {
+                        return $row->color_name;
+                    } else {
+                        return '<span>-</span>';
+                    }
+                })->editColumn('category_name', function ($row) {
+                    if ($row->category_name) {
+                        return $row->category_name;
+                    } else {
+                        return '<span>-</span>';
+                    }
+                })->editColumn('sub_category_name', function ($row) {
+                    if ($row->sub_category_name) {
+                        return $row->sub_category_name;
+                    } else {
+                        return '<span>-</span>';
+                    }
+                })->editColumn('size_name', function ($row) {
+                    if ($row->size_name) {
+                        return $row->size_name;
+                    } else {
+                        return '<span>-</span>';
+                    }
                 })
                 ->editColumn('product_name', function ($row) {
                     $product_name = $row->product_name;
@@ -10458,9 +10494,6 @@ class ReportController extends Controller
                 ->editColumn('total_sold', function ($row) {
                     return '<span  class="total_sold" data-currency_symbol=false data-orig-value="' . (int)$row->total_sold . '" data-unit="' . $row->unit . '" >' . (int) $row->total_sold . '</span> ' . $row->unit;
                 })
-
-
-
                 ->addColumn('sale_percentage', function ($row) {
                     if ($row->refference && ($row->total_qty_sold > 0 || $row->current_stock > 0)) {
                         $sum = $row->total_qty_sold + $row->current_stock;
@@ -10487,7 +10520,7 @@ class ReportController extends Controller
                         }
                     }
                 ])
-                ->rawColumns(['image', 'total_sold', 'unit_price', 'current_stock', 'subtotal', 'total_qty_sold', 'detail', 'refference', 'all_time_purchased', 'all_time_sold', 'seven_day_sold', 'fifteen_day_sold'])
+                ->rawColumns(['image', 'total_sold','size_name','sub_category_name','category_name','color_name', 'unit_price', 'current_stock', 'subtotal', 'total_qty_sold', 'detail', 'refference', 'all_time_purchased', 'all_time_sold', 'seven_day_sold', 'fifteen_day_sold'])
                 ->make(true);
         }
     }
