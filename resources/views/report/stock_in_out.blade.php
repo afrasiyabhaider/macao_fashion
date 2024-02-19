@@ -102,7 +102,9 @@
                                         <h4>Total stock out: <span class="stockOUT" data-currency_symbol="false"></span></h4>
                                         <h4 hidden>Total stock out: <span class="total_stock_out1"
                                                 data-currency_symbol="false"></span></h4>
-                                        <h4>Total Purchase Amount: <span class="total_buying_amount"
+                                        <h4>Total Purchase Amount: <span class="total_purchase_amount"
+                                                    data-currency_symbol="false"></span></h4>
+                                        <h4>Total Sold Amount: <span class="total_buying_amount"
                                                 data-currency_symbol="false"></span></h4>
                                         <h4>Total Sell Amount: <span class="sold_price" data-currency_symbol="false"></span></h4>
                                         <h4 hidden>Total sale price: <span class="total_sell_price1"
@@ -243,7 +245,8 @@
                 },
                 success: function(response) {
                     $('.totalPurchaseSum').text(response.totalPurchaseSum);
-                    $('.total_buying_amount').text(Number(response.totalPurchasePrice).toFixed(2));
+                    $('.total_buying_amount').text(Number(response.totalsoldPrice).toFixed(2));
+                    $('.total_purchase_amount').text(Number(response.totalPurchasePrice).toFixed(2));
                     // calculations();
 
                 },

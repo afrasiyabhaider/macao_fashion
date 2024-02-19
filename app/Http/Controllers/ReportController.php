@@ -8150,6 +8150,7 @@ class ReportController extends Controller
             // $query->join('product.color_id','=','color.id');
             $products = $query->select(
                 'vld.sell_price as unit_price',
+                'variations.default_purchase_price as purchase_price',
                 DB::raw('SUM(vld.qty_available) as current_stock')
             )
                 ->groupBy('p.name')
@@ -8159,17 +8160,23 @@ class ReportController extends Controller
             $results = $products;
             $totalPurchaseValues = $results->pluck('current_stock');
             // dd($totalPurchaseValues);
-            $totalPurchasePrice = $results->pluck('unit_price');
+            $totalsoldPrice = $results->pluck('unit_price');
+            $totalPurchasePrice = $results->pluck('purchase_price');
             $totalPurchaseSum = $totalPurchaseValues->sum();
             // dd($totalPurchasePrice);
-            $newArray = $totalPurchasePrice->map(function ($price, $index) use ($totalPurchaseValues) {
+            $newArray = $totalsoldPrice->map(function ($price, $index) use ($totalPurchaseValues) {
+                return $price * $totalPurchaseValues[$index];
+            });
+            $purchase = $totalPurchasePrice->map(function ($price, $index) use ($totalPurchaseValues) {
                 return $price * $totalPurchaseValues[$index];
             });
             $sumPrice = $newArray->sum();
+            $sumPurchase = $purchase->sum();
             // dd( $totalPurchasePrice, $totalPurchaseValues, $newArray,$sumPrice);
         }
         $ajaxResponse = [
-            'totalPurchasePrice' => $sumPrice,
+            'totalsoldPrice' => $sumPrice,
+            'totalPurchasePrice' => $sumPurchase,
             'totalPurchaseSum' => $totalPurchaseSum,
         ];
         return response()->json($ajaxResponse);
