@@ -103,10 +103,11 @@
                                         <h4 hidden>Total stock out: <span class="total_stock_out1"
                                                 data-currency_symbol="false"></span></h4>
                                         <h4>Total Purchase Amount: <span class="total_purchase_amount"
-                                                    data-currency_symbol="false"></span></h4>
+                                                data-currency_symbol="false"></span></h4>
                                         <h4>Total Sold Amount: <span class="total_buying_amount"
                                                 data-currency_symbol="false"></span></h4>
-                                        <h4>Total Sell Amount: <span class="sold_price" data-currency_symbol="false"></span></h4>
+                                        <h4>Total Sell Amount: <span class="sold_price" data-currency_symbol="false"></span>
+                                        </h4>
                                         <h4 hidden>Total sale price: <span class="total_sell_price1"
                                                 data-currency_symbol="false"></span></h4>
                                         {{-- <h4>Total reference: <span class="total_refference1"data-currency_symbol="false"></span>
@@ -124,6 +125,12 @@
                             <div class="tab-pane" id="stock_in">
                                 <div class="row">
                                     <div class="col-md-12">
+                                        <h4>Total stock in: <span class="totalPurchaseSum" data-currency_symbol="false"></span>
+                                        </h4>
+                                        <h4>Total Purchase Amount: <span class="total_purchase_amount"
+                                                data-currency_symbol="false"></span></h4>
+                                        <h4>Total Sold Amount: <span class="total_buying_amount"
+                                                data-currency_symbol="false"></span></h4>
                                         @include('report.partials.stock_in_table')
 
                                     </div>
@@ -132,6 +139,11 @@
                             <div class="tab-pane" id="stock_out">
                                 <div class="row">
                                     <div class="col-md-12">
+                                        <h4>Total stock out: <span class="stockOUT" data-currency_symbol="false"></span></h4>
+                                        <h4>Total Sell Amount: <span class="sold_price" data-currency_symbol="false"></span>
+                                        </h4>
+                                        <h4>Total unknown product sold : <span
+                                                class="unknown_soldUnknown"data-currency_symbol="false"></span></h4>
                                         @include('report.partials.stock_out_table')
                                     </div>
                                 </div>
@@ -206,9 +218,11 @@
                 url: '/reports/stock-in-out-grouped-report-total-sell',
                 type: 'POST',
                 data: {
-                    location_id: $('#location_id').val(),
+                    location_id: ($('#location_id').val() === '0') ? '' : $('#location_id').val(),
                     start_date: start,
                     end_date: end,
+                    category_id: $('#category_id').val(),
+                    sub_category_id: $('#sub_category_id').val(),
                 },
                 success: function(response) {
                     $('.stockOUT').text(response.totalQtySold);
@@ -225,6 +239,7 @@
         function getpurchasetotal() {
             var start = null;
             var end = null;
+            
             if ($('#product_purchase_date_filter').val()) {
                 start = $('input#product_purchase_date_filter')
                     .data('daterangepicker')
@@ -242,6 +257,8 @@
                     end_date: end,
                     // start_date: '2024-02-12',
                     // end_date: '2024-02-12',
+                    category_id: $('#category_id').val(),
+                    sub_category_id: $('#sub_category_id').val(),
                 },
                 success: function(response) {
                     $('.totalPurchaseSum').text(response.totalPurchaseSum);
@@ -560,15 +577,130 @@
         //     },
         // });
 
-        // new stockIn report
+        // new stockIn report with color and size
+        // stock_in_table = $('#stock_in_table').DataTable({
+        //     processing: true,
+        //     serverSide: true,
+        //     ajax: {
+        //         url: '/reports/stock-in-out',
+        //         // ini_set:('max_execution_time', 180),
+        //         data: function(d) {
+
+        //             var start = '';
+        //             var end = '';
+        //             var start = $.datepicker.formatDate('yy-mm-dd', new Date());
+        //             var end = $.datepicker.formatDate('yy-mm-dd', new Date());
+        //             if ($('#product_purchase_date_filter').val()) {
+        //                 start = $('input#product_purchase_date_filter')
+        //                     .data('daterangepicker')
+        //                     .startDate.format('YYYY-MM-DD');
+        //                 end = $('input#product_purchase_date_filter')
+        //                     .data('daterangepicker')
+        //                     .endDate.format('YYYY-MM-DD');
+        //             }
+        //             d.start_date = start;
+        //             d.end_date = end;
+        //             // d.start_date = '2024-02-12';
+        //             // d.end_date = '2024-02-12';
+
+        //             d.location_id = $('#location_id').val();
+        //             d.category_id = $('#category_id').val();
+        //             d.sub_category_id = $('#sub_category_id').val();
+        //             d.supplier_id = $('#suppliers').val();
+        //             // d.from_date = $('#product_list_from_date').val();
+        //             // d.to_date = $('#product_list_to_date').val();
+        //             d.unit_id = $('#unit').val();
+
+        //         },
+        //     },
+        //     pageLength: 300,
+        //     lengthMenu: [
+        //         [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, -1],
+        //         [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, 'All'],
+        //     ],
+        //     // aaSorting: [21, 'desc'],
+        //     columns: [{
+        //             data: 'DT_Row_Index',
+        //             name: 'DT_Row_Index',
+        //             searchable: false,
+        //             orderable: false
+        //         },
+        //         {
+        //             data: 'image',
+        //             name: 'image',
+        //             orderable: false,
+        //             searchable: false
+        //         },
+        //         {
+        //             data: 'sku',
+        //             name: 'variations.sub_sku'
+        //         },
+        //         {
+        //             data: 'product',
+        //             name: 'p.name'
+        //         },
+        //         {
+        //             data: 'refference',
+        //             name: 'p.refference'
+        //         },
+        //         {
+        //             data: 'location_name',
+        //             name: 'bl.name'
+        //         },
+
+        //         {
+        //             data: 'unit_price',
+        //             name: 'variations.sell_price_inc_tax'
+        //         },
+        //         {
+        //             data: 'color_name',
+        //             name: 'colors.name'
+        //         },
+        //         {
+        //             data: 'category_name',
+        //             name: 'categories.name'
+        //         },
+        //         {
+        //             data: 'sub_category_name',
+        //             name: 'sub_cat.name'
+        //         },
+        //         {
+        //             data: 'size_name',
+        //             name: 'sizes.name'
+        //         },
+        //         {
+        //             data: 'stock',
+        //             name: 'stock',
+        //             searchable: false
+        //         },
+        //         {
+        //             data: 'supplier_name',
+        //             name: 'suppliers.name'
+        //         },
+        //         {
+        //             data: 'product_date',
+        //             name: 'vld.product_updated_at'
+        //         },
+        //     ],
+        //     fnDrawCallback: function(oSettings) {
+        //         $('#footer_total_stock').html(__sum_stock($('#stock_in_table'), 'current_stock'));
+        //         $('#footer_total_sold').html(__sum_stock($('#stock_in_table'), 'total_sold'));
+        //         $('#footer_total_transfered').html(
+        //             __sum_stock($('#stock_in_table'), 'total_transfered')
+        //         );
+        //         $('#footer_total_adjusted').html(
+        //             __sum_stock($('#stock_in_table'), 'total_adjusted')
+        //         );
+        //         __currency_convert_recursively($('#stock_in_table'));
+        //     },
+        // });
+
         stock_in_table = $('#stock_in_table').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
                 url: '/reports/stock-in-out',
-                // ini_set:('max_execution_time', 180),
                 data: function(d) {
-
                     var start = '';
                     var end = '';
                     var start = $.datepicker.formatDate('yy-mm-dd', new Date());
@@ -593,34 +725,32 @@
                     // d.from_date = $('#product_list_from_date').val();
                     // d.to_date = $('#product_list_to_date').val();
                     d.unit_id = $('#unit').val();
-
                 },
             },
-            pageLength: 300,
+            pageLength: 100,
             lengthMenu: [
                 [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, -1],
                 [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, 'All'],
             ],
-            // aaSorting: [21, 'desc'],
+            aaSorting: [2, 'asc'],
             columns: [{
                     data: 'DT_Row_Index',
-                    name: 'DT_Row_Index',
                     searchable: false,
                     orderable: false
                 },
                 {
                     data: 'image',
-                    name: 'image',
                     orderable: false,
                     searchable: false
                 },
                 {
-                    data: 'sku',
-                    name: 'variations.sub_sku'
-                },
-                {
                     data: 'product',
                     name: 'p.name'
+                },
+                {
+                    data: 'detail',
+                    orderable: false,
+                    searchable: false
                 },
                 {
                     data: 'refference',
@@ -630,50 +760,29 @@
                     data: 'location_name',
                     name: 'bl.name'
                 },
-
                 {
                     data: 'unit_price',
                     name: 'variations.sell_price_inc_tax'
-                },
-                {
-                    data: 'color_name',
-                    name: 'colors.name'
-                },
-                {
-                    data: 'category_name',
-                    name: 'categories.name'
-                },
-                {
-                    data: 'sub_category_name',
-                    name: 'sub_cat.name'
-                },
-                {
-                    data: 'size_name',
-                    name: 'sizes.name'
                 },
                 {
                     data: 'stock',
                     name: 'stock',
                     searchable: false
                 },
-                {
-                    data: 'supplier_name',
-                    name: 'suppliers.name'
-                },
-                {
-                    data: 'product_date',
-                    name: 'vld.product_updated_at'
-                },
+                // {
+                //     data: 'description',
+                //     name: 'p.description'
+                // }
             ],
             fnDrawCallback: function(oSettings) {
-                $('#footer_total_stock').html(__sum_stock($('#stock_in_table'), 'current_stock'));
-                $('#footer_total_sold').html(__sum_stock($('#stock_in_table'), 'total_sold'));
-                $('#footer_total_transfered').html(
-                    __sum_stock($('#stock_in_table'), 'total_transfered')
-                );
-                $('#footer_total_adjusted').html(
-                    __sum_stock($('#stock_in_table'), 'total_adjusted')
-                );
+                $('#footer_group_total_stock').html(__sum_stock($('#stock_in_table'), 'current_stock'));
+                // $('#footer_total_sold').html(__sum_stock($('#grouped_stock_report_table'), 'total_sold'));
+                // $('#footer_total_transfered').html(
+                //     __sum_stock($('#grouped_stock_report_table'), 'total_transfered')
+                // );
+                // $('#footer_total_adjusted').html(
+                //     __sum_stock($('#grouped_stock_report_table'), 'total_adjusted')
+                // );
                 __currency_convert_recursively($('#stock_in_table'));
             },
         });
@@ -850,22 +959,22 @@
                     data: 'unit_price',
                     name: 'unit_price'
                 },
-                {
-                    data: 'color_name',
-                    name: 'colors.name'
-                },
-                {
-                    data: 'category_name',
-                    name: 'categories.name'
-                },
-                {
-                    data: 'sub_category_name',
-                    name: 'sub_cat.name'
-                },
-                {
-                    data: 'size_name',
-                    name: 'sizes.name'
-                },
+                // {
+                //     data: 'color_name',
+                //     name: 'colors.name'
+                // },
+                // {
+                //     data: 'category_name',
+                //     name: 'categories.name'
+                // },
+                // {
+                //     data: 'sub_category_name',
+                //     name: 'sub_cat.name'
+                // },
+                // {
+                //     data: 'size_name',
+                //     name: 'sizes.name'
+                // },
                 // { data: 'total_sold', searchable: false, orderable: false },
                 // { data: 'barcode', name: 'p.sku' },
                 // { data: 'transaction_date', name: 't.transaction_date' },

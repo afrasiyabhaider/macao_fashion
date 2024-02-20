@@ -27,8 +27,7 @@
 </div> --}}
 
 <div class="table-responsive">
-    <table class="table table-bordered ajax_view table-striped dataTable"
-        id="stock_out_table" style="width: 100%;">
+    <table class="table table-bordered ajax_view table-striped dataTable" id="stock_out_table" style="width: 100%;">
         <thead>
             <tr>
                 <th>Image</th>
@@ -39,10 +38,10 @@
                 </th>
                 {{-- <th>@lang('report.current_stock')</th> --}}
                 <th>Unit Price</th>
-                <th>Color</th>
-            <th>Category</th>
-            <th>Sub-Category</th>
-            <th>Size</th>
+                {{-- <th>Color</th>
+                <th>Category</th>
+                <th>Sub-Category</th>
+                <th>Size</th> --}}
                 <th>Total</th>
             </tr>
         </thead>
@@ -50,18 +49,17 @@
             <tr class="bg-gray font-10 footer-total text-center">
                 <td colspan="3"><strong>@lang('sale.total'):</strong></td>
                 <td id="footer_total_grouped_sold"></td>
+                {{-- <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
-                <td></td>
+                <td></td> --}}
                 <td></td>
                 {{-- <td></td>
-                
+                    
+                    <td>
+                    </td> --}}
                 <td>
-                </td> --}}
-                <td>
-                    <span class="display_currency" id="footer_grouped_subtotal"
-                        data-currency_symbol="true"></span>
+                    <span class="display_currency" id="footer_grouped_subtotal" data-currency_symbol="true"></span>
                 </td>
             </tr>
         </tfoot>
