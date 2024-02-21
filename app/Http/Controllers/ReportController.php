@@ -8269,224 +8269,105 @@ class ReportController extends Controller
             ];
             return response()->json($ajaxResponse);
         }
-        public function getstockInOutGroupedReportTotalKnow(Request $request)
+    public function getstockInOutGroupedReportTotalKnow(Request $request)
         {
-            // ini_set('memory_limit', '-1');
-            // ini_set('max_execution_time', 180); //3 minutes
-            // if (!auth()->user()->can('stock_in_out.view')) {
-            //     abort(403, 'Unauthorized action.');
-            // }
+            ini_set('memory_limit', '-1');
+            ini_set('max_execution_time', 180); //3 minutes
+            if (!auth()->user()->can('stock_in_out.view')) {
+                abort(403, 'Unauthorized action.');
+            }
     
-            // $business_id = $request->session()->get('user.business_id');
+            $business_id = $request->session()->get('user.business_id');
     
-            // $selling_price_groups = SellingPriceGroup::where('business_id', $business_id)
-            //     ->get();
-            // $allowed_selling_price_group = false;
-            // foreach ($selling_price_groups as $selling_price_group) {
-            //     if (auth()->user()->can('selling_price_group.' . $selling_price_group->id)) {
-            //         $allowed_selling_price_group = true;
-            //         break;
-            //     }
-            // }
-            // if ($request->ajax()) {
-    
-                // $query = Variation::join('products as p', 'p.id', '=', 'variations.product_id')
-                //     ->leftjoin('units', 'p.unit_id', '=', 'units.id')
-                //     ->leftjoin('colors', 'p.color_id', '=', 'colors.id')
-                //     ->leftjoin('sizes', 'p.sub_size_id', '=', 'sizes.id')
-                //     ->leftjoin('suppliers', 'p.supplier_id', '=', 'suppliers.id')
-                //     ->leftjoin('categories', 'p.category_id', '=', 'categories.id')
-                //     ->leftjoin('categories as sub_cat', 'p.sub_category_id', '=', 'sub_cat.id')
-                //     ->leftjoin('variation_location_details as vld', 'variations.id', '=', 'vld.variation_id')
-                //     ->leftjoin('location_transfer_details as ltd2', 'variations.id', '=', 'ltd2.variation_id')
-                //     ->join('business_locations as bl', 'bl.id', '=', 'vld.location_id')
-                //     ->join('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
-                //     ->where('p.business_id', $business_id)
-                //     ->whereIn('p.type', ['single', 'variable']);
-                // $permitted_locations = auth()->user()->permitted_locations();
-                // $location_filter = '';
-                // $location_filter2 = '';
-                // $location_filterqty = '';
-    
-                // if ($permitted_locations != 'all') {
-                //     $query->whereIn('vld.location_id', $permitted_locations);
-    
-                //     $locations_imploded = implode(', ', $permitted_locations);
-                //     $location_filter .= "AND transactions.location_id IN ($locations_imploded) ";
-                //     $location_filter2 .= "AND ltd2.location_id  IN ($locations_imploded) ";
-                //     $location_filterqty .= "AND pq.location_id  IN ($locations_imploded) ";
-                // }
-    
-                // if (!empty($request->input('location_id'))) {
-                //     $location_id = $request->input('location_id');
-    
-                //     $query->where('vld.location_id', $location_id);
-    
-                //     $location_filter .= "AND transactions.location_id=$location_id";
-                //     $location_filter2 .= "AND ltd2.location_id =$location_id";
-                //     $location_filterqty .= "AND pq.location_id =$location_id";
-                // }
-                // $from_date = $request->get('start_date');
-    
-                // $to_date = $request->get('end_date');
-                // if (!empty($from_date) && !empty($to_date)) {
-                //     $query->whereDate('vld.updated_at', '>=', $from_date)->whereDate('vld.updated_at', '<=', $to_date);
-                // }
-    
-                // if (!empty($request->input('unit_id'))) {
-                //     $query->where('p.unit_id', $request->input('unit_id'));
-                // }
-    
-                // $tax_id = request()->get('tax_id', null);
-                // if (!empty($tax_id)) {
-                //     $query->where('p.tax', $tax_id);
-                // }
-                //   if (!empty($request->input('supplier_id'))) {
-                //     $query->where('p.supplier_id', $request->input('supplier_id'));
-                // }
-    
-                // $type = request()->get('type', null);
-                // if (!empty($type)) {
-                //     $query->where('p.type', $type);
-                // }
-                // $product_type = $request->get('product_type');
-                // if ($product_type == 1) {
-                //     $query->where('p.refference', '!=', null);
-                //     $qtySubquery = $this->knowQtySubquery($location_filter, $from_date, $to_date);
-                //     $discountSubquery = $this->knowDiscountSubquery($location_filter, $from_date, $to_date);
-                // } else {
-                //     $query->where('p.refference', null);
-                //     $qtySubquery = $this->unknowQtySubquery($location_filter, $from_date, $to_date);
-                //     $discountSubquery = $this->unknowDiscountSubquery($location_filter, $from_date, $to_date);
-                // }
-                // $products = $query->select(
-    
-                //     DB::raw($qtySubquery),
-                //     DB::raw($discountSubquery),
-                // )
-                //     ->groupBy('p.refference')
-                //     ->orderBy('vld.updated_at', 'DESC')
-                //     ->get();
-    
-                ini_set('memory_limit', '-1');
-                ini_set('max_execution_time', 280); //3 minutes
-                if (!auth()->user()->can('stock_in_out.view')) {
-                    abort(403, 'Unauthorized action.');
+            $selling_price_groups = SellingPriceGroup::where('business_id', $business_id)
+                ->get();
+            $allowed_selling_price_group = false;
+            foreach ($selling_price_groups as $selling_price_group) {
+                if (auth()->user()->can('selling_price_group.' . $selling_price_group->id)) {
+                    $allowed_selling_price_group = true;
+                    break;
                 }
-        
-                $business_id = $request->session()->get('user.business_id');
-                $location_id = $request->get('location_id', null);
-        
+            }
+            //Return the details in ajax call
+            if ($request->ajax()) {
+    
+                $query = Variation::join('products as p', 'p.id', '=', 'variations.product_id')
+                    ->leftjoin('units', 'p.unit_id', '=', 'units.id')
+                    ->leftjoin('colors', 'p.color_id', '=', 'colors.id')
+                    ->leftjoin('sizes', 'p.sub_size_id', '=', 'sizes.id')
+                    ->leftjoin('suppliers', 'p.supplier_id', '=', 'suppliers.id')
+                    ->leftjoin('categories', 'p.category_id', '=', 'categories.id')
+                    ->leftjoin('categories as sub_cat', 'p.sub_category_id', '=', 'sub_cat.id')
+                    ->leftjoin('variation_location_details as vld', 'variations.id', '=', 'vld.variation_id')
+                    ->leftjoin('location_transfer_details as ltd2', 'variations.id', '=', 'ltd2.variation_id')
+                    ->join('business_locations as bl', 'bl.id', '=', 'vld.location_id')
+                    ->join('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
+                    ->where('p.business_id', $business_id)
+                    ->whereIn('p.type', ['single', 'variable']);
+                $permitted_locations = auth()->user()->permitted_locations();
                 $location_filter = '';
-                if (!empty($location_id)) {
-                    $location_filter = "AND transactions.location_id=$location_id";
+                $location_filter2 = '';
+                $location_filterqty = '';
+    
+                if ($permitted_locations != 'all') {
+                    $query->whereIn('vld.location_id', $permitted_locations);
+    
+                    $locations_imploded = implode(', ', $permitted_locations);
+                    $location_filter .= "AND transactions.location_id IN ($locations_imploded) ";
+                    $location_filter2 .= "AND ltd2.location_id  IN ($locations_imploded) ";
+                    $location_filterqty .= "AND pq.location_id  IN ($locations_imploded) ";
                 }
-        
-                $vld_str = '';
-                if (!empty($location_id)) {
-                    $vld_str = "AND vld.location_id=$location_id";
+    
+                if (!empty($request->input('location_id'))) {
+                    $location_id = $request->input('location_id');
+    
+                    $query->where('vld.location_id', $location_id);
+    
+                    $location_filter .= "AND transactions.location_id=$location_id";
+                    $location_filter2 .= "AND ltd2.location_id =$location_id";
+                    $location_filterqty .= "AND pq.location_id =$location_id";
                 }
-                if ($request->ajax()) {
-        
-                    $variation_id = $request->get('variation_id', null);
-                    $query = TransactionSellLine::join(
-                        'transactions as t',
-                        'transaction_sell_lines.transaction_id',
-                        '=',
-                        't.id'
-                    )
-                        ->join(
-                            'variations as v',
-                            'transaction_sell_lines.variation_id',
-                            '=',
-                            'v.id'
-                        )
-                        ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
-                        ->join('products as p', 'pv.product_id', '=', 'p.id')
-                        ->leftjoin('colors', 'p.color_id', '=', 'colors.id')
-                        ->leftjoin('sizes', 'p.sub_size_id', '=', 'sizes.id')
-                        ->leftjoin('suppliers', 'p.supplier_id', '=', 'suppliers.id')
-                        ->leftjoin('categories', 'p.category_id', '=', 'categories.id')
-                        ->leftjoin('categories as sub_cat', 'p.sub_category_id', '=', 'sub_cat.id')
-                        ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
-                        ->where('t.business_id', $business_id)
-                        ->where('t.type', 'sell')
-                        ->where('t.status', 'final')
-                        ->where('p.refference', null);
-                    $start_date = $request->get('start_date');
-                    $end_date = $request->get('end_date');
-                    if (!empty($start_date) && !empty($end_date)) {
-                        $query->whereDate('t.transaction_date', '>=', $start_date)->whereDate('t.transaction_date', '<=', $end_date);
-                    }
-                    $products = $query->select(
-                        'p.id as product_id',
-                        'p.name as product_name',
-                        'p.image as image',
-                        'p.refference as refference',
-                        'p.sku as barcode',
-                        'p.supplier_id as supplier',
-                        'p.enable_stock',
-                        'p.type as product_type',
-                        'pv.name as product_variation',
-                        'v.name as variation_name',
-                        't.id as transaction_id',
-                        'colors.name as color_name',
-                        'suppliers.name as supplier_name',
-                        'categories.name as category_name',
-                        'sub_cat.name as sub_category_name',
-                        'sizes.name as size_name',
-                        't.transaction_date as transaction_date',
-                        'transaction_sell_lines.unit_price_before_discount as unit_price',
-        
-                        DB::raw('DATE_FORMAT(t.transaction_date, "%Y-%m-%d") as formated_date'),
-        
-                        DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
-                        DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_refference = p.refference) as total_sold"),
-                        // DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_id = p.id) as total_sold"),
-                        DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
-                        'u.short_name as unit',
-                        DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
-                    )
-                        ->orderBy('total_qty_sold', 'DESC')
-                        ->groupBy('transaction_sell_lines.product_refference');
-                        // ->groupBy('transaction_sell_lines.product_id');
-        
-                    if (!empty($variation_id)) {
-                        $query->where('transaction_sell_lines.variation_id', $variation_id);
-                    }
-                    $purchase_start_date = $request->get('purchase_start_date');
-                    $purchase_end_date = $request->get('purchase_end_date');
-        
-                    if (!empty($purchase_start_date) && !empty($purchase_end_date)) {
-                        $query->whereBetween(DB::raw('date(p.product_updated_at)'), [$purchase_start_date, $purchase_end_date]);
-                    }
-        
-                    $permitted_locations = auth()->user()->permitted_locations();
-                    if ($permitted_locations != 'all') {
-                        $query->whereIn('t.location_id', $permitted_locations);
-                    }
-        
-                    if (!empty($location_id)) {
-                        $query->where('t.location_id', $location_id);
-                    }
-        
-                    $supplier_id = $request->get('supplier_id', null);
-                    if (!empty($supplier_id)) {
-                        $query->where('p.supplier_id', $supplier_id);
-                    }
-                    $category_id = $request->get('category_id', null);
-                    if (!empty($category_id)) {
-                        $query->where('p.category_id', $category_id);
-                    }
-                    $sub_category_id = $request->get('sub_category_id', null);
-                    if (!empty($sub_category_id)) {
-                        $query->where('p.sub_category_id', $sub_category_id);
-                    }
+                $from_date = $request->get('start_date');
+    
+                $to_date = $request->get('end_date');
+                if (!empty($from_date) && !empty($to_date)) {
+                    $query->whereDate('vld.updated_at', '>=', $from_date)->whereDate('vld.updated_at', '<=', $to_date);
+                }
+    
+                if (!empty($request->input('unit_id'))) {
+                    $query->where('p.unit_id', $request->input('unit_id'));
+                }
+    
+                $tax_id = request()->get('tax_id', null);
+                if (!empty($tax_id)) {
+                    $query->where('p.tax', $tax_id);
+                }
+    
+                $type = request()->get('type', null);
+                if (!empty($type)) {
+                    $query->where('p.type', $type);
+                }
+                $product_type = $request->get('product_type');
+                if ($product_type == 1) {
+                    $query->where('p.refference', '!=', null);
+                    $qtySubquery = $this->knowQtySubquery($location_filter, $from_date, $to_date);
+                    $discountSubquery = $this->knowDiscountSubquery($location_filter, $from_date, $to_date);
+                } else {
+                    $query->where('p.refference', null);
+                    $qtySubquery = $this->unknowQtySubquery($location_filter, $from_date, $to_date);
+                    $discountSubquery = $this->unknowDiscountSubquery($location_filter, $from_date, $to_date);
+                }
+                $products = $query->select(
+    
+                    DB::raw($qtySubquery),
+                    DB::raw($discountSubquery),
+                )
+                    ->groupBy('p.refference')
+                    ->orderBy('vld.updated_at', 'DESC')
+                    ->get();
                 $results = $products;
-                // $totaldiscount = $results->pluck('discount_amount');
-                // $totalSold = $results->pluck('total_sold');
-                $totaldiscount = $results->pluck('subtotal');
-                $totalSold = $results->pluck('total_qty_sold');
+                $totaldiscount = $results->pluck('discount_amount');
+                $totalSold = $results->pluck('total_sold');
                 $totalDiscountSum = $totaldiscount->sum();
                 $totalSoldSum = $totalSold->sum();
             }
