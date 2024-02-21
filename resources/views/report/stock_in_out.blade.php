@@ -57,6 +57,26 @@
                             ]) !!}
                         </div>
                     </div>
+                    {{-- <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('suppliers', 'Suppliers :') !!}
+                            {!! Form::select('suppliers', $suppliers, null, [
+                                'placeholder' => __('messages.all'),
+                                'class' => 'form-control select2',
+                                'style' => 'width:100%',
+                            ]) !!}
+                        </div>
+                    </div> --}}
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {!! Form::label('suppliers', 'Suppliers :') !!}
+                            {!! Form::select('suppliers', $suppliers, null, [
+                                'placeholder' => __('messages.all'),
+                                'class' => 'form-control select2',
+                                'style' => 'width:100%',
+                            ]) !!}
+                        </div>
+                    </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('Product Type', __('Product Type') . ':') !!}
@@ -116,6 +136,8 @@
                                                 class="discount_amount11"data-currency_symbol="false"></span></h4>
                                         <h4>Total unknown product sold : <span
                                                 class="unknown_soldUnknown"data-currency_symbol="false"></span></h4>
+                                        <h4>Total unknown Amount : <span
+                                                class="unknown_amount"data-currency_symbol="false"></span></h4>
                                         <h4 hidden>Total unknown price : <span
                                                 class="unknown_sold_price"data-currency_symbol="false"></span></h4>
                                         {{-- @include('report.partials.stock_group_table') --}}
@@ -184,6 +206,8 @@
                     // product_type: $('#product_type').val(),
                     start_date: start,
                     end_date: end,
+                    supplier_id: $('#suppliers').val(),
+
                     // start_date: '2024-02-12',
                     // end_date: '2024-02-12',
                 },
@@ -223,6 +247,8 @@
                     end_date: end,
                     category_id: $('#category_id').val(),
                     sub_category_id: $('#sub_category_id').val(),
+                    supplier_id: $('#suppliers').val(),
+
                 },
                 success: function(response) {
                     $('.stockOUT').text(response.totalQtySold);
@@ -259,6 +285,8 @@
                     // end_date: '2024-02-12',
                     category_id: $('#category_id').val(),
                     sub_category_id: $('#sub_category_id').val(),
+                    supplier_id: $('#suppliers').val(),
+
                 },
                 success: function(response) {
                     $('.totalPurchaseSum').text(response.totalPurchaseSum);
@@ -292,12 +320,14 @@
                     // product_type: $('#product_type').val(),
                     start_date: start,
                     end_date: end,
+                    supplier_id: $('#suppliers').val(),
+
                 },
                 success: function(response) {
                     $('.unknown_soldUnknown').text(response.totalSoldSum);
                     // $('.unknown_sold_price').text(Number(response.totalSellPriceSum).toFixed(2));
                     // $('.total_refferenceUnknown').text(response.totalReffernce);
-                    $('.discount_amountUnknown').text(Number(response.totalDiscountSum).toFixed(2));
+                    $('.unknown_amount').text(Number(response.totalDiscountSum).toFixed(2));
                     // calculations();
 
                 },
@@ -721,9 +751,9 @@
                     d.location_id = $('#location_id').val();
                     d.category_id = $('#category_id').val();
                     d.sub_category_id = $('#sub_category_id').val();
+                    // d.supplier_id = $('#suppliers').val();
                     d.supplier_id = $('#suppliers').val();
-                    // d.from_date = $('#product_list_from_date').val();
-                    // d.to_date = $('#product_list_to_date').val();
+
                     d.unit_id = $('#unit').val();
                 },
             },
@@ -931,6 +961,10 @@
                     d.location_id = $('#location_id').val();
                     d.category_id = $('#category_id').val();
                     d.sub_category_id = $('#sub_category_id').val();
+                    // d.supplier_id = $('select#supplier').val();
+                    d.supplier_id = $('#suppliers').val();
+
+
                 },
             },
             columns: [{
