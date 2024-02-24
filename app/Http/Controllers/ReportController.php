@@ -2701,6 +2701,11 @@ class ReportController extends Controller
             // if($to_date == 'no'){
             //     $to_date = Carbon::now();
             // }
+            if ($to_date == null) {
+                $to_date = Carbon::now()->format('Y-m-d');
+                $to_date_carbon = Carbon::createFromFormat('Y-m-d', $to_date);
+                $from_date = $to_date_carbon->subYears(10)->format('Y-m-d');
+            }
             if (!empty($to_date)) {
                 // dd($products->first());
                 $query->whereDate('p.created_at', '>=', $from_date)->whereDate('p.created_at', '<=', $to_date);
@@ -2793,16 +2798,41 @@ class ReportController extends Controller
                     if (!empty(request()->input('location_id'))) {
                         $location_id = request()->input('location_id');
                     }
-
                     $start_date = request()->get('start_date', 'null');
                     $end_date = request()->get('end_date', 'null');
+                    if ($end_date == null) {
+                        $end_date = Carbon::now()->format('Y-m-d');
+                        $to_date_carbon = Carbon::createFromFormat('Y-m-d', $end_date);
+                        $start_date = $to_date_carbon->subYears(10)->format('Y-m-d');
+                    }
                     if (isset($start_date) && isset($end_date)) {
                         return '<a  href="' . url("/product/color-detail/" . $row->product . '/' . $start_date . '/' . $end_date) . '" target="_blank" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
                     } else {
-                        return '<a  href="#"  class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
+                        return '<a  href="' . url("/product/color-detail/" . $row->product . '/' . $start_date . '/' . $end_date) . '" target="_blank" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
+
+                        // return '<a  href="#"  class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
                     }
+                    // $start_date = request()->get('start_date');
+                    // $end_date = request()->get('end_date');
+                    // // return '<a id="color-detail-modal" href="' . url("/product/color-detail/" . $row->product_name . '/' . $start_date . '/' . $end_date) . '" data-product-name="' . $row->product_name . '" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
+                    // return '<a  href="' . url("/product/color-detail/" . $row->product_name . '/' . $start_date . '/' . $end_date) . '" target="_blank" data-product-name="' . $row->product_name . '" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
                     // return '<a id="color-detail-modal" href="' . url("/product/color-detail/" . $row->product . '/' . $start_date . '/' . $end_date) . '" data-product-name="' . $row->product . '" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
                 })
+                // ->addColumn('detail', function ($row) {
+                //     $location_id = 0;
+                //     if (!empty(request()->input('location_id'))) {
+                //         $location_id = request()->input('location_id');
+                //     }
+
+                //     $start_date = request()->get('start_date', 'null');
+                //     $end_date = request()->get('end_date', 'null');
+                //     if (isset($start_date) && isset($end_date)) {
+                //         return '<a  href="' . url("/product/color-detail/" . $row->product . '/' . $start_date . '/' . $end_date) . '" target="_blank" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
+                //     } else {
+                //         return '<a  href="#"  class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
+                //     }
+                //     // return '<a id="color-detail-modal" href="' . url("/product/color-detail/" . $row->product . '/' . $start_date . '/' . $end_date) . '" data-product-name="' . $row->product . '" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
+                // })
                 // ->addColumn('sale_percent', function ($row) {
                 //     $quantity_sold =  (float) $row->total_sold;
                 //     $quantity_available =  (float) $row->stock  + $quantity_sold;
