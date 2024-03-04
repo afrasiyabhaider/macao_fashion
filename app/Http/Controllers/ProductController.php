@@ -1173,10 +1173,26 @@ class ProductController extends Controller
             $product_image = $product->image;
             $location_id = $request->input('location_id');
             // dd($location_id);
+            // if ($request->hasFile('file')) {
+            //     $file = $request->file();
+            //     $file['file'];
+            //     $product_image =  $this->productUtil->uploadFileArr($request, 'file', config('constants.product_img_path'), 0);
+            // }
             if ($request->hasFile('file')) {
-                $file = $request->file();
-                $file['file'];
-                $product_image =  $this->productUtil->uploadFileArr($request, 'file', config('constants.product_img_path'), 0);
+                $files = $request->file('file');
+            
+                $product_all = Product::where('refference', $request->refference)->get();
+                if (!empty($files)) { 
+                    foreach ($files as $uploadedFile) {
+                        $image = rand(10, 100) . time() . '.' . $uploadedFile->getClientOriginalExtension();
+                        $uploadedFile->storeAs(config('constants.product_img_path'), $image);
+                        foreach ($product_all as $key => $all_product) {
+                            $all_product->update([
+                                'image' => $image,
+                            ]);
+                        }
+                    }
+                }
             }
             $location = 1;
             if ($request->input('location_id')) {
