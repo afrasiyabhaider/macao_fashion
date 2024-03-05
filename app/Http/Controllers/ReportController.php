@@ -4790,7 +4790,7 @@ class ReportController extends Controller
                     return '<span class="display_currency invoices" data-currency_symbol="false" data-orig-value="' . $row->invoices . '">' . $row->invoices . '</span>';
                 })
                 ->editColumn('items', function ($row) {
-                    return '<span class="display_currency items" data-currency_symbol="false" data-orig-value="' . $row->items / 2 . '">' . $row->items  . '</span>';
+                    return '<span class="display_currency items" data-currency_symbol="false" data-orig-value="' . $row->items . '">' . $row->items  . '</span>';
                     // return '<span class="display_currency items" data-currency_symbol="false" data-orig-value="' . $row->items . '">' . $row->items . '</span>';
                 })
                 ->editColumn('created_at', function ($row) {
