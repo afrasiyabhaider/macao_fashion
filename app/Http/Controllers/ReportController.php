@@ -9760,11 +9760,14 @@ class ReportController extends Controller
 
             $results = $products;
             $totaldiscount = $results->pluck('discounted_amount');
+            $totainvoices = $results->pluck('invoices');
             // dd($totaldiscount);
             $totalDiscountSum = $totaldiscount->sum();
+            $totalinvoicesSum = $totainvoices->sum();
         }
         $ajaxResponse = [
             'totalDiscountSum' => $totalDiscountSum,
+            'totalinvoicesSum' => $totalinvoicesSum,
         ];
 
         // Return the response as JSON

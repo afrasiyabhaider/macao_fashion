@@ -140,6 +140,8 @@
                                                 class="unknown_amount"data-currency_symbol="false"></span></h4>
                                         <h4 hidden>Total unknown price : <span
                                                 class="unknown_sold_price"data-currency_symbol="false"></span></h4>
+                                                <h4>Total Invoices : <span
+                                                    class="totalinvoicesSum"data-currency_symbol="false"></span></h4>
                                         {{-- @include('report.partials.stock_group_table') --}}
                                     </div>
                                 </div>
@@ -219,6 +221,7 @@
                     $('.total_sell_price1').text(Number(response.totalSellPriceSum).toFixed(2));
                     $('.total_refference1').text(response.totalReffernce);
                     $('.discount_amount11').text(Number(response.totalDiscountSum).toFixed(2));
+                    $('.totalinvoicesSum').text(Number(response.totalinvoicesSum));
                     // calculations();
                 },
                 error: function(xhr, status, error) {
