@@ -17,6 +17,13 @@
                         {{ $product->refference }}<br>
                         <b>Supplier:</b>
                         {{ $product->supplier->name }}<br>
+                        <b>Description:</b>
+                        @if ($product->description == null)
+                            {{ '-' }}
+                        @else
+                            {{ $product->description }}
+                        @endif
+                        <br>
                         {{-- <b>@lang('product.unit'): </b>
                               {{$product->unit->short_name or '--' }}<br>
                               <b>@lang('product.barcode_type'): </b>
