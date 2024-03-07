@@ -222,7 +222,7 @@
                 </div>
                 <div class="col-sm-4 col-md-4 invoice-col">
                     <div class="thumbnail">
-                        <img src="{{ $product->image_url }}" alt="Product image" height="400px" width="350px">
+                        <img src="{{ $product->image_url }}" alt="Product image" height="430px" width="400px">
                     </div>
                 </div>
 
