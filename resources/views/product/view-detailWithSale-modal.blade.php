@@ -7,7 +7,7 @@
         </div>
         <div class="modal-body">
             <div class="row">
-                <div class="col-sm-9">
+                <div class="col-sm-8">
                     <div class="col-sm-4 invoice-col">
                         <b>@lang('product.sku'):</b>
                         {{ $product->sku }}<br>
@@ -142,79 +142,80 @@
                     {{-- new additoin  --}}
 
                     @if ($query)
-                <div class="row">
-                    <div class="col-md-12">
-                        <h4>Selling Details:</h4>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="table-responsive">
-                            <table class="table table-condensed bg-gray">
-                                <tr class="bg-info">
-                                    <th>Image</th>
-                                    <th>Refference</th>
-                                    <th>Name</th>
-                                    <th>Color</th>
-                                    <th>Size</th>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                    <th>Selling Date</th>
-                                </tr>
-                                @foreach ($query as $row)
-                                    <tr>
-                                        <td>
-                                            <img src=" {{ $row->image_url }}" alt="Product image"
-                                                class="product-thumbnail-small">
-                                        </td>
-                                        <td>
-                                            @if ($row->refference)
-                                                {{ $row->refference }}
-                                            @else
-                                                <b class="text-center">-</b>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            {{ $row->product_name }}
-                                        </td>
-                                        <td>
-                                            {{ $row->color }}
-                                        </td>
-                                        <td>
-                                            {{ $row->size }}
-                                        </td>
-                                        <td>
-                                            <span class="sell_qty" data-currency_symbol=false
-                                                data-orig-value=" {{ (int) $row->sell_qty }}"
-                                                data-unit="{{ $row->unit }} ">
-                                                {{ (int) $row->sell_qty }}
-                                            </span>
-                                            {{ $row->unit }}
-                                        </td>
-                                        <td>
-                                            <span class="display_currency row_subtotal" data-currency_symbol=true
-                                                data-orig-value="{{ $row->subtotal }} ">
-                                                {{ $row->subtotal }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            {{ Carbon\Carbon::parse($row->transaction_date)->format('d-M-Y H:i') }}
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </table>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4>Selling Details:</h4>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-condensed bg-gray">
+                                        <tr class="bg-info">
+                                            <th>Image</th>
+                                            <th>Refference</th>
+                                            <th>Name</th>
+                                            <th>Color</th>
+                                            <th>Size</th>
+                                            <th>Quantity</th>
+                                            <th>Price</th>
+                                            <th>Selling Date</th>
+                                        </tr>
+                                        @foreach ($query as $row)
+                                            <tr>
+                                                <td>
+                                                    <img src=" {{ $row->image_url }}" alt="Product image"
+                                                        class="product-thumbnail-small">
+                                                </td>
+                                                <td>
+                                                    @if ($row->refference)
+                                                        {{ $row->refference }}
+                                                    @else
+                                                        <b class="text-center">-</b>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    {{ $row->product_name }}
+                                                </td>
+                                                <td>
+                                                    {{ $row->color }}
+                                                </td>
+                                                <td>
+                                                    {{ $row->size }}
+                                                </td>
+                                                <td>
+                                                    <span class="sell_qty" data-currency_symbol=false
+                                                        data-orig-value=" {{ (int) $row->sell_qty }}"
+                                                        data-unit="{{ $row->unit }} ">
+                                                        {{ (int) $row->sell_qty }}
+                                                    </span>
+                                                    {{ $row->unit }}
+                                                </td>
+                                                <td>
+                                                    <span class="display_currency row_subtotal"
+                                                        data-currency_symbol=true
+                                                        data-orig-value="{{ $row->subtotal }} ">
+                                                        {{ $row->subtotal }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    {{ Carbon\Carbon::parse($row->transaction_date)->format('d-M-Y H:i') }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            @endif
-            @if ($product->type == 'single')
-                @include('product.partials.single_product_details')
-            @else
-                @include('product.partials.variable_product_details')
-            @endif
+                    @endif
+                    @if ($product->type == 'single')
+                        @include('product.partials.single_product_details')
+                    @else
+                        @include('product.partials.variable_product_details')
+                    @endif
                     {{-- end  --}}
                 </div>
-                <div class="col-sm-3 col-md-3 invoice-col">
+                <div class="col-sm-4 col-md-4 invoice-col">
                     <div class="thumbnail">
-                        <img src="{{ $product->image_url }}" alt="Product image" height="300px" width="200px">
+                        <img src="{{ $product->image_url }}" alt="Product image" height="400px" width="350px">
                     </div>
                 </div>
 
@@ -260,7 +261,7 @@
                     </div>
                 @endif
             @endif
-           
+
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-primary no-print" aria-label="Print"

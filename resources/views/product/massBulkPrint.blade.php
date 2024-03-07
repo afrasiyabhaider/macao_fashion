@@ -103,7 +103,7 @@
                                             data-id="subcat">{{ $objProduct['sub_category'] }}</strong>-
                                         <strong class="printList" data-id="name">{{ $objProduct['name'] }} </strong>
                                     </div>
-                                    <div class="col-xs-3 printList text-right" data-id="size" style="font-size: 12px">
+                                    <div class="col-xs-3 printList text-right" data-id="size" style="font-size: 20px">
                                         {{ $objProduct['size'] }}
                                     </div>
 
@@ -122,7 +122,7 @@
                                 </div>
 
                                 <div class="col-xs-12 d-flex">
-                                    <div class="col-xs-6" style="font-weight: bolder; font-size: 12px">
+                                    <div class="col-xs-6" style="font-weight: bolder; font-size: 20px">
                                         <div class="printList" id="defualt_price" data-id="price"
                                             style="position: absolute;top:-3px">
                                             <span>
