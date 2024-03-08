@@ -6361,7 +6361,7 @@ class ProductController extends Controller
         }
         return redirect()->back()->with('status', $output);
     }
-    
+
     public function removeToPOS(Request $request)
     {
         // dd($request);
@@ -6387,7 +6387,7 @@ class ProductController extends Controller
             }
             $output = [
                 'success' => 1,
-                'msg' => "Product will show on top on POS"
+                'msg' => "Product will remove from top on POS"
             ];
             DB::commit();
         }  catch (\Exception $ex) {
