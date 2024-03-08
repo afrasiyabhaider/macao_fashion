@@ -432,6 +432,7 @@ Route::get('/sells/pos/transationhistory', 'SellPosController@getTransationHisto
     // Website Routes
     Route::post('website/product/', 'WebsiteController@addToWebsite');
     Route::post('pos/product/', 'ProductController@showPos');
+    Route::post('pos/remove-product/', 'ProductController@removeToPOS');
     Route::post('website/remove-product/', 'WebsiteController@removeToWebsite');
     Route::post('pos/bottom/product/', 'ProductController@showBottomPos');
     Route::get('website/product/ajax', 'WebsiteController@websiteAjaxProducts');

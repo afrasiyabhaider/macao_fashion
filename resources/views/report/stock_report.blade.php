@@ -328,6 +328,20 @@
                     </div>
                 </div>  --}}
                         <div class="tab-pane" id="psr_product_in_top_tab">
+                            <div class="row" style="margin-bottom: 20px">
+                                <div class="col-12">
+                                    <form action="{{ action('ProductController@removeToPOS') }}" method="post"
+                                        class="ml-5" style="margin-left: 20px" id="remove_to_pos">
+                                        @csrf
+                                        <input type="hidden" name="product_id" id="product_id">
+                                        <button type="submit" class="btn btn-danger pull-left" id="remove_to_pos_button">
+                                            <i class="fa fa-cross "></i>
+                                            Remove from Top in pos
+                                        </button>
+                                    </form>
+                                    
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-md-12">
                                     @include('report.partials.product_in_top_report_table')
@@ -510,6 +524,25 @@
                 swal('@lang('lang_v1.no_row_selected')');
             }
         }) 
+        $(document).on('click', '#remove_to_pos_button', function(e) {
+            e.preventDefault();
+            var selected_rows = [];
+            var i = 0;
+            $('.row-select:checked').each(function() {
+                var selectedQty = $("#stock_qty_" + $(this).val()).val();
+                var selectedMaxQty = $("#stock_qty_" + $(this).val()).attr('max');
+                if (parseInt(selectedQty) <= parseInt(selectedMaxQty)) {
+                    selected_rows[i++] = $(this).val();
+                }
+            });
+            if (selected_rows.length > 0) {
+                $('input#product_id').val(selected_rows);
+                $("form#remove_to_pos").submit();
+            } else {
+                $('input#product_id').val('');
+                swal('@lang('lang_v1.no_row_selected')');
+            }
+        })
         $(document).on('click', '#remove_to_website_button', function(e) {
             e.preventDefault();
             var selected_rows = [];

@@ -6361,6 +6361,47 @@ class ProductController extends Controller
         }
         return redirect()->back()->with('status', $output);
     }
+    
+    public function removeToPOS(Request $request)
+    {
+        // dd($request);
+        // $validator = $request->validate([
+        //     'reffernce'
+        // ]);
+        try {
+            DB::beginTransaction();
+            $product = explode(",", $request->input('product_id'));
+            $show_pos = Product::orderBy('show_pos', 'DESC')->first()->show_pos + 1;
+            foreach ($product as $key => $value) {
+                $product = Product::find($value);
+                $product_ids = Product::where('name', $product->name)->get();
+                // dd($show_pos);
+                foreach ($product_ids as $p_key => $p_value) {
+                    $p_value->update([
+                        'show_pos' => 0,
+                        // 'show_pos' => $show_pos,
+                    ]);
+                    // $p_value->show_pos = 1;
+                    // $p_value->save();
+                }
+            }
+            $output = [
+                'success' => 1,
+                'msg' => "Product will show on top on POS"
+            ];
+            DB::commit();
+        }  catch (\Exception $ex) {
+            DB::rollback();
+            $output = [
+                'success' => 0,
+                'msg' => __("messages.something_went_wrong") . "Message:" . $ex->getMessage() . ' on Line: ' . $ex->getLine() . ' of ' . $ex->getFile()
+            ];
+        }
+        return redirect()->back()->with('status', $output);
+
+        // dd(WebsiteProducts::get(),$product,$request->input());
+
+    }
     /**
      * Show on Bottom Of POS 
      * 
