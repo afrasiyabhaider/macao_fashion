@@ -2701,11 +2701,11 @@ class ReportController extends Controller
             // if($to_date == 'no'){
             //     $to_date = Carbon::now();
             // }
-            if ($to_date == null) {
-                $to_date = Carbon::now()->format('Y-m-d');
-                $to_date_carbon = Carbon::createFromFormat('Y-m-d', $to_date);
-                $from_date = $to_date_carbon->subYears(10)->format('Y-m-d');
-            }
+            // if ($to_date == null) {
+            //     $to_date = Carbon::now()->format('Y-m-d');
+            //     $to_date_carbon = Carbon::createFromFormat('Y-m-d', $to_date);
+            //     $from_date = $to_date_carbon->subYears(10)->format('Y-m-d');
+            // }
             if (!empty($to_date)) {
                 // dd($products->first());
                 $query->whereDate('p.created_at', '>=', $from_date)->whereDate('p.created_at', '<=', $to_date);
@@ -2775,7 +2775,7 @@ class ReportController extends Controller
                 // 'vld.qty_available as current_stock'
                 DB::raw('SUM(vld.qty_available) as current_stock')
             )
-                ->groupBy('p.name')
+                ->groupBy('p.refference')
                 ->orderBy('vld.product_updated_at', 'DESC');
             // dd($products->first());
             // dd($products->first()->product()->first()->image_url);
