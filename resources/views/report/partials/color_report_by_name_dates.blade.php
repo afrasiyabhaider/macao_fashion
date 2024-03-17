@@ -23,7 +23,6 @@
                                 'placeholder' => __('lang_v1.select_a_date_range'),
                                 'class' => 'form-control',
                                 'id' => 'product_purchase_date_filter',
-                                
                             ]) !!}
                         </div>
                     </div>
@@ -67,54 +66,55 @@
                                                     <th>7-D Sold</th>
                                                     <th>15-D Sold</th>
                                                     <th>Quantity Sold <small>(Date Filter)</small> </th>
-                                                    <th>
-                                                        All Time Purchase
-                                                    </th>
                                                     <th>Current Stock</th>
+                                                    <th>All Time Purchase</th>
                                                     <th>Purchase Date</th>
                                                     <th>Last Update Date</th>
                                                 </tr>
-                                                @foreach ($current_group_color as $item)
+                                                {{-- @dd($current_group_color) --}}
+                                                @foreach ($merged_summed_values as $key => $item)
+                                                {{-- @dd($key,$item) --}}
                                                     <tr>
                                                         <td>
                                                             {{ $loop->iteration }}
                                                         </td>
                                                         <td>
-                                                            {{ $item->product_name }}
+                                                            {{ $item['product_name'] }}
                                                             {{-- {{ $item->product_id }} --}}
                                                         </td>
                                                         <td>
-                                                            {{ $item->color }}
+                                                            {{ $item['color'] }}
                                                         </td>
                                                         <td>
-                                                            {{ (int) $item->all_time_sold }}
-                                                        </td>
-                                                        <td>
-
-                                                            {{ (int) $item->today_sold }}
+                                                            {{ (int) $item['all_time_sold'] }}
                                                         </td>
                                                         <td>
 
-                                                            {{ (int) $item->seven_day_sold }}
+                                                            {{ (int) $item['today_sold'] }}
                                                         </td>
                                                         <td>
-                                                            {{ (int) $item->fifteen_day_sold }}
+
+                                                            {{ (int) $item['seven_day_sold'] }}
+                                                        </td>
+                                                        <td>
+                                                            {{ (int) $item['fifteen_day_sold'] }}
 
                                                         </td>
                                                         <td>
-                                                            {{ (int) $item->total_qty_sold }}
+                                                            {{ (int) $item['total_qty_sold'] }}
+                                                        </td>
+
+                                                        <td>
+                                                            {{ (int) $item['current_stock'] }}
                                                         </td>
                                                         <td>
-                                                            {{ (int) $item->all_time_sold + (int) $item->current_stock }}
+                                                            {{ (int) $item['all_time_sold'] + (int) $item['current_stock'] }}
                                                         </td>
                                                         <td>
-                                                              {{ (int)$item->current_stock }}
-                                                         </td>
-                                                        <td>
-                                                            {{ $item->purchase_date }}
+                                                            {{ $item['purchase_date'] }}
                                                         </td>
                                                         <td>
-                                                            {{ $item->last_update_date }}
+                                                            {{ $item['last_update_date'] }}
                                                         </td>
                                                     </tr>
                                                 @endforeach
