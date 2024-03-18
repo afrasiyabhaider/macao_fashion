@@ -2757,7 +2757,7 @@ class ReportController extends Controller
                 'p.image as image',
                 'p.description as description',
                 'p.type',
-                'p.refference',
+                'p.refference as refference',
                 'colors.name as color_name',
                 'suppliers.name as supplier_name',
                 'categories.name as category_name',
@@ -2806,9 +2806,9 @@ class ReportController extends Controller
                         $start_date = $to_date_carbon->subYears(10)->format('Y-m-d');
                     }
                     if (isset($start_date) && isset($end_date)) {
-                        return '<a  href="' . url("/product/color-detail/" . $row->product . '/' . $start_date . '/' . $end_date) . '" target="_blank" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
+                        return '<a  href="' . url("/product/color-detail/" . $row->product . '/' . $start_date . '/' . $end_date .'/'. $row->refference) . '" target="_blank" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
                     } else {
-                        return '<a  href="' . url("/product/color-detail/" . $row->product . '/' . $start_date . '/' . $end_date) . '" target="_blank" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
+                        return '<a  href="' . url("/product/color-detail/" . $row->product . '/' . $start_date . '/' . $end_date .'/'. $row->refference) . '" target="_blank" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
 
                         // return '<a  href="#"  class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
                     }
@@ -6283,7 +6283,7 @@ class ReportController extends Controller
                     $start_date = request()->get('start_date');
                     $end_date = request()->get('end_date');
                     // return '<a id="color-detail-modal" href="' . url("/product/color-detail/" . $row->product_name . '/' . $start_date . '/' . $end_date) . '" data-product-name="' . $row->product_name . '" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
-                    return '<a  href="' . url("/product/color-detail/" . $row->product_name . '/' . $start_date . '/' . $end_date) . '" target="_blank" data-product-name="' . $row->product_name . '" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
+                    return '<a  href="' . url("/product/color-detail/" . $row->product_name . '/' . $start_date . '/' . $end_date .'/'. $row->refference) . '" target="_blank" data-product-name="' . $row->product_name . '" class="btn btn-primary btn-sm">Color Report <i class="fa fa-eye"></i></a>';
                 })
                 ->addColumn('sale_percentage', function ($row) {
                     if ($row->refference && ($row->total_qty_sold > 0 || $row->current_stock > 0)) {

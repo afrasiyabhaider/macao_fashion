@@ -97,8 +97,8 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::get('/products/viewDetail/{id}', 'ProductController@viewProductDetailWithSale');
     Route::get('/products/viewRefDetail/{refference}', 'ProductController@viewProductRefDetailWithSale');
     Route::get('/product/color-detail/{name}/{id}', 'ProductController@viewColorDetailByRefrenceID');
-    Route::get('/product/color-detail/{name}/{start_date}/{end_date}', 'ProductController@viewColorDetail');
-    Route::get('/product/color-detail-by-filter/{name}/{start_date}/{end_date}', 'ProductController@viewColorDetailByFilter');
+    Route::get('/product/color-detail/{name}/{start_date}/{end_date}/{refference}', 'ProductController@viewColorDetail');
+    Route::get('/product/color-detail-by-filter/{name}/{start_date}/{end_date}/{refference}', 'ProductController@viewColorDetailByFilter');
     Route::get('/product/color-detail-stock/{name}/{start_date}/{end_date}/{location_id}', 'ProductController@viewColorDetailStock');
     Route::get('/products/nothing/{id}', 'ProductController@nothing');
     Route::get('/products/viewBulkPackage/{id}', 'ProductController@viewBulkPackage');

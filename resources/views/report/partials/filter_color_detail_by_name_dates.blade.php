@@ -15,6 +15,7 @@
                 </a>
             </li>
         </ul>
+        <input type="hidden" value="{{ $refference }}" class="refference">
         <div class="tab-content">
             <div class="tab-pane active" id="color_current">
                 <h4 class="modal-title">From: {{ $from_date }} - To: {{ $to_date }}</h4>

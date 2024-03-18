@@ -46,6 +46,7 @@
                                 </a>
                             </li>
                         </ul>
+                        <input type="hidden" value="{{ $refference }}" class="refference">
                         <div class="tab-content">
                             <div class="tab-pane active" id="color_current">
                                 <h4 class="modal-title">From: {{ $from_date }} - To: {{ $to_date }}</h4>
@@ -408,6 +409,7 @@
             var start = '';
             var end = '';
             var location = $('.location').val() != 0 ? $('.location').val() : ''
+            var refference = $('.refference').val() 
 
             start = $('input#product_purchase_date_filter')
                 .data('daterangepicker')
@@ -418,7 +420,7 @@
             $.ajax({
                 url: "{{ url('product/color-detail-by-filter') }}/" + @json($name) + '/' +
                     start +
-                    '/' + end,
+                    '/' + end + '/' + refference,
                 data: {
                     "location_id": location
                 },
