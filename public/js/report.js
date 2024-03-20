@@ -1260,13 +1260,16 @@ $(document).ready(function() {
     }
     if ($('#purchase_product_date_range').length == 1) {
         dateTo = moment().format('MM/DD/YYYY');
-        dateFrom = moment().subtract(6, 'd').format('MM/DD/YYYY');
+        // dateFrom = moment().subtract(6, 'd').format('MM/DD/YYYY');
+        dateFrom = moment().subtract(10, 'years').format('MM/DD/YYYY');
         get_sub_categories();
         $('#purchase_product_date_range').daterangepicker({
             ranges: ranges,
             // autoUpdateInput: true,
-            startDate: financial_year.start,
-            endDate: financial_year.end,
+            // startDate: financial_year.start,
+            // endDate: financial_year.end,
+            startDate: dateFrom,
+            endDate: dateTo,
             locale: {
                 format: moment_date_format,
                 cancelLabel: LANG.clear,
