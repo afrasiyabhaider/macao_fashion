@@ -114,6 +114,13 @@
                             </li>
                         </ul>
                         <div class="tab-content">
+                            <div class="row no-print">
+                                <div class="col-sm-12">
+                                    <button type="button" class="btn btn-primary pull-right" 
+                                    aria-label="Print" onclick="window.print();"
+                                    ><i class="fa fa-print"></i> @lang( 'messages.print' )</button>
+                                </div>
+                            </div>
                             <div class="tab-pane active" id="psr_grouped_tab">
                                 <div class="row">
                                     <div class="col-md-12">
