@@ -28,7 +28,7 @@
                     </div>
                </div>
                <div class="row" id="location_filter">
-                    <div class="form-group col-md-3">
+                    {{-- <div class="form-group col-md-3">
                          {!! Form::label('from_date', ' From Date:') !!}
                          <input type="date" name="product_list_from_date" value="{{date('Y-m-d')}}"
                               id="product_list_from_date" class="form-control">
@@ -37,7 +37,19 @@
                          {!! Form::label('to_date', ' To Date:') !!}
                          <input type="date" name="product_list_to_date" id="product_list_to_date" value=""
                               class="form-control">
-                    </div>
+                    </div> --}}
+                    <div class="col-md-3">
+                         <div class="form-group">
+ 
+                             {!! Form::label('product_sr_date_filter', 'Date:') !!}
+                             {!! Form::text('date_range', null, [
+                                 'placeholder' => __('lang_v1.select_a_date_range'),
+                                 'class' => 'form-control',
+                                 'id' => 'product_purchase_date_filter',
+                                 'readonly',
+                             ]) !!}
+                         </div>
+                     </div>
                </div>
                {!! Form::close() !!}
                @endcomponent
@@ -65,7 +77,7 @@
 </section>
 @endsection
 @section('javascript')
-<script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
+{{-- <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script> --}}
 <script>
      sub_category_table = $('#sub_category_table').DataTable({
         processing: true,
@@ -74,9 +86,31 @@
             url: '{{url("/reports/subcategory-report")}}',
             data: function(d) {
                 d.location_id = $('#location_id').val();
-                d.from_date = $('#product_list_from_date').val();
-                d.to_date = $('#product_list_to_date').val();
                 d.category_id = $('#category_id').val();
+                    var start = '';
+                    var end = '';
+                    // var start = $.datepicker.formatDate('yy-mm-dd', new Date());
+                    // var end = $.datepicker.formatDate('yy-mm-dd', new Date());
+                    // if ($('#product_purchase_date_filter').val()) {
+                    // start = $('input#product_purchase_date_filter')
+                    //     .data('daterangepicker')
+                    //     .startDate.format('YYYY-MM-DD');
+                    // end = $('input#product_purchase_date_filter')
+                    //     .data('daterangepicker')
+                    //     .endDate.format('YYYY-MM-DD');
+                    // }
+                if ($('#product_purchase_date_filter').val()) {
+                    start = $('input#product_purchase_date_filter')
+                        .data('daterangepicker')
+                        .startDate.format('YYYY-MM-DD');
+                    end = $('input#product_purchase_date_filter')
+                        .data('daterangepicker')
+                        .endDate.format('YYYY-MM-DD');
+                }
+                d.from_date = start;
+                d.to_date = end;
+               //  d.from_date = $('#product_list_from_date').val();
+               //  d.to_date = $('#product_list_to_date').val();
             },
         },
         pageLength: 50,
@@ -93,6 +127,32 @@
           //   { data: 'transfered', name: 'transfered' },
         ],
     });
+    if ($('#product_purchase_date_filter').length == 1) {
+            var purchasedateRangeSettings = {
+                ranges: ranges,
+                startDate: moment().subtract(365, 'days'),
+                endDate: moment(),
+                locale: {
+                    cancelLabel: LANG.clear,
+                    applyLabel: LANG.apply,
+                    customRangeLabel: LANG.custom_range,
+                    format: moment_date_format,
+                    toLabel: '~',
+                },
+            };
+            $('#product_purchase_date_filter').daterangepicker(purchasedateRangeSettings, function(start, end) {
+                $('#product_purchase_date_filter').val(
+                    start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
+                );
+                sub_category_table.ajax.reload();
+            });
+            $('#product_purchase_date_filter').on('cancel.daterangepicker', function(ev, picker) {
+                $('#product_purchase_date_filter').val('');
+                sub_category_table.ajax.reload();
+            });
+            $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment().subtract(10, 'years'));
+            $('#product_purchase_date_filter').data('daterangepicker').setEndDate(moment());
+        }
     $(
         '#sub_category_filter_form #location_id,#product_list_to_date,#category_id'
     ).change(function() {
