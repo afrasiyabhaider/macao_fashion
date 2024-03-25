@@ -149,8 +149,13 @@ class ProductNameCategoryController extends Controller
                 $input['name'] = $objCSV[0];
                 $input['business_id'] = $request->session()->get('user.business_id');
                 $input['created_by'] = $request->session()->get('user.id');
-
+                
+                $existingCategory = ProductNameCategory::where('name', $input['name'])->first();
+                if ($existingCategory !== null) {
+                    continue; 
+                }
                 $category = ProductNameCategory::create($input);
+                // $category = ProductNameCategory::create($input);
             }
             DB::commit();
             return redirect(action('ProductNameCategoryController@index'));
