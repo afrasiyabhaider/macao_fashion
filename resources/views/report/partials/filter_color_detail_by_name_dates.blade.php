@@ -36,10 +36,8 @@
                                     <th>7-D Sold</th>
                                     <th>15-D Sold</th>
                                     <th>Quantity Sold <small>(Date Filter)</small> </th>
-                                    <th>
-                                        All Time Purchase
-                                    </th>
                                     <th>Current Stock</th>
+                                    <th>All Time Purchase</th>
                                     <th>Purchase Date</th>
                                     <th>Last Update Date</th>
                                 </tr>
