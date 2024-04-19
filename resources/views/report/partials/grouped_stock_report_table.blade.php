@@ -8,7 +8,7 @@
                     <th>Image</th>
                     <th>@lang('business.product')</th>
                     <th>Color Detail</th>
-                    <th>Refference</th>
+                    <th>Ref</th>
                     <th>Location Name</th>
                     {{-- <th>Actions</th> --}}
                     <th>@lang('sale.unit_price')</th>

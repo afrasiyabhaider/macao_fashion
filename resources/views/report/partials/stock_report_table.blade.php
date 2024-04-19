@@ -16,19 +16,19 @@
                     VLD_ Sell Price
                 </th>
                 <th>Image</th>
-                <th>SKU</th>
+                <th>Barcode</th>
                 <th>POS</th>
                 <th>@lang('business.product')</th>
-                <th>Refference</th>
+                <th>Ref</th>
                 <th>Location Name</th>
-                <th>Actions</th>
+                <th>Act</th>
                 <th>@lang('sale.unit_price')</th>
                 <th>Color</th>
                 <th>Category</th>
                 <th>Sub-Category</th>
                 <th>Size</th>
-                <th>Description</th>
-                <th>Sale Percentage</th>
+                <th>Des</th>
+                <th>Sale %</th>
                 <th>@lang('report.current_stock')</th>
                 <th>Total Sold</th>
                 <th>Total Transfered</th>

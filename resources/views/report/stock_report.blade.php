@@ -1,6 +1,21 @@
 @extends('layouts.app')
 @section('title', __('report.stock_report'))
+@section('css')
+    <style>
+        .product-thumbnail-small {
+            height: 100px !important;
+            width: 100px !important;
+        }
 
+        table.table-bordered.dataTable td {
+            padding-top: 0px !important;
+            padding-bottom: 0px !important;
+            vertical-align: middle;
+            text-align: center
+        }
+    </style>
+
+@endsection
 @section('content')
 
     <!-- Content Header (Page header) -->

@@ -1,6 +1,20 @@
 @extends('layouts.app')
 @section('title', 'Daily Sale Report')
+@section('css')
+    <style>
+        .product-thumbnail-small {
+            height: 100px !important;
+            width: 100px !important;
+        }
 
+        table.table-bordered.dataTable td {
+            padding-top: 0px !important;
+            padding-bottom: 0px !important;
+            vertical-align: middle;
+        }
+    </style>
+
+@endsection
 @section('content')
 
 <!-- Content Header (Page header) -->
