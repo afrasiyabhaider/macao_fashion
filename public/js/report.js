@@ -2343,16 +2343,16 @@ $(document).ready(function() {
                 d.sub_category_id = $('select#sub_category_id').val();
             },
         },
-        columns: [{
-                data: 'image',
-                name: 'products.image',
-                searchable: false,
-                orderable: false
-            },
-
+        columns: [
             {
                 data: 'detail',
                 name: 'detail',
+                searchable: false,
+                orderable: false
+            },
+            {
+                data: 'image',
+                name: 'products.image',
                 searchable: false,
                 orderable: false
             },

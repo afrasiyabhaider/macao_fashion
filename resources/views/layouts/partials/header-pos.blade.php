@@ -4,10 +4,10 @@
   <div class="row">
     
     
-    <div class="col-md-5 pull-right">
+    <div class="col-md-7 pull-right">
       <span class=" btn btn-info  pull-right" style="padding: 10px">
         <i class="fa fa-user"></i>
-        <span class="h4 font-weight-bold">
+        <span class=" font-weight-bold">
           {{Auth::user()->first_name}}
           {{Auth::user()->last_name}}
         </span> -
@@ -67,7 +67,7 @@
 
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-5">
       
       <div class="m-6 pull-left mt-15 hidden-xs ">   <strong >{{ @format_date('now') }}</strong><strong style="margin-left: 10px;"  id="total_b_point"> </strong></div>
     </div>

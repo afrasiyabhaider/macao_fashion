@@ -3,8 +3,8 @@
 @section('css')
     <style>
         .product-thumbnail-small {
-            height: 100px !important;
-            width: 100px !important;
+            height: 80px !important;
+            width: 80px !important;
         }
 
         table.table-bordered.dataTable tbody td {
@@ -171,8 +171,8 @@
                                     id="product_sell_grouped_report_table" style="width: 100%;">
                                     <thead>
                                         <tr>
-                                            <th>Image</th>
                                             <th>Action</th>
+                                            <th>Image</th>
                                             <th>@lang('sale.product')</th>
                                             {{-- <th>Purchase Date</th> --}}
                                             <th>Ref</th>

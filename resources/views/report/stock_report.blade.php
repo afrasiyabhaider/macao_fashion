@@ -3,8 +3,8 @@
 @section('css')
     <style>
         .product-thumbnail-small {
-            height: 100px !important;
-            width: 100px !important;
+            height: 80px !important;
+            width: 80px !important;
         }
 
         table.table-bordered.dataTable td {
@@ -255,8 +255,8 @@
                                             Show Top in POS
                                         </button>
                                     </form>
-                                    <form action="{{ action('ProductController@showBottomPos') }}" method="post" class="ml-5"
-                                        style="margin-left: 20px" id="show_bottom_pos">
+                                    <form action="{{ action('ProductController@showBottomPos') }}" method="post"
+                                        class="ml-5" style="margin-left: 20px" id="show_bottom_pos">
                                         @csrf
                                         <input type="hidden" name="product_id" id="product_id">
                                         <button type="submit" class="btn btn-warning pull-left" id="show_bottom_pos_button">
@@ -323,7 +323,7 @@
                             'bulkTransfer-selected')) !!} --}}
                                     <button type="submit" class="btn btn-warning" id="bulkPrice-selected">
                                         <i class="fa fa-random"></i>
-                                        Set price 
+                                        Set price
                                     </button>
                                     {!! Form::close() !!}
 
@@ -354,7 +354,7 @@
                                             Remove from Top in pos
                                         </button>
                                     </form>
-                                    
+
                                 </div>
                             </div>
                             <div class="row">
@@ -370,12 +370,13 @@
                                         class="ml-5" style="margin-left: 20px" id="remove_to_website">
                                         @csrf
                                         <input type="hidden" name="product_id" id="product_id">
-                                        <button type="submit" class="btn btn-danger pull-left" id="remove_to_website_button">
+                                        <button type="submit" class="btn btn-danger pull-left"
+                                            id="remove_to_website_button">
                                             <i class="fa fa-cross "></i>
                                             Remove from Website
                                         </button>
                                     </form>
-                                    
+
                                 </div>
                             </div>
                             <div class="row">
@@ -451,7 +452,8 @@
             $("#bussiness_bulkTransfer").val(transferBussiness);
             $("#current_location").val($("#location_id").val());
             $('form#bulkTransfer_form').submit();
-        } 
+        }
+
         function PriceSelected() {
             // var PriceBussiness = $("#PriceBussiness option:selected").val();
             var PriceBussiness = $("#location_id option:selected").val();
@@ -489,9 +491,9 @@
                 $('input#selected_products_bulkTransfer').val('');
                 swal('@lang('lang_v1.no_row_selected')');
             }
-        }) 
+        })
         $(document).on('click', '#bulkPrice-selected', function(e) {
-            
+
             e.preventDefault();
             var selected_rows = [];
             var selected_rows_qty = [];
@@ -503,9 +505,9 @@
                 // var selectedLocationId = $("#location_" + $(this).val()).attr("max");
                 console.log(selectedPrice);
                 // if (parseInt(selectedPrice) <= parseInt(selectedMaxQty)) {
-                    selected_rows[i++] = $(this).val() + "@" + selectedPrice + "@" + selectedOldPrice;
-                        // $(this).val() + "@" + selectedPrice + "@" + selectedMaxQty + "@" +
-                        // selectedLocationId;
+                selected_rows[i++] = $(this).val() + "@" + selectedPrice + "@" + selectedOldPrice;
+                // $(this).val() + "@" + selectedPrice + "@" + selectedMaxQty + "@" +
+                // selectedLocationId;
                 // }
             });
             if (selected_rows.length > 0) {
@@ -538,7 +540,7 @@
                 $('input#product_id').val('');
                 swal('@lang('lang_v1.no_row_selected')');
             }
-        }) 
+        })
         $(document).on('click', '#remove_to_pos_button', function(e) {
             e.preventDefault();
             var selected_rows = [];
@@ -550,6 +552,10 @@
                     selected_rows[i++] = $(this).val();
                 }
             });
+            // console.log(selected_rows);
+            // return 0;
+
+
             if (selected_rows.length > 0) {
                 $('input#product_id').val(selected_rows);
                 $("form#remove_to_pos").submit();

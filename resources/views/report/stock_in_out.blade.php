@@ -2,9 +2,9 @@
 @section('title', __('stock_in_out'))
 @section('css')
     <style>
-        .product-thumbnail-small {
-            height: 100px !important;
-            width: 100px !important;
+         .product-thumbnail-small {
+            height: 80px !important;
+            width: 80px !important;
         }
 
         table.table-bordered.dataTable td {
@@ -162,8 +162,8 @@
                                                 class="unknown_amount"data-currency_symbol="false"></span></h4>
                                         <h4 hidden>Total unknown price : <span
                                                 class="unknown_sold_price"data-currency_symbol="false"></span></h4>
-                                                <h4>Total Invoices : <span
-                                                    class="totalinvoicesSum"data-currency_symbol="false"></span></h4>
+                                        <h4>Total Invoices : <span
+                                                class="totalinvoicesSum"data-currency_symbol="false"></span></h4>
                                         {{-- @include('report.partials.stock_group_table') --}}
                                     </div>
                                 </div>
