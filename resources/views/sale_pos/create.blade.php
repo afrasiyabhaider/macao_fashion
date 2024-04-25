@@ -4,7 +4,12 @@
 
 @section('css')
     <style>
-
+.pos-express-btn {
+    font-size: 13px !important;
+    overflow: hidden !important;
+    height: 41px !important;
+    white-space: normal;
+}
     </style>
 
 @endsection
@@ -12,11 +17,11 @@
 
     <!-- Content Header (Page header) -->
     <!-- <section class="content-header">
-                            <h1>Add Purchase</h1> -->
+                                        <h1>Add Purchase</h1> -->
     <!-- <ol class="breadcrumb">
-                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                <li class="active">Here</li>
-                            </ol> -->
+                                            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                            <li class="active">Here</li>
+                                        </ol> -->
     <!-- </section> -->
 
     <!-- Main content -->
@@ -29,7 +34,7 @@
                 @component('components.widget', ['class' => 'box-success'])
                     @slot('header')
                         <div class="row" style="margin-bottom: 5px;">
-                            <div class="col-sm-6">
+                            <div class="col-sm-12">
 
                                 <h3 class="box-title">POS Terminal <i class="fa fa-keyboard-o hover-q text-muted" aria-hidden="true"
                                         data-container="body" data-toggle="popover" data-placement="bottom"
@@ -38,6 +43,78 @@
                                 </h3>
                                 <br> <strong class="ml-2" id="total_b_point"> </strong>
                                 <br>
+                                <div class="row" style="margin-bottom: 5px;">
+                                    <div class="col-sm-6"  style="padding-right: 0 !important;">
+                                        {{-- onclick="openReturnWindow();" --}}
+
+                                        <div class="d-flex justify-content-between">
+                                            <a title="Return Sale" data-toggle="tooltip" data-placement="bottom" style=" width:49%; margin-right:1.2px;"
+                                                class="btn btn-danger btn-md " href="{{ url('sell-return/add') }}" target="__blank">
+                                                <strong><i class="fa fa-undo"></i></strong>
+                                                Return
+                                                {{-- <strong><i class="fa fa-asl-interpreting"></i></strong> --}}
+                                                {{-- RETURN --}}
+                                            </a>
+                                            <button type="button" onclick="openPopupWindow('/products/transfer');"
+                                                title="Transfer Products" data-toggle="tooltip" data-placement="bottom"
+                                                class="btn btn-warning " style=" width:49%; margin-right:1.2px;">
+                                                <strong><i class="fa fa-random fa-lg"></i></strong>
+                                                Transfer
+                                            </button>
+                                            <button type="button" title="Gift Card" data-toggle="tooltip" data-placement="bottom"
+                                                class="btn btn-success pos_add_quick_product  btn-3"
+                                                data-href="{{ action('GiftCardController@quickAdd') }}"
+                                                data-container=".quick_add_product_modal" style=" width:49%; margin-top:4px;">
+                                                <i class="fa fa-archive fa-lg"></i>
+                                                Gift Card
+                                            </button>
+
+
+                                            <button type="button" title="Add Cupons" data-toggle="tooltip" data-placement="bottom"
+                                                class=" btn btn-success pos_add_quick_product  btn-4"
+                                                data-href="{{ action('CouponController@quickAdd') }}"
+                                                data-container=".quick_add_product_modal" style=" width:49%; margin-top:4px; margin-right:1.2px;">
+                                                <i class="fa fa-calendar-check-o fa-lg"></i>
+                                                Cupon
+                                            </button>
+                                        </div>
+
+
+
+
+                                    </div>
+                                    <div class="col-sm-6 " style="padding-left: 0 !important;">
+                                        <div class="d-flex justify-content-between">
+                                            <a title="Return Sale" data-toggle="tooltip" data-placement="bottom" style="width:49%; margin-right:1.2px;"
+                                                class="btn btn-info btn-md  btn-5" href="{{ url('products/') }}" target="__blank">
+                                                <strong><i class="fa fa-list-ul"></i></strong>
+                                                List Product
+                                                {{-- <strong><i class="fa fa-asl-interpreting"></i></strong> --}}
+                                                {{-- RETURN --}}
+                                            </a>
+                                            <a title="Return Sale" data-toggle="tooltip" data-placement="bottom"
+                                                class="btn btn-info btn-md btn-6" href="{{ url('reports/product-sell-report') }}"
+                                                target="__blank" style="width:49%; margin-right:1.2px;">
+                                                <strong><i class="fa fa-dollar"></i></strong>
+                                                Sale Report
+                                            </a>
+
+
+                                            <a title="Return Sale" data-toggle="tooltip" data-placement="bottom"
+                                                class="btn btn-info btn-md  btn-7" href="{{ url('reports/stock-report') }}"
+                                                target="__blank" style=" width:49%; margin-top:4px; margin-right:1.2px;">
+                                                <strong>
+                                                    <i class="fa fa-inbox"></i>
+                                                </strong>
+                                                Stock Report
+                                            </a>
+
+                                            <button type="button" class="  btn-8 btn btn-warning btn-md "
+                                                style=" width:49%; margin-top:4px; margin-right:1.2px;" onClick="transationHistory();">Client
+                                                History</button>
+                                        </div>
+                                    </div>
+                                </div>
                                 <br>
                                 <input type="hidden" id="item_addition_method"
                                     value="{{ $business_details->item_addition_method }}">
@@ -54,7 +131,7 @@
                                                         $business_locations,
                                                         null,
                                                         [
-                                                            'class' => 'form-control input-sm mousetrap ',
+                                                            'class' => 'form-control input-md mousetrap ',
                                                             'placeholder' => __('lang_v1.select_location'),
                                                             'id' => 'select_location_id',
                                                             'onchange' => 'locationChange(event);',
@@ -72,70 +149,7 @@
                                     </div>
                                 @endif
                             </div>
-                            <div class="col-sm-6">
-                                {{-- onclick="openReturnWindow();" --}}
-                                <div style="display: flex; justify-content:end; margin-top:5px;">
-                                    <a title="Return Sale" data-toggle="tooltip" data-placement="bottom" style="margin-right: 5px"
-                                        class="btn btn-danger btn-md pull-right" href="{{ url('sell-return/add') }}"
-                                        target="__blank">
-                                        <strong><i class="fa fa-undo"></i></strong>
-                                        Return
-                                        {{-- <strong><i class="fa fa-asl-interpreting"></i></strong> --}}
-                                        {{-- RETURN --}}
-                                    </a>
-                                    <button type="button" onclick="openPopupWindow('/products/transfer');"
-                                        title="Transfer Products" data-toggle="tooltip" data-placement="bottom"
-                                        class="btn btn-warning pull-right" style="margin-right: 5px">
-                                        <strong><i class="fa fa-random fa-lg"></i></strong>
-                                        Transfer
-                                    </button>
-                                    <button type="button" title="Gift Card" data-toggle="tooltip" data-placement="bottom"
-                                        class="btn btn-success pos_add_quick_product pull-right btn-3"
-                                        data-href="{{ action('GiftCardController@quickAdd') }}"
-                                        data-container=".quick_add_product_modal" style="margin-right: 5px">
-                                        <i class="fa fa-archive fa-lg"></i>
-                                        Gift Card
-                                    </button>
-                                </div>
-                                <div style="display: flex; justify-content:end; margin-top:5px;">
 
-                                    <button type="button" title="Add Cupons" data-toggle="tooltip" data-placement="bottom"
-                                        class=" btn btn-success pos_add_quick_product pull-right btn-4"
-                                        data-href="{{ action('CouponController@quickAdd') }}"
-                                        data-container=".quick_add_product_modal" style="margin-right: 5px">
-                                        <i class="fa fa-calendar-check-o fa-lg"></i>
-                                        Cupon
-                                    </button>
-                                    <a title="Return Sale" data-toggle="tooltip" data-placement="bottom" style="margin-right: 5px"
-                                        class="btn btn-info btn-md pull-right btn-5" href="{{ url('products/') }}" target="__blank">
-                                        <strong><i class="fa fa-list-ul"></i></strong>
-                                        List Product
-                                        {{-- <strong><i class="fa fa-asl-interpreting"></i></strong> --}}
-                                        {{-- RETURN --}}
-                                    </a>
-                                    <a title="Return Sale" data-toggle="tooltip" data-placement="bottom"
-                                        class="btn btn-info btn-md pull-right btn-6" href="{{ url('reports/product-sell-report') }}"
-                                        target="__blank" style="margin-right: 5px; ">
-                                        <strong><i class="fa fa-dollar"></i></strong>
-                                        Sale Report
-                                    </a>
-                                </div>
-                                <div style="display: flex; justify-content:end; margin-top:5px;">
-
-                                    <a title="Return Sale" data-toggle="tooltip" data-placement="bottom"
-                                        class="btn btn-info btn-md pull-right btn-7" href="{{ url('reports/stock-report') }}"
-                                        target="__blank" style="margin-right: 5px; ">
-                                        <strong>
-                                            <i class="fa fa-inbox"></i>
-                                        </strong>
-                                        Stock Report
-                                    </a>
-
-                                    <button type="button" class=" btn-8 btn btn-warning btn-md pull-right"
-									style="margin-right: 5px; "  onClick="transationHistory();">Client History</button>
-                                 
-                                </div>
-                            </div>
                         </div>
                     @endslot
                     {!! Form::open(['url' => action('SellPosController@store'), 'method' => 'post', 'id' => 'add_pos_sell_form']) !!}
@@ -148,11 +162,12 @@
                     ]) !!}
 
                     <!-- /.box-header -->
-                    <div class="box-body">
+                    <div class="box-body" style="    padding-top: 0;">
                         <div class="row">
                             <input type="text" hidden id="direct_cash" name="direct_cash" value="0">
 
                             @if (config('constants.enable_sell_in_diff_currency') == true)
+                            
                                 <div class="col-md-4 col-sm-6">
                                     <div class="form-group">
                                         <div class="input-group">
@@ -182,7 +197,7 @@
                                                 {!! Form::hidden('hidden_price_group', key($price_groups), ['id' => 'hidden_price_group']) !!}
                                                 {!! Form::select('price_group', $price_groups, null, [
                                                     'class' => 'form-control
-                                                                                                                                                                                                                                                                                                								select2',
+                                                                                                                                                                                                                                                                                                                                                                                                                                                								select2',
                                                     'id' => 'price_group',
                                                     'style' => 'width: 100%;',
                                                 ]) !!}
@@ -213,9 +228,9 @@
                             @endif
                         </div>
                         <div class="row">
-                            <div class="@if (!empty($commission_agent)) col-sm-4 @else col-sm-6 @endif">
+                            <div class="@if (!empty($commission_agent)) col-sm-4 @else col-sm-12 @endif " style="padding-left: 5px ; padding-right: 5px ;">
                                 <div class="form-group" style="width: 100% !important">
-                                    <div class="input-group">
+                                    <div class="input-group" style="    margin-bottom: 25px;">
                                         <span class="input-group-addon">
                                             <i class="fa fa-user"></i>
                                         </span>
@@ -255,7 +270,7 @@
                                 </div>
                             @endif
 
-                            <div class="@if (!empty($commission_agent)) col-sm-4 @else col-sm-6 @endif">
+                            <div class="@if (!empty($commission_agent)) col-sm-4 @else col-sm-12 @endif" style="padding-left: 5px ; padding-right: 5px ;">
                                 <div class="form-group">
                                     <div class="input-group">
                                         <span class="input-group-btn">
