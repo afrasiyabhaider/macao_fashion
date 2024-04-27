@@ -29,14 +29,16 @@
                                 <div class="col-sm-1 col-xs-3 d-inline-table">
                                     <b>@lang('sale.item'):</b>
                                     <br />
-                                    <span class="total_quantity">0</span>
+                                  <div style="margin-top: 7px">
+                                    <span  class="total_quantity" style="font-size:40px">0</span>
+                                  </div>
                                 </div>
 
                                 <div class="col-sm-4 col-xs-4 d-inline-table ">
                                     <b>Amount Given:</b>
                                     <br />
                                     <input type="number" min="1" name="change" id="change_amount"
-                                        class="form-control" placeholder="Amount Given" onkeyup="clacuateChange(this);">
+                                        class="form-control" style="margin-top: 20px" placeholder="Amount Given" onkeyup="clacuateChange(this);">
                                 </div>
                                 <div class="col-1">
                                 </div>
@@ -102,7 +104,7 @@
 
                                     </span>
                                 </div>
-
+                          
                                 <!-- shipping -->
                                 <div class="col-sm-2 col-xs-6 d-inline-table hide">
 
@@ -124,14 +126,17 @@
                                     </span>
                                 </div>
 
-
+                          
                                 <div class="col-sm-3 col-xs-12 d-inline-table">
                                     <b>@lang('sale.total_payable'):</b>
                                     <br />
                                     <input type="float" name="final_total" id="final_total_input"
                                         style="display: none">
-                                    <span id="total_payable" class="text-success lead text-bold"
-                                        style="font-size:70px">0</span>
+                                   
+                                        <h4 class="text-success lead text-bold">
+                                            <span id="total_payable" class="text-success lead text-bold"
+                                            style="font-size:40px">0</span>
+                                        </h4>
                                     {{-- @if (empty($edit))
 									<button type="button" class="btn btn-danger btn-flat btn-xs pull-right" id="pos-cancel">@lang('sale.cancel')</button>
 								@else
@@ -203,7 +208,7 @@
 									</div>
 								</button> --}}
 								 <button type="button"
-                                     class="btn btn-info btn-block btn-flat btn-lg bg-blue-gradient  btn-lg pull-left pos-express-btn" title="Bonus Points"
+                                     class="btn btn-info btn-block   btn-lg pull-left pos-express-btn" title="Bonus Points"
                                     {{-- class="btn btn-info btn-block btn-flat btn-lg no-print @if ($pos_settings['disable_express_checkout'] != 0) hide @endif pos-express-btn pos-express-finalize"									 --}}
                                     onclick="couponPayment()">
 									<i class="fa fa-dollar" aria-hidden="true"></i> 
@@ -212,7 +217,7 @@
                                 </div>
                                 <div class="col-sm-2 col-xs-12 col-2px-padding">
                                     <button type="button"
-                                        class="btn btn-info btn-block btn-flat btn-lg no-print @if ($pos_settings['disable_express_checkout'] != 0) hide @endif pos-express-btn pos-express-finalize"
+                                        class="btn btn-info btn-block  btn-lg no-print @if ($pos_settings['disable_express_checkout'] != 0) hide @endif pos-express-btn pos-express-finalize"
                                         id="pos-save-card-external">
                                         {{-- data-pay_method="card"  --}}
                                         <i class="fa fa-credit-card"></i>
@@ -222,7 +227,7 @@
                                 </div>
                                 <div class="col-sm-2 col-xs-12 col-2px-padding">
                                     <button type="button"  
-                                        class="btn btn-success btn-block btn-flat btn-lg no-print @if ($pos_settings['disable_express_checkout'] != 0) hide @endif pos-express-btn pos-express-finalize"
+                                        class="btn btn-success btn-block btn-lg no-print @if ($pos_settings['disable_express_checkout'] != 0) hide @endif pos-express-btn pos-express-finalize"
                                         data-pay_method="cash" title="@lang('tooltip.express_checkout')">
                                         <div class="text-center">
                                             <i class="fa fa-dollar" aria-hidden="true"></i>
