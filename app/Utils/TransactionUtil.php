@@ -1160,7 +1160,9 @@ class TransactionUtil extends Util
             // $newPoints = $objContact->bonus_points - $leftAmount;
             $dataUpdate = ['bonus_points' => $newPoints];
             $dataWhere = ['business_id' => $transaction->business_id, 'id' => $objContact->id];
-            Contact::where($dataWhere)->update($dataUpdate);
+            if($transaction->contact_id != '1'){
+                Contact::where($dataWhere)->update($dataUpdate);
+                }
             }
         }
         //Delete the payment lines removed.
