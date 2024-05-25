@@ -928,6 +928,9 @@
             $("#CustomPrice").focus();
             $("#value").focus();
         });
+        onafterprint = function () {
+            $('#total_b_point').text('');
+            }
     </script>
 
     <script src="{{ asset('js/pos.js?v=' . $asset_v) }}"></script>
