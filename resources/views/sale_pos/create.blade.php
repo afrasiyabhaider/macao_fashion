@@ -553,7 +553,10 @@
                 alert('Payable is too Low');
                 return 0;
             }
-            var calc = parseFloat(amount - __read_number($('#final_total_input')));
+            // var calc = parseFloat(amount - __read_number($('#final_total_input')));
+            var totalPayable = $('#total_payable').text();
+            var newTotalPayable = totalPayable.replace(/,/g, '.');
+            var calc = parseFloat(amount - newTotalPayable);
             $('#change_text').html(__currency_trans_from_en(calc, true));
         }
 
