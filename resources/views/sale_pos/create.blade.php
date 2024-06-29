@@ -318,17 +318,19 @@
                         </div>
 
 
-                        <div class="form-group col-md-4" id="Bonus_Points" style="display: none">
-                            <div class="input-group">
-                                {{-- <label>Bonus Points</label> --}}
-                                <p id="custDet" hidden></p>
-                                <input class="form-control" type="hidden" id="user_total_point" placeholder="Bonus Point">
-                                <input class="form-control" type="hidden" id="total_points" placeholder="Bonus Point">
-                                <input class="form-control" type="number" id="cust_points" name="cust_bonus_point"
-                                    placeholder="Bonus Point" onchange="bonusinputes()">
-                                <span id="errorshow" class="text-danger"></span>
+                        <div class="row">
+                            <div class="form-group col-md-6"  id="Bonus_Points" style="display: none; padding:0 5px;">
+                                <div class="input-group " style="width:100%;">
+                                    {{-- <label>Bonus Points</label> --}}
+                                    <p id="custDet" hidden></p>
+                                    <input class="form-control" type="hidden" id="user_total_point" placeholder="Bonus Point">
+                                    <input class="form-control" type="hidden" id="total_points" placeholder="Bonus Point">
+                                    <input class="form-control" type="number" id="cust_points" name="cust_bonus_point"
+                                        placeholder="Bonus Point" onchange="bonusinputes()">
+                                    <span id="errorshow" class="text-danger"></span>
+                                </div>
                             </div>
-                        </div>
+                           </div>
                         <div class="form-group col-md-4">
                             <div class="input-group">
                                 {{-- <label>Discount %</label> --}}
