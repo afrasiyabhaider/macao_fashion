@@ -6161,10 +6161,10 @@ class ProductController extends Controller
             $productNames = $objInputs['name'];
             $existingProducts = Product::whereIn('name', $productNames)->get();
             if ($existingProducts->isNotEmpty()) {
-                return response()->json([
-                    // 'error' => 'This product names are already available: ' . $existingProducts->pluck('name')->implode(', ')
-                    'error' => 'This product names are already available'
-                ], 400);
+                $output = [
+                    'success' => 0,
+                    'msg' => "Bulk " . __('This product names are already available'. $existingProducts->pluck('name')->implode(', '))
+                ];
             }
             for ($i = 0; $i < count($objInputs['name']); $i++) {
                 $deleteNameSeriesId = 0;
