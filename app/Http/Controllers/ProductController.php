@@ -6158,15 +6158,19 @@ class ProductController extends Controller
             $tempReff = (int) $objBuss->prod_refference;
             $tRef = "";
             DB::beginTransaction();
-            $productNames = $objInputs['name'];
-            $existingProducts = Product::whereIn('name', $productNames)->get();
-            if ($existingProducts->isNotEmpty()) {
-                $output = [
-                    'success' => 0,
-                    'msg' => "Bulk " . __('This product names are already available'. $existingProducts->pluck('name')->implode(', '))
-                ];
-            }
+            // $productNames = $objInputs['name'];
+            // $existingProducts = Product::whereIn('name', $productNames)->get();
+            // if ($existingProducts->isNotEmpty()) {
+            //     $output = [
+            //         'success' => 0,
+            //         'msg' => "Bulk " . __('This product names are already available'. $existingProducts->pluck('name')->implode(', '))
+            //     ];
+            // }
             for ($i = 0; $i < count($objInputs['name']); $i++) {
+                $existingProduct = Product::where('name', $objInputs['name'][$i])->first();
+                if ($existingProduct) {
+                    continue;
+                }
                 $deleteNameSeriesId = 0;
                 if ($objInputs['name_id'][$i] != 0) {
                     $deleteNameSeriesId = $objInputs['name_id'][$i];
