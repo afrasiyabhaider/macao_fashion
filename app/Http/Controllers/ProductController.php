@@ -6167,10 +6167,10 @@ class ProductController extends Controller
             //     ];
             // }
             for ($i = 0; $i < count($objInputs['name']); $i++) {
-                $existingProduct = Product::where('name', $objInputs['name'][$i])->first();
-                if ($existingProduct) {
-                    continue;
-                }
+                // $existingProduct = Product::where('name', $objInputs['name'][$i])->first();
+                // if ($existingProduct) {
+                //     continue;
+                // }
                 $deleteNameSeriesId = 0;
                 if ($objInputs['name_id'][$i] != 0) {
                     $deleteNameSeriesId = $objInputs['name_id'][$i];
@@ -6505,5 +6505,13 @@ class ProductController extends Controller
             ];
         }
         return redirect()->back()->with('status', $output);
+    }
+    public function generateUniqueProductname($name)
+    {
+        do {
+            $randomName = $name . rand(10, 1000);
+        } while (ProductNameCategory::where('name', $randomName)->exists());
+
+        return response()->json(['name' => $randomName]);
     }
 }

@@ -72,8 +72,12 @@
 				<div class="col-sm-4">
 					<div class="form-group">
 						{!! Form::label('name', __('product.product_name') . ': *') !!}
+						{{-- {!! Form::text('name', null,
+						['class' => 'req form-control', 'disabled' ,'required',
+						'placeholder' => __('product.product_name')]); !!} --}}
+						{{-- {!! Form::text('name', !empty($duplicate_product->name) ? $duplicate_product->name : null, --}}
 						{!! Form::text('name', !empty($duplicate_product->name) ? $duplicate_product->name : null,
-						['class' => 'req form-control' ,'required',
+						['class' => 'req form-control' ,'disabled','required',
 						'placeholder' => __('product.product_name')]); !!}
 					</div>
 				</div>
@@ -779,13 +783,11 @@
 		 */
 		var x = Math.round(Math.random()*(0-200))+200;
 		editPnc(x);
-
 		var arrName = objPNC[pncRow].split("@");
-		$("#name_id").val(arrName[0]);
-		$("#name").val(arrName[1]);
-		//// console.log("Arr Name : "+arrName);
-		   $("#unit_price").focus();
-		// $("#refference_id").focus();
+		findName(arrName[1]);
+
+		$("#unit_price").focus();
+		$("#refference_id").focus();
 
 
 		$("#category_id").val(2).change();
@@ -827,6 +829,20 @@
      // $("#sub_category_id").change(function () {
     	// // $("#refference_id").focus();
      // });
+     function findName(name)
+     {
+		$.ajax({
+			type:'GET',
+			url:'/unique-product-name/'+name, 
+			success:function(data){
+				if(data)
+				{ 
+					$("#name_id").val(data.name);
+					$("#name").val(data.name);
+				}
+			}
+		});
+     }
      function changeUnitPrice(obj)
      {
 		//  // console.log(obj.value);
@@ -1539,6 +1555,7 @@
 							toastr.error('Category and Sub-Category not found. Please select manually.');
 						}
 						// .attr('selected',true);
+						console.log(result.product.name);
 						$("#name").val(result.product.name);
 						// $("#upload_image").val(result.product.image);
 						$("#name_id").val(0); //important

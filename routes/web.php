@@ -128,6 +128,7 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::get('/products/addColor/{id}', 'ProductController@addColor');
     Route::get('/products/updateProductId', 'ProductController@updateProductId');
     Route::get('/products/getProductId', 'ProductController@getProductId');
+    Route::get('/unique-product-name/{name}', 'ProductController@generateUniqueProductname');
     Route::post('/products/bulk_add_store', 'ProductController@bulkAddStore');
 
     Route::resource('products', 'ProductController');
