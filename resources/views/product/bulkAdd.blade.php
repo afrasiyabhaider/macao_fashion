@@ -73,7 +73,7 @@
 					<div class="form-group">
 						{!! Form::label('name', __('product.product_name') . ': *') !!}
 						{!! Form::text('name', !empty($duplicate_product->name) ? $duplicate_product->name : null,
-						['class' => 'req form-control', 'disabled' ,'required',
+						['class' => 'req form-control' ,'required',
 						'placeholder' => __('product.product_name')]); !!}
 					</div>
 				</div>
