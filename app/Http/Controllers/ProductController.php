@@ -6398,23 +6398,29 @@ class ProductController extends Controller
      **/
     public function showPos(Request $request)
     {
-        // dd($request);
         try {
             DB::beginTransaction();
             $product = explode(",", $request->input('product_id'));
             $show_pos = Product::orderBy('show_pos', 'DESC')->first()->show_pos + 1;
+
             foreach ($product as $key => $value) {
                 $product = Product::find($value);
-                $product_ids = Product::where('name', $product->name)->get();
-                // dd($product_ids);
-                foreach ($product_ids as $p_key => $p_value) {
-                    $p_value->update([
-                        'show_pos' => $show_pos,
-                    ]);
-                    // $p_value->show_pos = 1;
-                    // $p_value->save();
-                }
+                // $product_ids = Product::where('name', $product->name)->get();
+                // // dd($product_ids);
+                // foreach ($product_ids as $p_key => $p_value) {
+                //     $p_value->update([
+                //         'show_pos' => $show_pos,
+                //     ]);
+                //     // $p_value->show_pos = 1;
+                //     // $p_value->save();
+                // }
+
+                $product->update([
+                    'show_pos' => $show_pos,
+                ]);
             }
+
+        
             $output = [
                 'success' => 1,
                 'msg' => "Product will show on top on POS"
