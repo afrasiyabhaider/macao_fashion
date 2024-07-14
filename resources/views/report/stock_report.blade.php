@@ -287,6 +287,7 @@
                                         class="ml-5" style="margin-left: 20px" id="add_to_website">
                                         @csrf
                                         <input type="hidden" name="product_id" id="product_id">
+                                        <input type="hidden" name="location_id" id="websiteProduct_location_id">
                                         <button type="submit" class="btn btn-info pull-left" id="add_to_website_button">
                                             <i class="fa fa-copy"></i>
                                             Add to Website
@@ -529,14 +530,21 @@
                     selected_rows[i++] = $(this).val();
                 }
             });
+            var location_id = $("#location_id").val();
             // console.log(selected_rows);
             // return 0;
+            // if all location is selected then send main shop
+            if(location_id == 0){
+                location_id = 1;
+            }
 
 
             if (selected_rows.length > 0) {
                 $('input#product_id').val(selected_rows);
+                $('input#websiteProduct_location_id').val(location_id);
                 $("form#add_to_website").submit();
             } else {
+                $('input#websiteProduct_location_id').val('');
                 $('input#product_id').val('');
                 swal('@lang('lang_v1.no_row_selected')');
             }
