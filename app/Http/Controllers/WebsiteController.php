@@ -53,7 +53,7 @@ class WebsiteController extends Controller
                         $web_product = new WebsiteProducts();
                         $web_product->product_id = $product->id;
                         $web_product->refference = $product->refference;
-                        $web_product->location_id = (int)$request->input('location_id')??0;
+                        $web_product->location_id = (int)$request->input('location_id')??1;
                         $web_product->quantity = $qty;
                         $web_product->added_on = Carbon::now();
                         $web_product->save();
