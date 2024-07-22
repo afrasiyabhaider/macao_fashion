@@ -22,6 +22,12 @@
         padding-top: 10px !important;
         background-color: whitesmoke !important;
     }
+
+    /* @media only screen and (max-width:768px; ) {
+        .price-box span{
+            font-size: 10px;
+        }
+    } */
 </style>
 @section('content')
     <section class="content-header">
@@ -76,15 +82,14 @@
             </div>
         </div>
         <!-- <ol class="breadcrumb">
-                                                                            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                                                                            <li class="active">Here</li>
-                                                                        </ol> -->
+                                                                                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                                                                                <li class="active">Here</li>
+                                                                            </ol> -->
     </section>
 
     <!-- Main content -->
     <section class="content">
         <div id="showPRice">
-
             <div class="row">
                 @php $i=0; @endphp
                 {{-- @dd($product) --}}
@@ -95,7 +100,7 @@
                         {{-- @for ($j = 0; $j < $objProduct->printing_qty; $j++) --}}
                         {{-- @dd($objProduct) --}}
                         @for ($j = 0; $j < $objProduct['count']; $j++)
-                            <div class="col-md-4 col-xs-4 heh mt-sm-3">
+                            <div class="col-md-4 col-xs-4 heh mt-sm-3 " style="margin-bottom:80px;">
                                 <div class="">
                                     <div class="col-xs-9 text-left" style="font-size: 12px">
                                         {{-- @dd($objProduct) --}}
@@ -103,7 +108,7 @@
                                             data-id="subcat">{{ $objProduct['sub_category'] }}</strong>-
                                         <strong class="printList" data-id="name">{{ $objProduct['name'] }} </strong>
                                     </div>
-                                    <div class="col-xs-3 printList text-right" data-id="size" style="font-size: 20px">
+                                    <div class="col-xs-3 printList text-right" data-id="size" style="font-size: 28px">
                                         {{ $objProduct['size'] }}
                                     </div>
 
@@ -122,47 +127,49 @@
                                 </div>
 
                                 <div class="col-xs-12 d-flex">
-                                    <div class="col-xs-6" style="font-weight: bolder; font-size: 20px">
-                                        <div class="printList" id="defualt_price" data-id="price"
-                                            style="position: absolute;top:-3px">
-                                            <span>
-                                                €
-                                            </span>
-                                            {{-- i.fa.fa-euro-sign --}}
-                                            @if ($objProduct['max_price'] != $objProduct['min_price'] && $objProduct['type'] == 'variable')
-                                                - <span class="display_currency" data-currency_symbol="true" id="pr">
-                                                    {{ $objProduct['max_price'] }}
+                                    <div class="row">
+                                        <div class="col-xs-6 price-box" style=" font-weight:  bolder; font-size: 24px;">
+                                            <div class="printList" id="defualt_price" data-id="price"
+                                                style="position: absolute;top:-3px; left: 0;">
+                                                <span>
+                                                    €
                                                 </span>
-                                            @else
-                                                {{-- €  --}}
-                                                <span class="display_currency" data-currency_symbol="true">
-                                                    {{ $objProduct['max_price'] }}
+                                                {{-- i.fa.fa-euro-sign --}}
+                                                @if ($objProduct['max_price'] != $objProduct['min_price'] && $objProduct['type'] == 'variable')
+                                                    - <span class="display_currency" data-currency_symbol="true" id="pr">
+                                                        {{ $objProduct['max_price'] }}
+                                                    </span>
+                                                @else
+                                                    {{-- €  --}}
+                                                    <span class="display_currency" data-currency_symbol="true">
+                                                        {{ $objProduct['max_price'] }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="priceList hideV" id="oldPrice" style="position: absolute; top:-2px;left: 0;">
+                                                <span>
+                                                    €
                                                 </span>
-                                            @endif
+                                                {{-- i.fa.fa-euro-sign --}}
+                                                @if ($objProduct['max_price'] != $objProduct['min_price'] && $objProduct['type'] == 'variable')
+                                                    - <span class="display_currency" data-currency_symbol="true" id="pr">
+                                                        {{ $objProduct['old_price'] }}
+                                                    </span>
+                                                @else
+                                                    {{-- €  --}}
+                                                    <span class="display_currency" data-currency_symbol="true">
+                                                        {{ $objProduct['old_price'] }}
+                                                    </span>
+                                                @endif
+                                            </div>
                                         </div>
-                                        <div class="priceList hideV" id="oldPrice" style="position: absolute; top:-2px">
-                                            <span>
-                                                €
-                                            </span>
-                                            {{-- i.fa.fa-euro-sign --}}
-                                            @if ($objProduct['max_price'] != $objProduct['min_price'] && $objProduct['type'] == 'variable')
-                                                - <span class="display_currency" data-currency_symbol="true" id="pr">
-                                                    {{ $objProduct['old_price'] }}
-                                                </span>
-                                            @else
-                                                {{-- €  --}}
-                                                <span class="display_currency" data-currency_symbol="true">
-                                                    {{ $objProduct['old_price'] }}
-                                                </span>
-                                            @endif
+                                        <div class="col-xs-2 printList text-center" data-id="color" style="font-size: 12px">
+                                            {{ $objProduct['ColorName'] }}
                                         </div>
-                                    </div>
-                                    <div class="col-xs-2 printList text-center" data-id="color" style="font-size: 12px">
-                                        {{ $objProduct['ColorName'] }}
-                                    </div>
-                                    <div class="col-xs-3 text-center printList" data-id="refference"
-                                        style="font-size: 12px">
-                                        {{ $objProduct['refference'] }}
+                                        <div class="col-xs-3 text-center printList" data-id="refference"
+                                            style="font-size: 12px">
+                                            {{ $objProduct['refference'] }}
+                                        </div>
                                     </div>
                                     {{-- <div  class="col printList text-right" data-id="subcat" style="font-size: 14px">
                                         {{$objProduct->sub_category}}
