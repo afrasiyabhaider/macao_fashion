@@ -1,4 +1,5 @@
 <?php
+
 /**
  * WooCommerce REST API HTTP Client
  *
@@ -23,7 +24,6 @@ use Automattic\WooCommerce\HttpClient\Response;
  */
 class HttpClient
 {
-
     /**
      * cURL handle.
      *
@@ -58,6 +58,13 @@ class HttpClient
      * @var Options
      */
     protected $options;
+
+    /**
+     * The custom cURL options to use in the requests.
+     *
+     * @var array
+     */
+    private $customCurlOptions = [];
 
     /**
      * Request.
@@ -135,7 +142,11 @@ class HttpClient
     protected function buildUrlQuery($url, $parameters = [])
     {
         if (!empty($parameters)) {
-            $url .= '?' . \http_build_query($parameters);
+            if (false !== strpos($url, '?')) {
+                $url .= '&' . \http_build_query($parameters);
+            } else {
+                $url .= '?' . \http_build_query($parameters);
+            }
         }
 
         return $url;
@@ -153,8 +164,8 @@ class HttpClient
     protected function authenticate($url, $method, $parameters = [])
     {
         // Setup authentication.
-        if ($this->isSsl()) {
-            $basicAuth  = new BasicAuth(
+        if (!$this->options->isOAuthOnly() && $this->isSsl()) {
+            $basicAuth = new BasicAuth(
                 $this->ch,
                 $this->consumerKey,
                 $this->consumerSecret,
@@ -163,7 +174,7 @@ class HttpClient
             );
             $parameters = $basicAuth->getParameters();
         } else {
-            $oAuth      = new OAuth(
+            $oAuth = new OAuth(
                 $url,
                 $this->consumerKey,
                 $this->consumerSecret,
@@ -228,6 +239,24 @@ class HttpClient
         $body    = '';
         $url     = $this->url . $endpoint;
         $hasData = !empty($data);
+        $headers = $this->getRequestHeaders($hasData);
+
+        // HTTP method override feature which masks PUT and DELETE HTTP methods as POST method with added
+        // ?_method=PUT query parameter and/or X-HTTP-Method-Override HTTP header.
+        if (!in_array($method, ['GET', 'POST'])) {
+            $usePostMethod = false;
+            if ($this->options->isMethodOverrideQuery()) {
+                $parameters = array_merge(['_method' => $method], $parameters);
+                $usePostMethod = true;
+            }
+            if ($this->options->isMethodOverrideHeader()) {
+                $headers['X-HTTP-Method-Override'] = $method;
+                $usePostMethod = true;
+            }
+            if ($usePostMethod) {
+                $method = 'POST';
+            }
+        }
 
         // Setup authentication.
         $parameters = $this->authenticate($url, $method, $parameters);
@@ -245,7 +274,7 @@ class HttpClient
             $this->buildUrlQuery($url, $parameters),
             $method,
             $parameters,
-            $this->getRequestHeaders($hasData),
+            $headers,
             $body
         );
 
@@ -324,6 +353,10 @@ class HttpClient
         \curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
         \curl_setopt($this->ch, CURLOPT_HTTPHEADER, $this->request->getRawHeaders());
         \curl_setopt($this->ch, CURLOPT_URL, $this->request->getUrl());
+
+        foreach ($this->customCurlOptions as $customCurlOptionKey => $customCurlOptionValue) {
+            \curl_setopt($this->ch, $customCurlOptionKey, $customCurlOptionValue);
+        }
     }
 
     /**
@@ -359,7 +392,7 @@ class HttpClient
     /**
      * Process response.
      *
-     * @return array
+     * @return \stdClass
      */
     protected function processResponse()
     {
@@ -396,7 +429,7 @@ class HttpClient
      * @param array  $data       Request data.
      * @param array  $parameters Request parameters.
      *
-     * @return array
+     * @return \stdClass
      */
     public function request($endpoint, $method, $data = [], $parameters = [])
     {
@@ -440,5 +473,15 @@ class HttpClient
     public function getResponse()
     {
         return $this->response;
+    }
+
+    /**
+     * Set custom cURL options to use in requests.
+     *
+     * @param array $curlOptions
+     */
+    public function setCustomCurlOptions(array $curlOptions)
+    {
+        $this->customCurlOptions = $curlOptions;
     }
 }

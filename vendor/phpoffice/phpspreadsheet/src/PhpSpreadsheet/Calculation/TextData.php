@@ -2,7 +2,6 @@
 
 namespace PhpOffice\PhpSpreadsheet\Calculation;
 
-use DateTimeInterface;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Shared\StringHelper;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
@@ -99,7 +98,7 @@ class TextData
      *
      * @param string $characters Value
      *
-     * @return int|string A string if arguments are invalid
+     * @return int
      */
     public static function ASCIICODE($characters)
     {
@@ -168,7 +167,7 @@ class TextData
         if ($decimals > 0) {
             $mask .= '.' . str_repeat('0', $decimals);
         } else {
-            $round = 10 ** abs($decimals);
+            $round = pow(10, abs($decimals));
             if ($value < 0) {
                 $round = 0 - $round;
             }
@@ -544,7 +543,7 @@ class TextData
      *
      * @param mixed $value Value to check
      *
-     * @return DateTimeInterface|float|int|string A string if arguments are invalid
+     * @return bool
      */
     public static function VALUE($value = '')
     {
@@ -624,7 +623,7 @@ class TextData
             $percentageAdjustment = strlen($value) - strlen($percentageString);
             if ($percentageAdjustment) {
                 $value = (float) $percentageString;
-                $value /= 10 ** ($percentageAdjustment * 2);
+                $value /= pow(10, $percentageAdjustment * 2);
             }
         }
 

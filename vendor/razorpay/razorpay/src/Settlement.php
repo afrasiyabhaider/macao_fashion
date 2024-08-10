@@ -7,9 +7,21 @@ namespace Razorpay\Api;
  */
 class Settlement extends Entity
 {
+     /**
+     * create Ondemand Settlemententity
+     * @param  array $attributes
+     * @return Settlement
+     */
+    public function createOndemandSettlement($attributes = array())
+    {
+        $relativeUrl = $this->getEntityUrl() ."ondemand" ;
+
+        return $this->request('POST', $relativeUrl, $attributes);
+    }
+    
     /**
      * Fetch single settlement entity
-     * @param  string      $id
+     * @param  string $id
      * @return Settlement
      */
     public function fetch($id)
@@ -19,7 +31,7 @@ class Settlement extends Entity
 
     /**
      * Get all settlements according to options
-     * @param  array       $options
+     * @param  array $options
      * @return Collection
      */
     public function all($options = array())
@@ -36,6 +48,40 @@ class Settlement extends Entity
     {
         $relativeUrl = $this->getEntityUrl() . 'report/combined';
 
+        return $this->request('GET', $relativeUrl, $options);
+    }
+
+     /**
+     * Get Settlement Recon
+     * @param  array  $options
+     * @return array
+     */
+    public function settlementRecon($options = array())
+    {
+        $relativeUrl = $this->getEntityUrl() . 'recon/combined';
+
+        return $this->request('GET', $relativeUrl, $options);
+    }
+     /**
+     * fetch Ondemand Settlement by Id 
+     * @param  string $id
+     * @param  array  $options
+     * @return array
+     */
+    public function fetchOndemandSettlementById($id, $options = array())
+    {
+        $relativeUrl = $this->getEntityUrl(). "ondemand/" . $id;
+       
+        return $this->request('GET', $relativeUrl, $options);
+    }
+    /**
+     * fetch all Ondemand Settlement 
+     * @return array
+     */
+    public function fetchAllOndemandSettlement($options = array())
+    {
+        $relativeUrl = $this->getEntityUrl(). "ondemand/";
+        
         return $this->request('GET', $relativeUrl, $options);
     }
 }

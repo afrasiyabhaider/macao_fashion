@@ -2,6 +2,8 @@
 
 namespace PhpOffice\PhpSpreadsheet\Style;
 
+use PhpOffice\PhpSpreadsheet\Exception as PhpSpreadsheetException;
+
 class Font extends Supervisor
 {
     // Underline types
@@ -156,6 +158,8 @@ class Font extends Supervisor
      * </code>
      *
      * @param array $pStyles Array containing style information
+     *
+     * @throws PhpSpreadsheetException
      *
      * @return $this
      */
@@ -357,18 +361,21 @@ class Font extends Supervisor
     /**
      * Set Superscript.
      *
+     * @param bool $pValue
+     *
      * @return $this
      */
-    public function setSuperscript(bool $pValue)
+    public function setSuperscript($pValue)
     {
+        if ($pValue == '') {
+            $pValue = false;
+        }
         if ($this->isSupervisor) {
             $styleArray = $this->getStyleArray(['superscript' => $pValue]);
             $this->getActiveSheet()->getStyle($this->getSelectedCells())->applyFromArray($styleArray);
         } else {
             $this->superscript = $pValue;
-            if ($this->superscript) {
-                $this->subscript = false;
-            }
+            $this->subscript = !$pValue;
         }
 
         return $this;
@@ -391,18 +398,21 @@ class Font extends Supervisor
     /**
      * Set Subscript.
      *
+     * @param bool $pValue
+     *
      * @return $this
      */
-    public function setSubscript(bool $pValue)
+    public function setSubscript($pValue)
     {
+        if ($pValue == '') {
+            $pValue = false;
+        }
         if ($this->isSupervisor) {
             $styleArray = $this->getStyleArray(['subscript' => $pValue]);
             $this->getActiveSheet()->getStyle($this->getSelectedCells())->applyFromArray($styleArray);
         } else {
             $this->subscript = $pValue;
-            if ($this->subscript) {
-                $this->superscript = false;
-            }
+            $this->superscript = !$pValue;
         }
 
         return $this;
@@ -497,6 +507,10 @@ class Font extends Supervisor
 
     /**
      * Set Color.
+     *
+     * @param Color $pValue
+     *
+     * @throws PhpSpreadsheetException
      *
      * @return $this
      */

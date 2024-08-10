@@ -2,7 +2,6 @@
 
 namespace PhpOffice\PhpSpreadsheet;
 
-use PhpOffice\PhpSpreadsheet\Calculation\Calculation;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -69,7 +68,7 @@ class ReferenceHelper
      */
     public static function columnReverseSort($a, $b)
     {
-        return -strcasecmp(strlen($a) . $a, strlen($b) . $b);
+        return 1 - strcasecmp(strlen($a) . $a, strlen($b) . $b);
     }
 
     /**
@@ -108,7 +107,7 @@ class ReferenceHelper
         [$bc, $br] = sscanf($b, '%[A-Z]%d');
 
         if ($ar === $br) {
-            return -strcasecmp(strlen($ac) . $ac, strlen($bc) . $bc);
+            return 1 - strcasecmp(strlen($ac) . $ac, strlen($bc) . $bc);
         }
 
         return ($ar < $br) ? 1 : -1;
@@ -130,17 +129,13 @@ class ReferenceHelper
         [$cellColumn, $cellRow] = Coordinate::coordinateFromString($cellAddress);
         $cellColumnIndex = Coordinate::columnIndexFromString($cellColumn);
         //    Is cell within the range of rows/columns if we're deleting
-        if (
-            $pNumRows < 0 &&
+        if ($pNumRows < 0 &&
             ($cellRow >= ($beforeRow + $pNumRows)) &&
-            ($cellRow < $beforeRow)
-        ) {
+            ($cellRow < $beforeRow)) {
             return true;
-        } elseif (
-            $pNumCols < 0 &&
+        } elseif ($pNumCols < 0 &&
             ($cellColumnIndex >= ($beforeColumnIndex + $pNumCols)) &&
-            ($cellColumnIndex < $beforeColumnIndex)
-        ) {
+            ($cellColumnIndex < $beforeColumnIndex)) {
             return true;
         }
 
@@ -157,7 +152,7 @@ class ReferenceHelper
      * @param int $beforeRow Number of the row we're inserting/deleting before
      * @param int $pNumRows Number of rows to insert/delete (negative values indicate deletion)
      */
-    protected function adjustPageBreaks(Worksheet $pSheet, $pBefore, $beforeColumnIndex, $pNumCols, $beforeRow, $pNumRows): void
+    protected function adjustPageBreaks(Worksheet $pSheet, $pBefore, $beforeColumnIndex, $pNumCols, $beforeRow, $pNumRows)
     {
         $aBreaks = $pSheet->getBreaks();
         ($pNumCols > 0 || $pNumRows > 0) ?
@@ -190,7 +185,7 @@ class ReferenceHelper
      * @param int $beforeRow Number of the row we're inserting/deleting before
      * @param int $pNumRows Number of rows to insert/delete (negative values indicate deletion)
      */
-    protected function adjustComments($pSheet, $pBefore, $beforeColumnIndex, $pNumCols, $beforeRow, $pNumRows): void
+    protected function adjustComments($pSheet, $pBefore, $beforeColumnIndex, $pNumCols, $beforeRow, $pNumRows)
     {
         $aComments = $pSheet->getComments();
         $aNewComments = []; // the new array of all comments
@@ -217,7 +212,7 @@ class ReferenceHelper
      * @param int $beforeRow Number of the row we're inserting/deleting before
      * @param int $pNumRows Number of rows to insert/delete (negative values indicate deletion)
      */
-    protected function adjustHyperlinks($pSheet, $pBefore, $beforeColumnIndex, $pNumCols, $beforeRow, $pNumRows): void
+    protected function adjustHyperlinks($pSheet, $pBefore, $beforeColumnIndex, $pNumCols, $beforeRow, $pNumRows)
     {
         $aHyperlinkCollection = $pSheet->getHyperlinkCollection();
         ($pNumCols > 0 || $pNumRows > 0) ?
@@ -242,7 +237,7 @@ class ReferenceHelper
      * @param int $beforeRow Number of the row we're inserting/deleting before
      * @param int $pNumRows Number of rows to insert/delete (negative values indicate deletion)
      */
-    protected function adjustDataValidations($pSheet, $pBefore, $beforeColumnIndex, $pNumCols, $beforeRow, $pNumRows): void
+    protected function adjustDataValidations($pSheet, $pBefore, $beforeColumnIndex, $pNumCols, $beforeRow, $pNumRows)
     {
         $aDataValidationCollection = $pSheet->getDataValidationCollection();
         ($pNumCols > 0 || $pNumRows > 0) ?
@@ -267,7 +262,7 @@ class ReferenceHelper
      * @param int $beforeRow Number of the row we're inserting/deleting before
      * @param int $pNumRows Number of rows to insert/delete (negative values indicate deletion)
      */
-    protected function adjustMergeCells($pSheet, $pBefore, $beforeColumnIndex, $pNumCols, $beforeRow, $pNumRows): void
+    protected function adjustMergeCells($pSheet, $pBefore, $beforeColumnIndex, $pNumCols, $beforeRow, $pNumRows)
     {
         $aMergeCells = $pSheet->getMergeCells();
         $aNewMergeCells = []; // the new array of all merge cells
@@ -288,7 +283,7 @@ class ReferenceHelper
      * @param int $beforeRow Number of the row we're inserting/deleting before
      * @param int $pNumRows Number of rows to insert/delete (negative values indicate deletion)
      */
-    protected function adjustProtectedCells($pSheet, $pBefore, $beforeColumnIndex, $pNumCols, $beforeRow, $pNumRows): void
+    protected function adjustProtectedCells($pSheet, $pBefore, $beforeColumnIndex, $pNumCols, $beforeRow, $pNumRows)
     {
         $aProtectedCells = $pSheet->getProtectedCells();
         ($pNumCols > 0 || $pNumRows > 0) ?
@@ -312,7 +307,7 @@ class ReferenceHelper
      * @param int $beforeRow Number of the row we're inserting/deleting before
      * @param int $pNumRows Number of rows to insert/delete (negative values indicate deletion)
      */
-    protected function adjustColumnDimensions($pSheet, $pBefore, $beforeColumnIndex, $pNumCols, $beforeRow, $pNumRows): void
+    protected function adjustColumnDimensions($pSheet, $pBefore, $beforeColumnIndex, $pNumCols, $beforeRow, $pNumRows)
     {
         $aColumnDimensions = array_reverse($pSheet->getColumnDimensions(), true);
         if (!empty($aColumnDimensions)) {
@@ -337,7 +332,7 @@ class ReferenceHelper
      * @param int $beforeRow Number of the row we're inserting/deleting before
      * @param int $pNumRows Number of rows to insert/delete (negative values indicate deletion)
      */
-    protected function adjustRowDimensions($pSheet, $pBefore, $beforeColumnIndex, $pNumCols, $beforeRow, $pNumRows): void
+    protected function adjustRowDimensions($pSheet, $pBefore, $beforeColumnIndex, $pNumCols, $beforeRow, $pNumRows)
     {
         $aRowDimensions = array_reverse($pSheet->getRowDimensions(), true);
         if (!empty($aRowDimensions)) {
@@ -368,8 +363,10 @@ class ReferenceHelper
      * @param int $pNumCols Number of columns to insert/delete (negative values indicate deletion)
      * @param int $pNumRows Number of rows to insert/delete (negative values indicate deletion)
      * @param Worksheet $pSheet The worksheet that we're editing
+     *
+     * @throws Exception
      */
-    public function insertNewBefore($pBefore, $pNumCols, $pNumRows, Worksheet $pSheet): void
+    public function insertNewBefore($pBefore, $pNumCols, $pNumRows, Worksheet $pSheet)
     {
         $remove = ($pNumCols < 0 || $pNumRows < 0);
         $allCoordinates = $pSheet->getCoordinates();
@@ -605,11 +602,11 @@ class ReferenceHelper
             }
         }
 
-        // Update workbook: define names
-        if (count($pSheet->getParent()->getDefinedNames()) > 0) {
-            foreach ($pSheet->getParent()->getDefinedNames() as $definedName) {
-                if ($definedName->getWorksheet()->getHashCode() === $pSheet->getHashCode()) {
-                    $definedName->setValue($this->updateCellReference($definedName->getValue(), $pBefore, $pNumCols, $pNumRows));
+        // Update workbook: named ranges
+        if (count($pSheet->getParent()->getNamedRanges()) > 0) {
+            foreach ($pSheet->getParent()->getNamedRanges() as $namedRange) {
+                if ($namedRange->getWorksheet()->getHashCode() == $pSheet->getHashCode()) {
+                    $namedRange->setRange($this->updateCellReference($namedRange->getRange(), $pBefore, $pNumCols, $pNumRows));
                 }
             }
         }
@@ -626,6 +623,8 @@ class ReferenceHelper
      * @param int $pNumCols Number of columns to insert
      * @param int $pNumRows Number of rows to insert
      * @param string $sheetName Worksheet name/title
+     *
+     * @throws Exception
      *
      * @return string Updated formula
      */
@@ -760,147 +759,14 @@ class ReferenceHelper
     }
 
     /**
-     * Update all cell references within a formula, irrespective of worksheet.
-     */
-    public function updateFormulaReferencesAnyWorksheet(string $formula = '', int $insertColumns = 0, int $insertRows = 0): string
-    {
-        $formula = $this->updateCellReferencesAllWorksheets($formula, $insertColumns, $insertRows);
-
-        if ($insertColumns !== 0) {
-            $formula = $this->updateColumnRangesAllWorksheets($formula, $insertColumns);
-        }
-
-        if ($insertRows !== 0) {
-            $formula = $this->updateRowRangesAllWorksheets($formula, $insertRows);
-        }
-
-        return $formula;
-    }
-
-    private function updateCellReferencesAllWorksheets(string $formula, int $insertColumns, int $insertRows): string
-    {
-        $splitCount = preg_match_all(
-            '/' . Calculation::CALCULATION_REGEXP_CELLREF_RELATIVE . '/mui',
-            $formula,
-            $splitRanges,
-            PREG_OFFSET_CAPTURE
-        );
-
-        $columnLengths = array_map('strlen', array_column($splitRanges[6], 0));
-        $rowLengths = array_map('strlen', array_column($splitRanges[7], 0));
-        $columnOffsets = array_column($splitRanges[6], 1);
-        $rowOffsets = array_column($splitRanges[7], 1);
-
-        $columns = $splitRanges[6];
-        $rows = $splitRanges[7];
-
-        while ($splitCount > 0) {
-            --$splitCount;
-            $columnLength = $columnLengths[$splitCount];
-            $rowLength = $rowLengths[$splitCount];
-            $columnOffset = $columnOffsets[$splitCount];
-            $rowOffset = $rowOffsets[$splitCount];
-            $column = $columns[$splitCount][0];
-            $row = $rows[$splitCount][0];
-
-            if (!empty($column) && $column[0] !== '$') {
-                $column = Coordinate::stringFromColumnIndex(Coordinate::columnIndexFromString($column) + $insertColumns);
-                $formula = substr($formula, 0, $columnOffset) . $column . substr($formula, $columnOffset + $columnLength);
-            }
-            if (!empty($row) && $row[0] !== '$') {
-                $row += $insertRows;
-                $formula = substr($formula, 0, $rowOffset) . $row . substr($formula, $rowOffset + $rowLength);
-            }
-        }
-
-        return $formula;
-    }
-
-    private function updateColumnRangesAllWorksheets(string $formula, int $insertColumns): string
-    {
-        $splitCount = preg_match_all(
-            '/' . Calculation::CALCULATION_REGEXP_COLUMNRANGE_RELATIVE . '/mui',
-            $formula,
-            $splitRanges,
-            PREG_OFFSET_CAPTURE
-        );
-
-        $fromColumnLengths = array_map('strlen', array_column($splitRanges[1], 0));
-        $fromColumnOffsets = array_column($splitRanges[1], 1);
-        $toColumnLengths = array_map('strlen', array_column($splitRanges[2], 0));
-        $toColumnOffsets = array_column($splitRanges[2], 1);
-
-        $fromColumns = $splitRanges[1];
-        $toColumns = $splitRanges[2];
-
-        while ($splitCount > 0) {
-            --$splitCount;
-            $fromColumnLength = $fromColumnLengths[$splitCount];
-            $toColumnLength = $toColumnLengths[$splitCount];
-            $fromColumnOffset = $fromColumnOffsets[$splitCount];
-            $toColumnOffset = $toColumnOffsets[$splitCount];
-            $fromColumn = $fromColumns[$splitCount][0];
-            $toColumn = $toColumns[$splitCount][0];
-
-            if (!empty($fromColumn) && $fromColumn[0] !== '$') {
-                $fromColumn = Coordinate::stringFromColumnIndex(Coordinate::columnIndexFromString($fromColumn) + $insertColumns);
-                $formula = substr($formula, 0, $fromColumnOffset) . $fromColumn . substr($formula, $fromColumnOffset + $fromColumnLength);
-            }
-            if (!empty($toColumn) && $toColumn[0] !== '$') {
-                $toColumn = Coordinate::stringFromColumnIndex(Coordinate::columnIndexFromString($toColumn) + $insertColumns);
-                $formula = substr($formula, 0, $toColumnOffset) . $toColumn . substr($formula, $toColumnOffset + $toColumnLength);
-            }
-        }
-
-        return $formula;
-    }
-
-    private function updateRowRangesAllWorksheets(string $formula, int $insertRows): string
-    {
-        $splitCount = preg_match_all(
-            '/' . Calculation::CALCULATION_REGEXP_ROWRANGE_RELATIVE . '/mui',
-            $formula,
-            $splitRanges,
-            PREG_OFFSET_CAPTURE
-        );
-
-        $fromRowLengths = array_map('strlen', array_column($splitRanges[1], 0));
-        $fromRowOffsets = array_column($splitRanges[1], 1);
-        $toRowLengths = array_map('strlen', array_column($splitRanges[2], 0));
-        $toRowOffsets = array_column($splitRanges[2], 1);
-
-        $fromRows = $splitRanges[1];
-        $toRows = $splitRanges[2];
-
-        while ($splitCount > 0) {
-            --$splitCount;
-            $fromRowLength = $fromRowLengths[$splitCount];
-            $toRowLength = $toRowLengths[$splitCount];
-            $fromRowOffset = $fromRowOffsets[$splitCount];
-            $toRowOffset = $toRowOffsets[$splitCount];
-            $fromRow = $fromRows[$splitCount][0];
-            $toRow = $toRows[$splitCount][0];
-
-            if (!empty($fromRow) && $fromRow[0] !== '$') {
-                $fromRow += $insertRows;
-                $formula = substr($formula, 0, $fromRowOffset) . $fromRow . substr($formula, $fromRowOffset + $fromRowLength);
-            }
-            if (!empty($toRow) && $toRow[0] !== '$') {
-                $toRow += $insertRows;
-                $formula = substr($formula, 0, $toRowOffset) . $toRow . substr($formula, $toRowOffset + $toRowLength);
-            }
-        }
-
-        return $formula;
-    }
-
-    /**
      * Update cell reference.
      *
      * @param string $pCellRange Cell range
      * @param string $pBefore Insert before this one
      * @param int $pNumCols Number of columns to increment
      * @param int $pNumRows Number of rows to increment
+     *
+     * @throws Exception
      *
      * @return string Updated cell range
      */
@@ -929,7 +795,7 @@ class ReferenceHelper
      * @param string $oldName Old name (name to replace)
      * @param string $newName New name
      */
-    public function updateNamedFormulas(Spreadsheet $spreadsheet, $oldName = '', $newName = ''): void
+    public function updateNamedFormulas(Spreadsheet $spreadsheet, $oldName = '', $newName = '')
     {
         if ($oldName == '') {
             return;
@@ -957,6 +823,8 @@ class ReferenceHelper
      * @param string $pBefore Insert before this one
      * @param int $pNumCols Number of columns to increment
      * @param int $pNumRows Number of rows to increment
+     *
+     * @throws Exception
      *
      * @return string Updated cell range
      */
@@ -996,6 +864,8 @@ class ReferenceHelper
      * @param int $pNumCols Number of columns to increment
      * @param int $pNumRows Number of rows to increment
      *
+     * @throws Exception
+     *
      * @return string Updated cell reference
      */
     private function updateSingleCellReference($pCellReference = 'A1', $pBefore = 'A1', $pNumCols = 0, $pNumRows = 0)
@@ -1030,6 +900,8 @@ class ReferenceHelper
 
     /**
      * __clone implementation. Cloning should not be allowed in a Singleton!
+     *
+     * @throws Exception
      */
     final public function __clone()
     {

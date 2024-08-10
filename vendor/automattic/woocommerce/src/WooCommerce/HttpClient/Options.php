@@ -1,4 +1,5 @@
 <?php
+
 /**
  * WooCommerce REST API HTTP Client Options
  *
@@ -15,28 +16,29 @@ namespace Automattic\WooCommerce\HttpClient;
  */
 class Options
 {
-
     /**
      * Default WooCommerce REST API version.
+     *
+     * @var string
      */
-    const VERSION = 'wc/v3';
+    public const VERSION = 'wc/v3';
 
     /**
      * Default request timeout.
      */
-    const TIMEOUT = 15;
+    public const TIMEOUT = 15;
 
     /**
      * Default WP API prefix.
      * Including leading and trailing slashes.
      */
-    const WP_API_PREFIX = '/wp-json/';
+    public const WP_API_PREFIX = '/wp-json/';
 
     /**
      * Default User Agent.
      * No version number.
      */
-    const USER_AGENT = 'WooCommerce API Client-PHP';
+    public const USER_AGENT = 'WooCommerce API Client-PHP';
 
     /**
      * Options.
@@ -73,6 +75,16 @@ class Options
     public function verifySsl()
     {
         return isset($this->options['verify_ssl']) ? (bool) $this->options['verify_ssl'] : true;
+    }
+
+    /**
+     * Only use OAuth.
+     *
+     * @return bool
+     */
+    public function isOAuthOnly()
+    {
+        return isset($this->options['oauth_only']) ? (bool) $this->options['oauth_only'] : false;
     }
 
     /**
@@ -137,12 +149,34 @@ class Options
     }
 
     /**
-     * Get follow redirects
+     * Get follow redirects.
      *
      * @return bool
      */
     public function getFollowRedirects()
     {
         return isset($this->options['follow_redirects']) ? (bool) $this->options['follow_redirects'] : false;
+    }
+
+    /**
+     * Check is it needed to mask all non-GET/POST methods (PUT/DELETE/etc.) by using POST method with added
+     * query parameter ?_method=METHOD into URL.
+     *
+     * @return bool
+     */
+    public function isMethodOverrideQuery()
+    {
+        return isset($this->options['method_override_query']) && $this->options['method_override_query'];
+    }
+
+    /**
+     * Check is it needed to mask all non-GET/POST methods (PUT/DELETE/etc.) by using POST method with added
+     * "X-HTTP-Method-Override: METHOD" HTTP header into request.
+     *
+     * @return bool
+     */
+    public function isMethodOverrideHeader()
+    {
+        return isset($this->options['method_override_header']) && $this->options['method_override_header'];
     }
 }

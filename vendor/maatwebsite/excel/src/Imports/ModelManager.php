@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithUpserts;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Exceptions\RowSkippedException;
 use Maatwebsite\Excel\Validators\RowValidator;
@@ -24,10 +23,6 @@ class ModelManager
      * @var RowValidator
      */
     private $validator;
-    /**
-     * @var bool
-     */
-    private $remembersRowNumber = false;
 
     /**
      * @param RowValidator $validator
@@ -44,14 +39,6 @@ class ModelManager
     public function add(int $row, array $attributes)
     {
         $this->rows[$row] = $attributes;
-    }
-
-    /**
-     * @param bool $remembersRowNumber
-     */
-    public function setRemembersRowNumber(bool $remembersRowNumber)
-    {
-        $this->remembersRowNumber = $remembersRowNumber;
     }
 
     /**
@@ -79,15 +66,10 @@ class ModelManager
      * @param ToModel $import
      * @param array   $attributes
      *
-     * @param int|null $rowNumber
      * @return Model[]|Collection
      */
-    public function toModels(ToModel $import, array $attributes, $rowNumber = null): Collection
+    public function toModels(ToModel $import, array $attributes): Collection
     {
-        if ($this->remembersRowNumber) {
-            $import->rememberRowNumber($rowNumber);
-        }
-
         $model = $import->model($attributes);
 
         if (null !== $model) {
@@ -103,20 +85,16 @@ class ModelManager
     private function massFlush(ToModel $import)
     {
         $this->rows()
-             ->flatMap(function (array $attributes, $index) use ($import) {
-                 return $this->toModels($import, $attributes, $index);
+             ->flatMap(function (array $attributes) use ($import) {
+                 return $this->toModels($import, $attributes);
              })
              ->mapToGroups(function ($model) {
                  return [\get_class($model) => $this->prepare($model)->getAttributes()];
              })
              ->each(function (Collection $models, string $model) use ($import) {
                  try {
-                     if ($import instanceof WithUpserts) {
-                         $model::query()->upsert($models->toArray(), $import->uniqueBy());
-                     } else {
-                         /* @var Model $model */
-                         $model::query()->insert($models->toArray());
-                     }
+                     /* @var Model $model */
+                     $model::query()->insert($models->toArray());
                  } catch (Throwable $e) {
                      if ($import instanceof SkipsOnError) {
                          $import->onError($e);
@@ -134,14 +112,10 @@ class ModelManager
     {
         $this
             ->rows()
-            ->each(function (array $attributes, $index) use ($import) {
-                $this->toModels($import, $attributes, $index)->each(function (Model $model) use ($import) {
+            ->each(function (array $attributes) use ($import) {
+                $this->toModels($import, $attributes)->each(function (Model $model) use ($import) {
                     try {
-                        if ($import instanceof WithUpserts) {
-                            $model->upsert($model->getAttributes(), $import->uniqueBy());
-                        } else {
-                            $model->saveOrFail();
-                        }
+                        $model->saveOrFail();
                     } catch (Throwable $e) {
                         if ($import instanceof SkipsOnError) {
                             $import->onError($e);

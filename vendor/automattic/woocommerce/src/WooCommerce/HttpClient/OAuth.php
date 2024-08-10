@@ -1,4 +1,5 @@
 <?php
+
 /**
  * WooCommerce oAuth1.0
  *
@@ -15,11 +16,10 @@ namespace Automattic\WooCommerce\HttpClient;
  */
 class OAuth
 {
-
     /**
      * OAuth signature method algorithm.
      */
-    const HASH_ALGORITHM = 'SHA256';
+    public const HASH_ALGORITHM = 'SHA256';
 
     /**
      * API endpoint URL.
@@ -190,7 +190,7 @@ class OAuth
 
         // Normalize parameter key/values and sort them.
         $parameters = $this->normalizeParameters($parameters);
-        \uksort($parameters, 'strcmp');
+        $parameters = $this->getSortedParameters($parameters);
 
         // Set query string.
         $queryString  = \implode('%26', $this->joinWithEqualsSign($parameters)); // Join with ampersand.

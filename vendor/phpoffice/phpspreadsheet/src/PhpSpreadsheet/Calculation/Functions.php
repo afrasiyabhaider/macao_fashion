@@ -57,6 +57,8 @@ class Functions
     /**
      * Set the Compatibility Mode.
      *
+     * @category Function Configuration
+     *
      * @param string $compatibilityMode Compatibility Mode
      *                                                Permitted values are:
      *                                                    Functions::COMPATIBILITY_EXCEL            'Excel'
@@ -67,8 +69,7 @@ class Functions
      */
     public static function setCompatibilityMode($compatibilityMode)
     {
-        if (
-            ($compatibilityMode == self::COMPATIBILITY_EXCEL) ||
+        if (($compatibilityMode == self::COMPATIBILITY_EXCEL) ||
             ($compatibilityMode == self::COMPATIBILITY_GNUMERIC) ||
             ($compatibilityMode == self::COMPATIBILITY_OPENOFFICE)
         ) {
@@ -82,6 +83,8 @@ class Functions
 
     /**
      * Return the current Compatibility Mode.
+     *
+     * @category Function Configuration
      *
      * @return string Compatibility Mode
      *                            Possible Return values are:
@@ -97,6 +100,8 @@ class Functions
     /**
      * Set the Return Date Format used by functions that return a date/time (Excel, PHP Serialized Numeric or PHP Object).
      *
+     * @category Function Configuration
+     *
      * @param string $returnDateType Return Date Format
      *                                                Permitted values are:
      *                                                    Functions::RETURNDATE_UNIX_TIMESTAMP        'P'
@@ -107,8 +112,7 @@ class Functions
      */
     public static function setReturnDateType($returnDateType)
     {
-        if (
-            ($returnDateType == self::RETURNDATE_UNIX_TIMESTAMP) ||
+        if (($returnDateType == self::RETURNDATE_UNIX_TIMESTAMP) ||
             ($returnDateType == self::RETURNDATE_PHP_DATETIME_OBJECT) ||
             ($returnDateType == self::RETURNDATE_EXCEL)
         ) {
@@ -122,6 +126,8 @@ class Functions
 
     /**
      * Return the current Return Date Format for functions that return a date/time (Excel, PHP Serialized Numeric or PHP Object).
+     *
+     * @category Function Configuration
      *
      * @return string Return Date Format
      *                            Possible Return values are:
@@ -137,6 +143,8 @@ class Functions
     /**
      * DUMMY.
      *
+     * @category Error Returns
+     *
      * @return string #Not Yet Implemented
      */
     public static function DUMMY()
@@ -146,6 +154,8 @@ class Functions
 
     /**
      * DIV0.
+     *
+     * @category Error Returns
      *
      * @return string #Not Yet Implemented
      */
@@ -163,6 +173,8 @@ class Functions
      * Returns the error value #N/A
      *        #N/A is the error value that means "no value is available."
      *
+     * @category Logical Functions
+     *
      * @return string #N/A!
      */
     public static function NA()
@@ -174,6 +186,8 @@ class Functions
      * NaN.
      *
      * Returns the error value #NUM!
+     *
+     * @category Error Returns
      *
      * @return string #NUM!
      */
@@ -187,6 +201,8 @@ class Functions
      *
      * Returns the error value #NAME?
      *
+     * @category Error Returns
+     *
      * @return string #NAME?
      */
     public static function NAME()
@@ -198,6 +214,8 @@ class Functions
      * REF.
      *
      * Returns the error value #REF!
+     *
+     * @category Error Returns
      *
      * @return string #REF!
      */
@@ -211,6 +229,8 @@ class Functions
      *
      * Returns the error value #NULL!
      *
+     * @category Error Returns
+     *
      * @return string #NULL!
      */
     public static function null()
@@ -222,6 +242,8 @@ class Functions
      * VALUE.
      *
      * Returns the error value #VALUE!
+     *
+     * @category Error Returns
      *
      * @return string #VALUE!
      */
@@ -638,7 +660,7 @@ class Functions
      *
      * @return bool|string
      */
-    public static function isFormula($cellReference = '', ?Cell $pCell = null)
+    public static function isFormula($cellReference = '', Cell $pCell = null)
     {
         if ($pCell === null) {
             return self::REF();
@@ -647,7 +669,7 @@ class Functions
         preg_match('/^' . Calculation::CALCULATION_REGEXP_CELLREF . '$/i', $cellReference, $matches);
 
         $cellReference = $matches[6] . $matches[7];
-        $worksheetName = str_replace("''", "'", trim($matches[2], "'"));
+        $worksheetName = trim($matches[3], "'");
 
         $worksheet = (!empty($worksheetName))
             ? $pCell->getWorksheet()->getParent()->getSheetByName($worksheetName)

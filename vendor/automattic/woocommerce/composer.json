@@ -9,18 +9,20 @@
       "email": "claudio.sanches@automattic.com"
     }
   ],
+  "minimum-stability": "dev",
   "keywords": [
     "API",
     "WooCommerce"
   ],
   "require": {
-    "php": ">= 5.4.0",
+    "php": ">= 7.1.0",
     "ext-curl": "*",
     "ext-json": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "*",
-    "squizlabs/php_codesniffer": "3.*"
+    "phpunit/phpunit": "^8",
+    "squizlabs/php_codesniffer": "3.*",
+    "overtrue/phplint": "7.4.x-dev"
   },
   "autoload": {
     "psr-4": {
@@ -28,6 +30,9 @@
     }
   },
   "autoload-dev": {
-    "psr-4": { "Automattic\\WooCommerce\\Tests\\": "tests/WooCommerce" }
+    "psr-4": { 
+      "Automattic\\WooCommerce\\LegacyTests\\": "tests/legacy-php/WooCommerce/Tests",
+      "Automattic\\WooCommerce\\Tests\\": "tests/php/WooCommerce/Tests"
+    }
   }
 }
