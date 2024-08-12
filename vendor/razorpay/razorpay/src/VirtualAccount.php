@@ -21,37 +21,19 @@ class VirtualAccount extends Entity
 
     public function close()
     {
-        $relativeUrl = $this->getEntityUrl() . $this->id . '/close';
+        $relativeUrl = $this->getEntityUrl() . $this->id;
 
+        $data = array(
+            'status' => 'closed'
+        );
 
-        return $this->request('POST', $relativeUrl);
+        return $this->request('PATCH', $relativeUrl, $data);
     }
 
-    public function payments($options = array())
+    public function payments()
     {
         $relativeUrl = $this->getEntityUrl() . $this->id . '/payments';
 
-        return $this->request('GET', $relativeUrl, $options);
-    }
-
-    public function addReceiver($attributes = array())
-    {
-        $relativeUrl = $this->getEntityUrl() . $this->id . '/receivers';
-
-        return $this->request('POST', $relativeUrl, $attributes); 
-    }
-
-    public function addAllowedPayer($attributes = array())
-    {
-        $relativeUrl = $this->getEntityUrl() . $this->id . '/allowed_payers';
-
-        return $this->request('POST', $relativeUrl, $attributes);
-    }
-
-    public function deleteAllowedPayer($allowedPlayerId)
-    {
-        $relativeUrl = $this->getEntityUrl() . $this->id . '/allowed_payers/'.$allowedPlayerId;
- 
-        return $this->request('DELETE', $relativeUrl); 
+        return $this->request('GET', $relativeUrl);
     }
 }

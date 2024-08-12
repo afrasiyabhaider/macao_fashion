@@ -49,7 +49,7 @@ class TestMakeCommand extends GeneratorCommand
     protected function getOptions()
     {
         return [
-            ['feature', null, InputOption::VALUE_NONE, 'Create a feature test.'],
+            ['feature', false, InputOption::VALUE_NONE, 'Create a feature test.'],
         ];
     }
 

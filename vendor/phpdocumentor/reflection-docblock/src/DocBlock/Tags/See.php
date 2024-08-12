@@ -23,7 +23,6 @@ use phpDocumentor\Reflection\FqsenResolver;
 use phpDocumentor\Reflection\Types\Context as TypeContext;
 use phpDocumentor\Reflection\Utils;
 use Webmozart\Assert\Assert;
-
 use function array_key_exists;
 use function explode;
 use function preg_match;
@@ -33,9 +32,11 @@ use function preg_match;
  */
 final class See extends BaseTag implements Factory\StaticMethod
 {
-    protected string $name = 'see';
+    /** @var string */
+    protected $name = 'see';
 
-    protected Reference $refers;
+    /** @var Reference */
+    protected $refers;
 
     /**
      * Initializes this tag.
@@ -51,21 +52,21 @@ final class See extends BaseTag implements Factory\StaticMethod
         ?FqsenResolver $typeResolver = null,
         ?DescriptionFactory $descriptionFactory = null,
         ?TypeContext $context = null
-    ): self {
+    ) : self {
         Assert::notNull($descriptionFactory);
 
         $parts = Utils::pregSplit('/\s+/Su', $body, 2);
         $description = isset($parts[1]) ? $descriptionFactory->create($parts[1], $context) : null;
 
         // https://tools.ietf.org/html/rfc2396#section-3
-        if (preg_match('#\w://\w#', $parts[0])) {
+        if (preg_match('/\w:\/\/\w/i', $parts[0])) {
             return new static(new Url($parts[0]), $description);
         }
 
         return new static(new FqsenRef(self::resolveFqsen($parts[0], $typeResolver, $context)), $description);
     }
 
-    private static function resolveFqsen(string $parts, ?FqsenResolver $fqsenResolver, ?TypeContext $context): Fqsen
+    private static function resolveFqsen(string $parts, ?FqsenResolver $fqsenResolver, ?TypeContext $context) : Fqsen
     {
         Assert::notNull($fqsenResolver);
         $fqsenParts = explode('::', $parts);
@@ -81,7 +82,7 @@ final class See extends BaseTag implements Factory\StaticMethod
     /**
      * Returns the ref of this tag.
      */
-    public function getReference(): Reference
+    public function getReference() : Reference
     {
         return $this->refers;
     }
@@ -89,7 +90,7 @@ final class See extends BaseTag implements Factory\StaticMethod
     /**
      * Returns a string representation of this tag.
      */
-    public function __toString(): string
+    public function __toString() : string
     {
         if ($this->description) {
             $description = $this->description->render();

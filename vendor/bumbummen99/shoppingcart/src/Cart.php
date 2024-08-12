@@ -13,12 +13,9 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Session\SessionManager;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Traits\Macroable;
 
 class Cart
 {
-    use Macroable;
-
     const DEFAULT_INSTANCE = 'default';
 
     /**
@@ -636,15 +633,13 @@ class Cart
             $identifier = $identifier->getInstanceIdentifier();
         }
 
-        $instance = $this->currentInstance();
-
-        if ($this->storedCartInstanceWithIdentifierExists($instance, $identifier)) {
+        if ($this->storedCartWithIdentifierExists($identifier)) {
             throw new CartAlreadyStoredException("A cart with identifier {$identifier} was already stored.");
         }
 
         $this->getConnection()->table($this->getTableName())->insert([
             'identifier' => $identifier,
-            'instance'   => $instance,
+            'instance'   => $this->currentInstance(),
             'content'    => serialize($content),
             'created_at' => $this->createdAt ?: Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -666,16 +661,16 @@ class Cart
             $identifier = $identifier->getInstanceIdentifier();
         }
 
-        $currentInstance = $this->currentInstance();
-
-        if (!$this->storedCartInstanceWithIdentifierExists($currentInstance, $identifier)) {
+        if (!$this->storedCartWithIdentifierExists($identifier)) {
             return;
         }
 
         $stored = $this->getConnection()->table($this->getTableName())
-            ->where(['identifier'=> $identifier, 'instance' => $currentInstance])->first();
+            ->where('identifier', $identifier)->first();
 
         $storedContent = unserialize(data_get($stored, 'content'));
+
+        $currentInstance = $this->currentInstance();
 
         $this->instance(data_get($stored, 'instance'));
 
@@ -694,7 +689,7 @@ class Cart
         $this->createdAt = Carbon::parse(data_get($stored, 'created_at'));
         $this->updatedAt = Carbon::parse(data_get($stored, 'updated_at'));
 
-        $this->getConnection()->table($this->getTableName())->where(['identifier' => $identifier, 'instance' => $currentInstance])->delete();
+        $this->getConnection()->table($this->getTableName())->where('identifier', $identifier)->delete();
     }
 
     /**
@@ -710,13 +705,11 @@ class Cart
             $identifier = $identifier->getInstanceIdentifier();
         }
 
-        $instance = $this->currentInstance();
-
-        if (!$this->storedCartInstanceWithIdentifierExists($instance, $identifier)) {
+        if (!$this->storedCartWithIdentifierExists($identifier)) {
             return;
         }
 
-        $this->getConnection()->table($this->getTableName())->where(['identifier' => $identifier, 'instance' => $instance])->delete();
+        $this->getConnection()->table($this->getTableName())->where('identifier', $identifier)->delete();
 
         $this->events->dispatch('cart.erased');
     }
@@ -731,14 +724,14 @@ class Cart
      *
      * @return bool
      */
-    public function merge($identifier, $keepDiscount = false, $keepTax = false, $dispatchAdd = true, $instance = self::DEFAULT_INSTANCE)
+    public function merge($identifier, $keepDiscount = false, $keepTax = false, $dispatchAdd = true)
     {
-        if (!$this->storedCartInstanceWithIdentifierExists($instance, $identifier)) {
+        if (!$this->storedCartWithIdentifierExists($identifier)) {
             return false;
         }
 
         $stored = $this->getConnection()->table($this->getTableName())
-            ->where(['identifier'=> $identifier, 'instance'=> $instance])->first();
+            ->where('identifier', $identifier)->first();
 
         $storedContent = unserialize($stored->content);
 
@@ -836,9 +829,9 @@ class Cart
      *
      * @return bool
      */
-    private function storedCartInstanceWithIdentifierExists($instance, $identifier)
+    private function storedCartWithIdentifierExists($identifier)
     {
-        return $this->getConnection()->table($this->getTableName())->where(['identifier' => $identifier, 'instance'=> $instance])->exists();
+        return $this->getConnection()->table($this->getTableName())->where('identifier', $identifier)->exists();
     }
 
     /**

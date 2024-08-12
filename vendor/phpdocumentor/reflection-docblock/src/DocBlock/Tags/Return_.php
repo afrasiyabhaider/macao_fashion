@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace phpDocumentor\Reflection\DocBlock\Tags;
 
-use Doctrine\Deprecations\Deprecation;
 use phpDocumentor\Reflection\DocBlock\Description;
 use phpDocumentor\Reflection\DocBlock\DescriptionFactory;
 use phpDocumentor\Reflection\Type;
@@ -33,23 +32,12 @@ final class Return_ extends TagWithType implements Factory\StaticMethod
         $this->description = $description;
     }
 
-    /**
-     * @deprecated Create using static factory is deprecated,
-     *  this method should not be called directly by library consumers
-     */
     public static function create(
         string $body,
         ?TypeResolver $typeResolver = null,
         ?DescriptionFactory $descriptionFactory = null,
         ?TypeContext $context = null
-    ): self {
-        Deprecation::triggerIfCalledFromOutside(
-            'phpdocumentor/reflection-docblock',
-            'https://github.com/phpDocumentor/ReflectionDocBlock/issues/361',
-            'Create using static factory is deprecated, this method should not be called directly
-             by library consumers',
-        );
-
+    ) : self {
         Assert::notNull($typeResolver);
         Assert::notNull($descriptionFactory);
 
@@ -61,7 +49,7 @@ final class Return_ extends TagWithType implements Factory\StaticMethod
         return new static($type, $description);
     }
 
-    public function __toString(): string
+    public function __toString() : string
     {
         if ($this->description) {
             $description = $this->description->render();
@@ -71,6 +59,6 @@ final class Return_ extends TagWithType implements Factory\StaticMethod
 
         $type = $this->type ? '' . $this->type : 'mixed';
 
-        return $type . ($description !== '' ? ' ' . $description : '');
+        return $type . ($description !== '' ? ($type !== '' ? ' ' : '') . $description : '');
     }
 }

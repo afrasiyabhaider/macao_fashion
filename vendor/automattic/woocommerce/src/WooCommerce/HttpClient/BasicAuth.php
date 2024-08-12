@@ -1,5 +1,4 @@
 <?php
-
 /**
  * WooCommerce Basic Authentication
  *

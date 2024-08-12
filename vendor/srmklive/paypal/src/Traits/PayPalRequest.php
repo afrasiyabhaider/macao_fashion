@@ -127,13 +127,6 @@ trait PayPalRequest
     private $validateSSL;
 
     /**
-     * Fraudnet Header Id.
-     *
-     * @var string
-     */
-    private $fraudnetId;
-
-    /**
      * Set PayPal API Credentials.
      *
      * @param array $credentials
@@ -235,20 +228,6 @@ trait PayPalRequest
         $this->apiUrl = $this->config['ipn_url'];
 
         return $this->doPayPalRequest('verifyipn');
-    }
-
-    /**
-     * Function to set fraudnet id.
-     *
-     * @param string $fraudnetId
-     *
-     * @return $this
-     */
-    public function setFraudnetId($fraudnetId)
-    {
-        $this->fraudnetId = $fraudnetId;
-
-        return $this;
     }
 
     /**

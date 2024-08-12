@@ -18,7 +18,7 @@ interface DataFormatterInterface
     /**
      * Transforms a PHP variable to a string representation
      *
-     * @param mixed $data
+     * @param mixed $var
      * @return string
      */
     function formatVar($data);

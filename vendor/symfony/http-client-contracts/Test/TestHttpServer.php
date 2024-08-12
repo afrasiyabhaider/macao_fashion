@@ -18,9 +18,6 @@ class TestHttpServer
 {
     private static $process = [];
 
-    /**
-     * @return Process
-     */
     public static function start(int $port = 8057)
     {
         if (isset(self::$process[$port])) {
@@ -42,12 +39,5 @@ class TestHttpServer
         } while (!@fopen('http://127.0.0.1:'.$port, 'r'));
 
         return $process;
-    }
-
-    public static function stop(int $port = 8057)
-    {
-        if (isset(self::$process[$port])) {
-            self::$process[$port]->stop();
-        }
     }
 }

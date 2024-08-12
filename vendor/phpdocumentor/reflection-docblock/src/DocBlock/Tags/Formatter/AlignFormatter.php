@@ -15,7 +15,6 @@ namespace phpDocumentor\Reflection\DocBlock\Tags\Formatter;
 
 use phpDocumentor\Reflection\DocBlock\Tag;
 use phpDocumentor\Reflection\DocBlock\Tags\Formatter;
-
 use function max;
 use function str_repeat;
 use function strlen;
@@ -23,7 +22,7 @@ use function strlen;
 class AlignFormatter implements Formatter
 {
     /** @var int The maximum tag name length. */
-    protected int $maxLen = 0;
+    protected $maxLen = 0;
 
     /**
      * @param Tag[] $tags All tags that should later be aligned with the formatter.
@@ -38,7 +37,7 @@ class AlignFormatter implements Formatter
     /**
      * Formats the given tag to return a simple plain text version.
      */
-    public function format(Tag $tag): string
+    public function format(Tag $tag) : string
     {
         return '@' . $tag->getName() .
             str_repeat(

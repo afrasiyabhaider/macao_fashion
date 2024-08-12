@@ -5,7 +5,7 @@ declare(strict_types=1);
 /*
  * This file is part of Guzzle Factory.
  *
- * (c) Graham Campbell <hello@gjcampbell.co.uk>
+ * (c) Graham Campbell <graham@alt-three.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,15 +13,12 @@ declare(strict_types=1);
 
 namespace GrahamCampbell\GuzzleFactory;
 
-use Closure;
 use GuzzleHttp\BodySummarizer;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
-use GuzzleHttp\RequestOptions;
-use GuzzleHttp\RetryMiddleware;
 use GuzzleHttp\Utils;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -29,49 +26,37 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * This is the guzzle factory class.
  *
- * @author Graham Campbell <hello@gjcampbell.co.uk>
+ * @author Graham Campbell <graham@alt-three.com>
  */
 final class GuzzleFactory
 {
-    /**
-     * The default crypto method.
-     *
-     * @var int
-     */
-    private const CRYPTO_METHOD = \STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
-
     /**
      * The default connect timeout.
      *
      * @var int
      */
-    private const CONNECT_TIMEOUT = 10;
+    const CONNECT_TIMEOUT = 10;
 
     /**
      * The default transport timeout.
      *
      * @var int
      */
-    private const TIMEOUT = 15;
+    const TIMEOUT = 15;
 
     /**
      * The default backoff multiplier.
      *
      * @var int
      */
-    private const BACKOFF = 1000;
+    const BACKOFF = 1000;
 
     /**
      * The default 4xx retry codes.
      *
      * @var int[]
      */
-    private const CODES = [429];
-
-    /**
-     * The default amount of retries.
-     */
-    private const RETRIES = 3;
+    const CODES = [429];
 
     /**
      * Create a new guzzle client.
@@ -79,23 +64,13 @@ final class GuzzleFactory
      * @param array      $options
      * @param int|null   $backoff
      * @param int[]|null $codes
-     * @param int|null   $retries
      *
      * @return \GuzzleHttp\Client
      */
-    public static function make(
-        array $options = [],
-        int $backoff = null,
-        array $codes = null,
-        int $retries = null
-    ): Client {
-        $config = array_merge([
-            RequestOptions::CRYPTO_METHOD   => self::CRYPTO_METHOD,
-            RequestOptions::CONNECT_TIMEOUT => self::CONNECT_TIMEOUT,
-            RequestOptions::TIMEOUT         => self::TIMEOUT,
-        ], $options);
-
-        $config['handler'] = self::handler($backoff, $codes, $retries, $options['handler'] ?? null);
+    public static function make(array $options = [], int $backoff = null, array $codes = null)
+    {
+        $config = array_merge(['connect_timeout' => self::CONNECT_TIMEOUT, 'timeout' => self::TIMEOUT], $options);
+        $config['handler'] = self::handler($backoff, $codes, $options['handler'] ?? null);
 
         return new Client($config);
     }
@@ -105,24 +80,15 @@ final class GuzzleFactory
      *
      * @param int|null                      $backoff
      * @param int[]|null                    $codes
-     * @param int|null                      $retries
      * @param \GuzzleHttp\HandlerStack|null $stack
      *
      * @return \GuzzleHttp\HandlerStack
      */
-    public static function handler(
-        int $backoff = null,
-        array $codes = null,
-        int $retries = null,
-        HandlerStack $stack = null
-    ): HandlerStack {
+    public static function handler(int $backoff = null, array $codes = null, HandlerStack $stack = null)
+    {
         $stack = $stack ?? self::innerHandler();
 
-        if ($retries === 0) {
-            return $stack;
-        }
-
-        $stack->push(self::createRetryMiddleware($backoff ?? self::BACKOFF, $codes ?? self::CODES, $retries ?? self::RETRIES), 'retry');
+        $stack->push(self::createRetryMiddleware($backoff ?? self::BACKOFF, $codes ?? self::CODES), 'retry');
 
         return $stack;
     }
@@ -134,9 +100,8 @@ final class GuzzleFactory
      *
      * @return \GuzzleHttp\HandlerStack
      */
-    public static function innerHandler(
-        callable $handler = null
-    ): HandlerStack {
+    public static function innerHandler(callable $handler = null): HandlerStack
+    {
         $stack = new HandlerStack($handler ?? Utils::chooseHandler());
 
         $stack->push(Middleware::httpErrors(new BodySummarizer(250)), 'http_errors');
@@ -152,25 +117,15 @@ final class GuzzleFactory
      *
      * @param int   $backoff
      * @param int[] $codes
-     * @param int   $maxRetries
      *
-     * @return Closure
+     * @return callable
      */
-    private static function createRetryMiddleware(
-        int $backoff,
-        array $codes,
-        int $maxRetries
-    ): Closure {
-        $decider = static function ($retries, RequestInterface $request, ResponseInterface $response = null, TransferException $exception = null) use ($codes, $maxRetries) {
-            return $retries < $maxRetries && ($exception instanceof ConnectException || ($response && ($response->getStatusCode() >= 500 || in_array($response->getStatusCode(), $codes, true))));
-        };
-
-        $delay = static function ($retries) use ($backoff) {
-            return (int) pow(2, $retries) * $backoff;
-        };
-
-        return static function (callable $handler) use ($decider, $delay): RetryMiddleware {
-            return new RetryMiddleware($decider, $handler, $delay);
-        };
+    private static function createRetryMiddleware(int $backoff, array $codes): callable
+    {
+        return Middleware::retry(function ($retries, RequestInterface $request, ResponseInterface $response = null, TransferException $exception = null) use ($codes) {
+            return $retries < 3 && ($exception instanceof ConnectException || ($response && ($response->getStatusCode() >= 500 || in_array($response->getStatusCode(), $codes, true))));
+        }, function ($retries) use ($backoff) {
+            return (int) pow(2, $retries) * ($backoff === null ? self::BACKOFF : $backoff);
+        });
     }
 }

@@ -35,7 +35,8 @@ class FatalErrorException extends \ErrorException
 
             $this->setTrace($trace);
         } elseif (null !== $traceOffset) {
-            if (\function_exists('xdebug_get_function_stack') && $trace = @xdebug_get_function_stack()) {
+            if (\function_exists('xdebug_get_function_stack')) {
+                $trace = xdebug_get_function_stack();
                 if (0 < $traceOffset) {
                     array_splice($trace, -$traceOffset);
                 }
@@ -73,7 +74,7 @@ class FatalErrorException extends \ErrorException
 
     protected function setTrace($trace)
     {
-        $traceReflector = new \ReflectionProperty(\Exception::class, 'trace');
+        $traceReflector = new \ReflectionProperty('Exception', 'trace');
         $traceReflector->setAccessible(true);
         $traceReflector->setValue($this, $trace);
     }

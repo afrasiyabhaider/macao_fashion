@@ -1,5 +1,4 @@
 <?php
-
 /**
  * WooCommerce REST API HTTP Client Exception
  *

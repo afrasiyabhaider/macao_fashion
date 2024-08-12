@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Yajra\DataTables\Exceptions\Exception;
 
@@ -21,7 +20,7 @@ class EloquentDataTable extends QueryDataTable
     /**
      * Can the DataTable engine be created with these parameters.
      *
-     * @param  mixed  $source
+     * @param mixed $source
      * @return bool
      */
     public static function canCreate($source)
@@ -32,7 +31,7 @@ class EloquentDataTable extends QueryDataTable
     /**
      * EloquentEngine constructor.
      *
-     * @param  mixed  $model
+     * @param mixed $model
      */
     public function __construct($model)
     {
@@ -77,10 +76,10 @@ class EloquentDataTable extends QueryDataTable
     /**
      * Compile query builder where clause depending on configurations.
      *
-     * @param  mixed  $query
-     * @param  string  $columnName
-     * @param  string  $keyword
-     * @param  string  $boolean
+     * @param mixed  $query
+     * @param string $columnName
+     * @param string $keyword
+     * @param string $boolean
      */
     protected function compileQuerySearch($query, $columnName, $keyword, $boolean = 'or')
     {
@@ -92,21 +91,15 @@ class EloquentDataTable extends QueryDataTable
             return parent::compileQuerySearch($query, $columnName, $keyword, $boolean);
         }
 
-        if ($this->isMorphRelation($relation)) {
-            $query->{$boolean . 'WhereHasMorph'}($relation, '*', function (Builder $query) use ($column, $keyword) {
-                parent::compileQuerySearch($query, $column, $keyword, '');
-            });
-        } else {
-            $query->{$boolean . 'WhereHas'}($relation, function (Builder $query) use ($column, $keyword) {
-                parent::compileQuerySearch($query, $column, $keyword, '');
-            });
-        }
+        $query->{$boolean . 'WhereHas'}($relation, function (Builder $query) use ($column, $keyword) {
+            parent::compileQuerySearch($query, $column, $keyword, '');
+        });
     }
 
     /**
      * Resolve the proper column name be used.
      *
-     * @param  string  $column
+     * @param string $column
      * @return string
      */
     protected function resolveRelationColumn($column)
@@ -123,28 +116,9 @@ class EloquentDataTable extends QueryDataTable
     }
 
     /**
-     * Check if a relation is a morphed one or not.
-     *
-     * @param  string  $relation
-     * @return bool
-     */
-    protected function isMorphRelation($relation)
-    {
-        $isMorph = false;
-        if ($relation !== null && $relation !== '') {
-            $relationParts = explode('.', $relation);
-            $firstRelation = array_shift($relationParts);
-            $model         = $this->query->getModel();
-            $isMorph       = method_exists($model, $firstRelation) && $model->$firstRelation() instanceof MorphTo;
-        }
-
-        return $isMorph;
-    }
-
-    /**
      * Check if a relation was not used on eager loading.
      *
-     * @param  string  $relation
+     * @param  string $relation
      * @return bool
      */
     protected function isNotEagerLoaded($relation)
@@ -157,10 +131,9 @@ class EloquentDataTable extends QueryDataTable
     /**
      * Join eager loaded relation and get the related column name.
      *
-     * @param  string  $relation
-     * @param  string  $relationColumn
+     * @param string $relation
+     * @param string $relationColumn
      * @return string
-     *
      * @throws \Yajra\DataTables\Exceptions\Exception
      */
     protected function joinEagerLoadedColumn($relation, $relationColumn)
@@ -189,17 +162,15 @@ class EloquentDataTable extends QueryDataTable
 
                 case $model instanceof HasOneThrough:
                     $pivot    = explode('.', $model->getQualifiedParentKeyName())[0]; // extract pivot table from key
-                    $pivotPK  = $pivot . '.' . $model->getFirstKeyName();
+                    $pivotPK  = $pivot . '.' . $model->getLocalKeyName();
                     $pivotFK  = $model->getQualifiedLocalKeyName();
                     $this->performJoin($pivot, $pivotPK, $pivotFK);
 
                     $related = $model->getRelated();
                     $table   = $related->getTable();
-                    $tablePK = $model->getSecondLocalKeyName();
+                    $tablePK = $related->getForeignKey();
                     $foreign = $pivot . '.' . $tablePK;
                     $other   = $related->getQualifiedKeyName();
-
-                    $lastQuery->addSelect($lastQuery->getModel()->getTable().'.*');
 
                     break;
 
@@ -228,10 +199,10 @@ class EloquentDataTable extends QueryDataTable
     /**
      * Perform join query.
      *
-     * @param  string  $table
-     * @param  string  $foreign
-     * @param  string  $other
-     * @param  string  $type
+     * @param string $table
+     * @param string $foreign
+     * @param string $other
+     * @param string $type
      */
     protected function performJoin($table, $foreign, $other, $type = 'left')
     {

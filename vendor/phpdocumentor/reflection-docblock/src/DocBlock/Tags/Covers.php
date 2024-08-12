@@ -20,7 +20,6 @@ use phpDocumentor\Reflection\FqsenResolver;
 use phpDocumentor\Reflection\Types\Context as TypeContext;
 use phpDocumentor\Reflection\Utils;
 use Webmozart\Assert\Assert;
-
 use function array_key_exists;
 use function explode;
 
@@ -29,9 +28,11 @@ use function explode;
  */
 final class Covers extends BaseTag implements Factory\StaticMethod
 {
-    protected string $name = 'covers';
+    /** @var string */
+    protected $name = 'covers';
 
-    private Fqsen $refers;
+    /** @var Fqsen */
+    private $refers;
 
     /**
      * Initializes this tag.
@@ -47,7 +48,7 @@ final class Covers extends BaseTag implements Factory\StaticMethod
         ?DescriptionFactory $descriptionFactory = null,
         ?FqsenResolver $resolver = null,
         ?TypeContext $context = null
-    ): self {
+    ) : self {
         Assert::stringNotEmpty($body);
         Assert::notNull($descriptionFactory);
         Assert::notNull($resolver);
@@ -60,7 +61,7 @@ final class Covers extends BaseTag implements Factory\StaticMethod
         );
     }
 
-    private static function resolveFqsen(string $parts, ?FqsenResolver $fqsenResolver, ?TypeContext $context): Fqsen
+    private static function resolveFqsen(string $parts, ?FqsenResolver $fqsenResolver, ?TypeContext $context) : Fqsen
     {
         Assert::notNull($fqsenResolver);
         $fqsenParts = explode('::', $parts);
@@ -76,7 +77,7 @@ final class Covers extends BaseTag implements Factory\StaticMethod
     /**
      * Returns the structural element this tag refers to.
      */
-    public function getReference(): Fqsen
+    public function getReference() : Fqsen
     {
         return $this->refers;
     }
@@ -84,7 +85,7 @@ final class Covers extends BaseTag implements Factory\StaticMethod
     /**
      * Returns a string representation of this tag.
      */
-    public function __toString(): string
+    public function __toString() : string
     {
         if ($this->description) {
             $description = $this->description->render();

@@ -195,7 +195,7 @@ class Command
      *
      * @return int The command exit code
      *
-     * @throws ExceptionInterface When input binding fails. Bypass this by calling {@link ignoreValidationErrors()}.
+     * @throws \Exception When binding input fails. Bypass this by calling {@link ignoreValidationErrors()}.
      *
      * @see setCode()
      * @see execute()
@@ -281,14 +281,7 @@ class Command
         if ($code instanceof \Closure) {
             $r = new \ReflectionFunction($code);
             if (null === $r->getClosureThis()) {
-                set_error_handler(static function () {});
-                try {
-                    if ($c = \Closure::bind($code, $this)) {
-                        $code = $c;
-                    }
-                } finally {
-                    restore_error_handler();
-                }
+                $code = \Closure::bind($code, $this);
             }
         }
 
@@ -375,10 +368,10 @@ class Command
     /**
      * Adds an argument.
      *
-     * @param string   $name        The argument name
-     * @param int|null $mode        The argument mode: InputArgument::REQUIRED or InputArgument::OPTIONAL
-     * @param string   $description A description text
-     * @param mixed    $default     The default value (for InputArgument::OPTIONAL mode only)
+     * @param string               $name        The argument name
+     * @param int|null             $mode        The argument mode: InputArgument::REQUIRED or InputArgument::OPTIONAL
+     * @param string               $description A description text
+     * @param string|string[]|null $default     The default value (for InputArgument::OPTIONAL mode only)
      *
      * @throws InvalidArgumentException When argument mode is not valid
      *
@@ -394,11 +387,11 @@ class Command
     /**
      * Adds an option.
      *
-     * @param string            $name        The option name
-     * @param string|array|null $shortcut    The shortcuts, can be null, a string of shortcuts delimited by | or an array of shortcuts
-     * @param int|null          $mode        The option mode: One of the InputOption::VALUE_* constants
-     * @param string            $description A description text
-     * @param mixed             $default     The default value (must be null for InputOption::VALUE_NONE)
+     * @param string                        $name        The option name
+     * @param string|array|null             $shortcut    The shortcuts, can be null, a string of shortcuts delimited by | or an array of shortcuts
+     * @param int|null                      $mode        The option mode: One of the InputOption::VALUE_* constants
+     * @param string                        $description A description text
+     * @param string|string[]|int|bool|null $default     The default value (must be null for InputOption::VALUE_NONE)
      *
      * @throws InvalidArgumentException If option mode is invalid or incompatible
      *
@@ -464,7 +457,7 @@ class Command
     /**
      * @param bool $hidden Whether or not the command should be hidden from the list of commands
      *
-     * @return $this
+     * @return Command The current instance
      */
     public function setHidden($hidden)
     {
@@ -613,7 +606,7 @@ class Command
      */
     public function addUsage($usage)
     {
-        if (!str_starts_with($usage, $this->name)) {
+        if (0 !== strpos($usage, $this->name)) {
             $usage = sprintf('%s %s', $this->name, $usage);
         }
 

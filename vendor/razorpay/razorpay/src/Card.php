@@ -11,11 +11,4 @@ class Card extends Entity
     {
         return parent::fetch($id);
     }
-
-    public function requestCardReference($attributes = array())
-    {
-        $entityUrl = $this->getEntityUrl() . '/fingerprints';
-
-        return $this->request('POST', $entityUrl, $attributes);
-    }
 }

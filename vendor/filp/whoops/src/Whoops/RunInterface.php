@@ -50,16 +50,6 @@ interface RunInterface
     public function clearHandlers();
 
     /**
-     * @return array<callable>
-     */
-    public function getFrameFilters();
-
-    /**
-     * @return Run
-     */
-    public function clearFrameFilters();
-
-    /**
      * Registers this instance as an error handler.
      *
      * @return Run
@@ -101,15 +91,6 @@ interface RunInterface
     public function sendHttpCode($code = null);
 
     /**
-     * Should Whoops exit with a specific code on the CLI if possible?
-     * Whoops will exit with 1 by default, but you can specify something else.
-     *
-     * @param int $code
-     * @return int
-     */
-    public function sendExitCode($code = null);
-
-    /**
      * Should Whoops push output directly to the client?
      * If this is false, output will be returned by handleException
      *
@@ -147,12 +128,4 @@ interface RunInterface
      * Special case to deal with Fatal errors and the like.
      */
     public function handleShutdown();
-
-    /**
-     * Registers a filter callback in the frame filters stack.
-     *
-     * @param callable $filterCallback
-     * @return \Whoops\Run
-     */
-    public function addFrameFilter($filterCallback);
 }

@@ -72,19 +72,15 @@ class JavascriptRenderer
 
     protected $ajaxHandlerBindToFetch = false;
 
-    protected $ajaxHandlerBindToJquery = false;
+    protected $ajaxHandlerBindToJquery = true;
 
-    protected $ajaxHandlerBindToXHR = true;
+    protected $ajaxHandlerBindToXHR = false;
 
     protected $ajaxHandlerAutoShow = true;
-
-    protected $ajaxHandlerEnableTab = false;
 
     protected $openHandlerClass = 'PhpDebugBar.OpenHandler';
 
     protected $openHandlerUrl;
-
-    protected $cspNonce;
 
     /**
      * @param \DebugBar\DebugBar $debugBar
@@ -181,17 +177,11 @@ class JavascriptRenderer
         if (array_key_exists('ajax_handler_auto_show', $options)) {
             $this->setAjaxHandlerAutoShow($options['ajax_handler_auto_show']);
         }
-        if (array_key_exists('ajax_handler_enable_tab', $options)) {
-            $this->setAjaxHandlerEnableTab($options['ajax_handler_enable_tab']);
-        }
         if (array_key_exists('open_handler_classname', $options)) {
             $this->setOpenHandlerClass($options['open_handler_classname']);
         }
         if (array_key_exists('open_handler_url', $options)) {
             $this->setOpenHandlerUrl($options['open_handler_url']);
-        }
-        if (array_key_exists('csp_nonce', $options)) {
-            $this->setCspNonce($options['csp_nonce']);
         }
     }
 
@@ -514,7 +504,6 @@ class JavascriptRenderer
      * Sets whether to call bindToJquery() on the ajax handler
      *
      * @param boolean $bind
-     * @deprecated use setBindAjaxHandlerToXHR
      */
     public function setBindAjaxHandlerToJquery($bind = true)
     {
@@ -526,7 +515,6 @@ class JavascriptRenderer
      * Checks whether bindToJquery() will be called on the ajax handler
      *
      * @return boolean
-     * @deprecated use isAjaxHandlerBoundToXHR
      */
     public function isAjaxHandlerBoundToJquery()
     {
@@ -577,28 +565,6 @@ class JavascriptRenderer
     }
 
     /**
-     * Sets whether new ajax debug data will be shown in a separate tab instead of dropdown.
-     *
-     * @param boolean $enabled
-     */
-    public function setAjaxHandlerEnableTab($enabled = true)
-    {
-        $this->ajaxHandlerEnableTab = $enabled;
-        return $this;
-    }
-
-    /**
-     * Check if the Ajax Handler History tab is enabled
-     *
-     * @return boolean
-     */
-    public function isAjaxHandlerTabEnabled()
-    {
-        return $this->ajaxHandlerEnableTab;
-    }
-
-
-    /**
      * Sets the class name of the js open handler
      *
      * @param string $className
@@ -638,28 +604,6 @@ class JavascriptRenderer
     public function getOpenHandlerUrl()
     {
         return $this->openHandlerUrl;
-    }
-
-    /**
-     * Sets the CSP Nonce (or remove it by setting to null)
-     *
-     * @param string|null $nonce
-     * @return $this
-     */
-    public function setCspNonce($nonce = null)
-    {
-        $this->cspNonce = $nonce;
-        return $this;
-    }
-
-    /**
-     * Get the CSP Nonce
-     *
-     * @return string|null
-     */
-    public function getCspNonce()
-    {
-        return $this->cspNonce;
     }
 
     /**
@@ -748,8 +692,8 @@ class JavascriptRenderer
         }
 
         foreach ($additionalAssets as $assets) {
-            $basePath = isset($assets['base_path']) ? $assets['base_path'] : '';
-            $baseUrl = isset($assets['base_url']) ? $assets['base_url'] : '';
+            $basePath = isset($assets['base_path']) ? $assets['base_path'] : null;
+            $baseUrl = isset($assets['base_url']) ? $assets['base_url'] : null;
             $root = $this->getRelativeRoot($relativeTo,
                 $this->makeUriRelativeTo($basePath, $this->basePath),
                 $this->makeUriRelativeTo($baseUrl, $this->baseUrl));
@@ -775,7 +719,7 @@ class JavascriptRenderer
         $cssFiles = array_unique($cssFiles);
         $jsFiles = array_unique($jsFiles);
 
-        return $this->filterAssetArray(array($cssFiles, $jsFiles, $inlineCss, $inlineJs, $inlineHead), $type ?? '');
+        return $this->filterAssetArray(array($cssFiles, $jsFiles, $inlineCss, $inlineJs, $inlineHead), $type);
     }
 
     /**
@@ -818,8 +762,6 @@ class JavascriptRenderer
             return $uris;
         }
 
-        $uri = $uri ?? '';
-
         if (substr($uri, 0, 1) === '/' || preg_match('/^([a-zA-Z]+:\/\/|[a-zA-Z]:\/|[a-zA-Z]:\\\)/', $uri)) {
             return $uri;
         }
@@ -833,10 +775,10 @@ class JavascriptRenderer
      * @param string $type 'css', 'js', 'inline_css', 'inline_js', 'inline_head', or null for all
      * @return array
      */
-    protected function filterAssetArray($array, $type = '')
+    protected function filterAssetArray($array, $type = null)
     {
         $types = array('css', 'js', 'inline_css', 'inline_js', 'inline_head');
-        $typeIndex = array_search(strtolower($type ?? ''), $types);
+        $typeIndex = array_search(strtolower($type), $types);
         return $typeIndex !== false ? $array[$typeIndex] : $array;
     }
 
@@ -963,8 +905,6 @@ class JavascriptRenderer
         list($cssFiles, $jsFiles, $inlineCss, $inlineJs, $inlineHead) = $this->getAssets(null, self::RELATIVE_URL);
         $html = '';
 
-        $nonce = $this->getNonceAttribute();
-
         foreach ($cssFiles as $file) {
             $html .= sprintf('<link rel="stylesheet" type="text/css" href="%s">' . "\n", $file);
         }
@@ -978,7 +918,7 @@ class JavascriptRenderer
         }
 
         foreach ($inlineJs as $content) {
-            $html .= sprintf('<script type="text/javascript"%s>%s</script>' . "\n", $nonce, $content);
+            $html .= sprintf('<script type="text/javascript">%s</script>' . "\n", $content);
         }
 
         foreach ($inlineHead as $content) {
@@ -986,7 +926,7 @@ class JavascriptRenderer
         }
 
         if ($this->enableJqueryNoConflict && !$this->useRequireJs) {
-            $html .= '<script type="text/javascript"' . $nonce . '>jQuery.noConflict(true);</script>' . "\n";
+            $html .= '<script type="text/javascript">jQuery.noConflict(true);</script>' . "\n";
         }
 
         return $html;
@@ -1073,16 +1013,10 @@ class JavascriptRenderer
         $suffix = !$initialize ? '(ajax)' : null;
         $js .= $this->getAddDatasetCode($this->debugBar->getCurrentRequestId(), $this->debugBar->getData(), $suffix);
 
-        $nonce = $this->getNonceAttribute();
-
-	if ($nonce != '') {
-            $js = preg_replace("/<script>/", "<script nonce='{$this->cspNonce}'>", $js);
-        }
-
         if ($this->useRequireJs){
-            return "<script type=\"text/javascript\"{$nonce}>\nrequire(['debugbar'], function(PhpDebugBar){ $js });\n</script>\n";
+            return "<script type=\"text/javascript\">\nrequire(['debugbar'], function(PhpDebugBar){ $js });\n</script>\n";
         } else {
-            return "<script type=\"text/javascript\"{$nonce}>\n$js\n</script>\n";
+            return "<script type=\"text/javascript\">\n$js\n</script>\n";
         }
 
     }
@@ -1194,9 +1128,6 @@ class JavascriptRenderer
         // activate state restoration
         $js .= sprintf("%s.restoreState();\n", $varname);
 
-        if ($this->ajaxHandlerEnableTab) {
-            $js .= sprintf("%s.enableAjaxHandlerTab();\n", $varname);
-        }
         return $js;
     }
 
@@ -1217,18 +1148,5 @@ class JavascriptRenderer
             $suffix ? ", " . json_encode($suffix) : ''
         );
         return $js;
-    }
-
-    /**
-     * If a nonce it set, create the correct attribute
-     * @return string
-     */
-    protected function getNonceAttribute()
-    {
-        if ($nonce = $this->getCspNonce()) {
-            return ' nonce="' . $nonce .'"';
-        }
-
-        return '';
     }
 }

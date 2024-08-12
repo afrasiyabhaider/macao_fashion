@@ -1,5 +1,4 @@
 <?php
-
 /**
  * WooCommerce REST API Client
  *
@@ -18,10 +17,11 @@ use Automattic\WooCommerce\HttpClient\HttpClient;
  */
 class Client
 {
+
     /**
      * WooCommerce REST API Client version.
      */
-    public const VERSION = '3.1.0';
+    const VERSION = '3.0.0';
 
     /**
      * HttpClient instance.
@@ -36,7 +36,7 @@ class Client
      * @param string $url            Store URL.
      * @param string $consumerKey    Consumer key.
      * @param string $consumerSecret Consumer secret.
-     * @param array  $options        Options (version, timeout, verify_ssl, oauth_only).
+     * @param array  $options        Options (version, timeout, verify_ssl).
      */
     public function __construct($url, $consumerKey, $consumerSecret, $options = [])
     {
@@ -49,7 +49,7 @@ class Client
      * @param string $endpoint API endpoint.
      * @param array  $data     Request data.
      *
-     * @return \stdClass
+     * @return array
      */
     public function post($endpoint, $data)
     {
@@ -62,7 +62,7 @@ class Client
      * @param string $endpoint API endpoint.
      * @param array  $data     Request data.
      *
-     * @return \stdClass
+     * @return array
      */
     public function put($endpoint, $data)
     {
@@ -75,7 +75,7 @@ class Client
      * @param string $endpoint   API endpoint.
      * @param array  $parameters Request parameters.
      *
-     * @return \stdClass
+     * @return array
      */
     public function get($endpoint, $parameters = [])
     {
@@ -88,7 +88,7 @@ class Client
      * @param string $endpoint   API endpoint.
      * @param array  $parameters Request parameters.
      *
-     * @return \stdClass
+     * @return array
      */
     public function delete($endpoint, $parameters = [])
     {
@@ -100,7 +100,7 @@ class Client
      *
      * @param string $endpoint API endpoint.
      *
-     * @return \stdClass
+     * @return array
      */
     public function options($endpoint)
     {

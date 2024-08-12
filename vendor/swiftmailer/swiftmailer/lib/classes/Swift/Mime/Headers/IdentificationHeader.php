@@ -9,7 +9,6 @@
  */
 
 use Egulias\EmailValidator\EmailValidator;
-use Egulias\EmailValidator\Validation\MessageIDValidation;
 use Egulias\EmailValidator\Validation\RFCValidation;
 
 /**
@@ -180,9 +179,7 @@ class Swift_Mime_Headers_IdentificationHeader extends Swift_Mime_Headers_Abstrac
      */
     private function assertValidId($id)
     {
-        $emailValidation = class_exists(MessageIDValidation::class) ? new MessageIDValidation() : new RFCValidation();
-
-        if (!$this->emailValidator->isValid($id, $emailValidation)) {
+        if (!$this->emailValidator->isValid($id, new RFCValidation())) {
             throw new Swift_RfcComplianceException('Invalid ID given <'.$id.'>');
         }
     }

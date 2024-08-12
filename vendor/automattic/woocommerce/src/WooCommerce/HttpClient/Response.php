@@ -1,5 +1,4 @@
 <?php
-
 /**
  * WooCommerce REST API HTTP Client Response
  *
@@ -16,6 +15,7 @@ namespace Automattic\WooCommerce\HttpClient;
  */
 class Response
 {
+
     /**
      * Response code.
      *
@@ -49,20 +49,6 @@ class Response
         $this->code    = $code;
         $this->headers = $headers;
         $this->body    = $body;
-    }
-
-    /**
-     * To string.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return \json_encode([
-            'code'    => $this->code,
-            'headers' => $this->headers,
-            'body'    => $this->body,
-        ]);
     }
 
     /**

@@ -16,7 +16,9 @@ class Sqlite extends DbDumper
      */
     public function dumpToFile(string $dumpFile)
     {
-        $process = $this->getProcess($dumpFile);
+        $command = $this->getDumpCommand($dumpFile);
+
+        $process = Process::fromShellCommandline($command, null, null, null, $this->timeout);
 
         $process->run();
 
@@ -45,16 +47,5 @@ class Sqlite extends DbDumper
         );
 
         return $this->echoToFile($command, $dumpFile);
-    }
-
-    /**
-     * @param string $dumpFile
-     * @return Process
-     */
-    public function getProcess(string $dumpFile): Process
-    {
-        $command = $this->getDumpCommand($dumpFile);
-
-        return Process::fromShellCommandline($command, null, null, null, $this->timeout);
     }
 }

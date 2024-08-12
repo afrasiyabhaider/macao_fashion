@@ -40,9 +40,6 @@ class Client
     protected $teamMemberId;
 
     /** @var string */
-    protected $namespaceId;
-
-    /** @var string */
     protected $appKey;
 
     /** @var string */
@@ -339,12 +336,11 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-move_v2
      */
-    public function move(string $fromPath, string $toPath, bool $autorename = false): array
+    public function move(string $fromPath, string $toPath): array
     {
         $parameters = [
             'from_path' => $this->normalizePath($fromPath),
             'to_path' => $this->normalizePath($toPath),
-            'autorename' => $autorename,
         ];
 
         return $this->rpcEndpointRequest('files/move_v2', $parameters);
@@ -395,11 +391,10 @@ class Client
      * @param string $path
      * @param string|resource $contents
      * @param string $mode
-     * @param bool $autorename
      *
      * @return array
      */
-    public function upload(string $path, $contents, $mode = 'add', $autorename = false): array
+    public function upload(string $path, $contents, $mode = 'add'): array
     {
         if ($this->shouldUploadChunked($contents)) {
             return $this->uploadChunked($path, $contents, $mode);
@@ -408,7 +403,6 @@ class Client
         $arguments = [
             'path' => $this->normalizePath($path),
             'mode' => $mode,
-            'autorename' => $autorename,
         ];
 
         $response = $this->contentEndpointRequest('files/upload', $arguments, $contents);
@@ -487,7 +481,6 @@ class Client
                 $stream->seek($pos, SEEK_SET);
                 goto tryUpload;
             }
-
             throw $exception;
         }
     }
@@ -499,7 +492,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-start
      *
-     * @param string|resource|StreamInterface $contents
+     * @param string|StreamInterface $contents
      * @param bool $close
      *
      * @return UploadSessionCursor
@@ -547,7 +540,7 @@ class Client
      *
      * @link https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-finish
      *
-     * @param string|resource|StreamInterface $contents
+     * @param string|StreamInterface $contents
      * @param \Spatie\Dropbox\UploadSessionCursor $cursor
      * @param string $path
      * @param string|array $mode
@@ -625,7 +618,7 @@ class Client
      *
      * @throws \Exception
      */
-    public function contentEndpointRequest(string $endpoint, array $arguments, $body = '', bool $isRefreshed = false): ResponseInterface
+    public function contentEndpointRequest(string $endpoint, array $arguments, $body = ''): ResponseInterface
     {
         $headers = ['Dropbox-API-Arg' => json_encode($arguments)];
 
@@ -639,20 +632,13 @@ class Client
                 'body' => $body,
             ]);
         } catch (ClientException $exception) {
-            if (
-                $isRefreshed
-                || ! $this->tokenProvider instanceof RefreshableTokenProvider
-                || ! $this->tokenProvider->refresh($exception)
-            ) {
-                throw $this->determineException($exception);
-            }
-            $response = $this->contentEndpointRequest($endpoint, $arguments, $body, true);
+            throw $this->determineException($exception);
         }
 
         return $response;
     }
 
-    public function rpcEndpointRequest(string $endpoint, array $parameters = null, bool $isRefreshed = false): array
+    public function rpcEndpointRequest(string $endpoint, array $parameters = null): array
     {
         try {
             $options = ['headers' => $this->getHeaders()];
@@ -663,18 +649,12 @@ class Client
 
             $response = $this->client->post($this->getEndpointUrl('api', $endpoint), $options);
         } catch (ClientException $exception) {
-            if (
-                $isRefreshed
-                || ! $this->tokenProvider instanceof RefreshableTokenProvider
-                || ! $this->tokenProvider->refresh($exception)
-            ) {
-                throw $this->determineException($exception);
-            }
-
-            return $this->rpcEndpointRequest($endpoint, $parameters, true);
+            throw $this->determineException($exception);
         }
 
-        return json_decode($response->getBody(), true) ?? [];
+        $response = json_decode($response->getBody(), true);
+
+        return $response ?? [];
     }
 
     protected function determineException(ClientException $exception): Exception
@@ -689,7 +669,7 @@ class Client
     /**
      * @param $contents
      *
-     * @return \GuzzleHttp\Psr7\PumpStream|\GuzzleHttp\Psr7\Stream|StreamInterface
+     * @return \GuzzleHttp\Psr7\PumpStream|\GuzzleHttp\Psr7\Stream
      */
     protected function getStream($contents)
     {
@@ -705,7 +685,7 @@ class Client
             });
         }
 
-        return Psr7\Utils::streamFor($contents);
+        return Psr7\stream_for($contents);
     }
 
     /**
@@ -722,16 +702,7 @@ class Client
     public function setAccessToken(string $accessToken): self
     {
         $this->tokenProvider = new InMemoryTokenProvider($accessToken);
-
-        return $this;
-    }
-
-    /**
-     * Set the namespace ID.
-     */
-    public function setNamespaceId(string $namespaceId): self
-    {
-        $this->namespaceId = $namespaceId;
+        // $this->accessToken = $accessToken;
 
         return $this;
     }
@@ -753,18 +724,6 @@ class Client
                 $auth,
                 [
                     'Dropbox-API-Select-User' => $this->teamMemberId,
-                ]
-            );
-        }
-
-        if ($this->namespaceId) {
-            $headers = array_merge(
-                $headers,
-                [
-                    'Dropbox-API-Path-Root' => json_encode([
-                        '.tag' => 'namespace_id',
-                        'namespace_id' => $this->namespaceId,
-                    ]),
                 ]
             );
         }

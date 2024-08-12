@@ -15,7 +15,6 @@ namespace phpDocumentor\Reflection\DocBlock\Tags;
 
 use phpDocumentor\Reflection\DocBlock\Tag;
 use Webmozart\Assert\Assert;
-
 use function array_key_exists;
 use function preg_match;
 use function rawurlencode;
@@ -29,19 +28,22 @@ use function trim;
 final class Example implements Tag, Factory\StaticMethod
 {
     /** @var string Path to a file to use as an example. May also be an absolute URI. */
-    private string $filePath;
+    private $filePath;
 
     /**
      * @var bool Whether the file path component represents an URI. This determines how the file portion
      *     appears at {@link getContent()}.
      */
-    private bool $isURI;
+    private $isURI;
 
-    private int $startingLine;
+    /** @var int */
+    private $startingLine;
 
-    private int $lineCount;
+    /** @var int */
+    private $lineCount;
 
-    private ?string $content = null;
+    /** @var string|null */
+    private $content;
 
     public function __construct(
         string $filePath,
@@ -64,7 +66,7 @@ final class Example implements Tag, Factory\StaticMethod
         $this->isURI = $isURI;
     }
 
-    public function getContent(): string
+    public function getContent() : string
     {
         if ($this->content === null || $this->content === '') {
             $filePath = $this->filePath;
@@ -80,12 +82,12 @@ final class Example implements Tag, Factory\StaticMethod
         return $this->content;
     }
 
-    public function getDescription(): ?string
+    public function getDescription() : ?string
     {
         return $this->content;
     }
 
-    public static function create(string $body): ?Tag
+    public static function create(string $body) : ?Tag
     {
         // File component: File path in quotes or File URI / Source information
         if (!preg_match('/^\s*(?:(\"[^\"]+\")|(\S+))(?:\s+(.*))?$/sux', $body, $matches)) {
@@ -135,7 +137,7 @@ final class Example implements Tag, Factory\StaticMethod
      * @return string Path to a file to use as an example.
      *     May also be an absolute URI.
      */
-    public function getFilePath(): string
+    public function getFilePath() : string
     {
         return trim($this->filePath, '"');
     }
@@ -143,9 +145,9 @@ final class Example implements Tag, Factory\StaticMethod
     /**
      * Returns a string representation for this tag.
      */
-    public function __toString(): string
+    public function __toString() : string
     {
-        $filePath = $this->filePath;
+        $filePath = (string) $this->filePath;
         $isDefaultLine = $this->startingLine === 1 && $this->lineCount === 0;
         $startingLine = !$isDefaultLine ? (string) $this->startingLine : '';
         $lineCount = !$isDefaultLine ? (string) $this->lineCount : '';
@@ -166,27 +168,27 @@ final class Example implements Tag, Factory\StaticMethod
     /**
      * Returns true if the provided URI is relative or contains a complete scheme (and thus is absolute).
      */
-    private function isUriRelative(string $uri): bool
+    private function isUriRelative(string $uri) : bool
     {
         return strpos($uri, ':') === false;
     }
 
-    public function getStartingLine(): int
+    public function getStartingLine() : int
     {
         return $this->startingLine;
     }
 
-    public function getLineCount(): int
+    public function getLineCount() : int
     {
         return $this->lineCount;
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return 'example';
     }
 
-    public function render(?Formatter $formatter = null): string
+    public function render(?Formatter $formatter = null) : string
     {
         if ($formatter === null) {
             $formatter = new Formatter\PassthroughFormatter();

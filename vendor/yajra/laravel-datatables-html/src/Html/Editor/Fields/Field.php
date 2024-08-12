@@ -321,7 +321,7 @@ class Field extends Fluent
      * Set field attr option.
      *
      * @param string $attribute
-     * @param mixed $value
+     * @param string $value
      * @return $this
      */
     public function attr($attribute, $value)

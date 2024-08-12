@@ -20,7 +20,8 @@ use phpDocumentor\Reflection\Fqsen as RealFqsen;
  */
 final class Fqsen implements Reference
 {
-    private RealFqsen $fqsen;
+    /** @var RealFqsen */
+    private $fqsen;
 
     public function __construct(RealFqsen $fqsen)
     {
@@ -30,7 +31,7 @@ final class Fqsen implements Reference
     /**
      * @return string string representation of the referenced fqsen
      */
-    public function __toString(): string
+    public function __toString() : string
     {
         return (string) $this->fqsen;
     }

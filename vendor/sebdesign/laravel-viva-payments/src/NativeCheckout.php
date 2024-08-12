@@ -139,7 +139,7 @@ class NativeCheckout
     ): string {
         $parameters = ['amount' => $amount];
 
-        $response = $this->client->post(
+        $response = $this->client->get(
             $this->client->getApiUrl()->withPath(
                 "/nativecheckout/v2/transactions/{$preauthTransactionId}"
             ),

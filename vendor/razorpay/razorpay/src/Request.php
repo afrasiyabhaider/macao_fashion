@@ -26,7 +26,7 @@ class Request
      * @var array
      */
     protected static $headers = array(
-        'Razorpay-API'  =>  1    
+        'Razorpay-API'  =>  1
     );
 
     /**
@@ -34,14 +34,12 @@ class Request
      * @param  string   $method HTTP Verb
      * @param  string   $url    Relative URL for the request
      * @param  array $data Data to be passed along the request
-     * @param  array $additionHeader headers to be passed along the request
-     * @param  string $apiVersion version to be passed along the request
      * @return array Response data in array format. Not meant
      * to be used directly
      */
-    public function request($method, $url, $data = array(), $apiVersion = "v1")
-    { 
-        $url = Api::getFullUrl($url, $apiVersion);
+    public function request($method, $url, $data = array())
+    {
+        $url = Api::getFullUrl($url);
 
         $hooks = new Requests_Hooks();
 
@@ -50,12 +48,13 @@ class Request
         $options = array(
             'auth' => array(Api::getKey(), Api::getSecret()),
             'hook' => $hooks,
-            'timeout' => 60
+            'timeout' => 60,
         );
-        
+
         $headers = $this->getRequestHeaders();
 
-        $response = Requests::request($url, $headers, $data, $method, $options);  
+        $response = Requests::request($url, $headers, $data, $method, $options);
+
         $this->checkErrors($response);
 
         return json_decode($response->body, true);
@@ -158,9 +157,8 @@ class Request
     {
         $uaHeader = array(
             'User-Agent' => $this->constructUa()
-            
         );
-        
+
         $headers = array_merge(self::$headers, $uaHeader);
 
         return $headers;

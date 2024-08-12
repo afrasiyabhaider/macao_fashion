@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__ . '/../vendor/autoload.php';
+include __DIR__ . '/../classes/Bootstrap.php';
 
 $grid1 = [
     [1, 3, 2],
