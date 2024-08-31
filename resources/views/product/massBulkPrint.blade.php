@@ -97,13 +97,13 @@
                         @for ($j = 0; $j < $objProduct['count']; $j++)
                             <div class="col-md-4 col-xs-4 heh mt-sm-3">
                                 <div class="">
-                                    <div class="col-xs-9 text-left" style="font-size: 12px">
+                                    <div class="col-xs-7 text-left" style="font-size: 12px">
                                         {{-- @dd($objProduct) --}}
                                         <strong class="printList"
                                             data-id="subcat">{{ $objProduct['sub_category'] }}</strong>-
                                         <strong class="printList" data-id="name">{{ $objProduct['name'] }} </strong>
                                     </div>
-                                    <div class="col-xs-3 printList text-right" data-id="size" style="font-size: 20px">
+                                    <div class="col-xs-5 printList text-right" data-id="size" style="font-size: 20px">
                                         {{ $objProduct['size'] }}
                                     </div>
 
