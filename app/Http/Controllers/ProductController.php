@@ -1178,6 +1178,16 @@ class ProductController extends Controller
             //     $file['file'];
             //     $product_image =  $this->productUtil->uploadFileArr($request, 'file', config('constants.product_img_path'), 0);
             // }
+
+            if ($request->input('description')) {
+                $product_all = Product::where('refference', $request->refference)->get();
+                // dd($product_all);
+                foreach ($product_all as $key => $disc) {
+                    $disc->update([
+                        'description' => $request->input('description'),
+                    ]);
+                }
+            }
             if ($request->hasFile('file')) {
                 $files = $request->file('file');
             
