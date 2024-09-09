@@ -3606,7 +3606,7 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function viewProductDetailWithSale($id)
+    public function viewProductDetailWithSale($id,$location_id)
     {
         if (!auth()->user()->can('purchase_n_sell_report.view') && !auth()->user()->can('product.view')) {
             abort(403, 'Unauthorized action.');
@@ -3710,10 +3710,10 @@ class ProductController extends Controller
         //     $query->whereIn('t.location_id', $permitted_locations);
         // }
 
-        // $location_id = $request->get('location_id', null);
-        // if (!empty($location_id)) {
-        //     $query->where('t.location_id', $location_id);
-        // }
+        if (!empty($location_id)) {
+            // dd(1);
+            $query->where('t.location_id', $location_id);
+        }
 
         // $customer_id = $request->get('customer_id', null);
         // if (!empty($customer_id)) {
