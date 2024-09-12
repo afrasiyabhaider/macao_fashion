@@ -83,14 +83,18 @@ if (! function_exists('isFileImage')) {
 if (! function_exists('updateRewardPointsInWebsite')) {
     function updateRewardPointsInWebsite($business_id, $contact_id)
     {
-        $objContact = \App\Contact::where('business_id', $business_id)->where("id", $contact_id)->first();
-        if (!$objContact) {
-            return false;
+        try {
+            $objContact = \App\Contact::where('business_id', $business_id)->where("id", $contact_id)->first();
+            if (!$objContact) {
+                return false;
+            }
+            $status = \Illuminate\Support\Facades\DB::connection('website')
+                ->table('users')
+                ->where('pos_user_id', $contact_id)
+                ->update(['reward' => $objContact->bonus_points]);
+            return $status;
+        } catch (\Exception $exception) {
+            \Illuminate\Support\Facades\Log::info($exception->getMessage() . ' Line: ' . $exception->getLine() . ' File: ' . $exception->getFile());
         }
-        $status = DB::connection('website')
-            ->table('users')
-            ->where('pos_user_id', $contact_id)
-            ->update(['reward' => $objContact->bonus_points]);
-        return $status;
     }
 }
