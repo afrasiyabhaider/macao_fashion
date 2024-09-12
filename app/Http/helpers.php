@@ -88,7 +88,7 @@ if (! function_exists('updateRewardPointsInWebsite')) {
             if (!$objContact) {
                 return false;
             }
-            $status = DB::connection('website')
+            $status = \Illuminate\Support\Facades\DB::connection('website')
                 ->table('users')
                 ->where('pos_user_id', $contact_id)
                 ->update(['reward' => $objContact->bonus_points]);
