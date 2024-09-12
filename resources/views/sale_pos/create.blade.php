@@ -148,7 +148,7 @@
                                                             'required',
                                                             'autofocus',
                                                         ],
-                                                        $bl_attributes,
+                                                        $bl_attributes
                                                     ) !!}
                                                     <span class="input-group-addon">
                                                         @show_tooltip(__('tooltip.sale_location'))

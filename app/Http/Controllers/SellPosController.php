@@ -378,7 +378,7 @@ class SellPosController extends Controller
                 'customer_groups',
                 'accounts',
                 'objBusiness',
-                'price_groups',
+                'price_groups'
             ));
     }
 

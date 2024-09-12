@@ -357,7 +357,7 @@ class CashRegisterUtil extends Util
             // DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as user_name"),
             // DB::raw("SUM(IF(pay_method='gift_card', IF(transaction_type='sell', amount, 0), 0)) as total_gift"),
             DB::raw("SUM(IF(line_discount_amount > 0.00 && unit_price > 0,unit_price, 0)) as discount_given"),
-            DB::raw("SUM(IF(unit_price = 0.00,unit_price_before_discount, 0)) as less_unit_price"),
+            DB::raw("SUM(IF(unit_price = 0.00,unit_price_before_discount, 0)) as less_unit_price")
             // 'u.email'
         )->first();
         // dd($register_details);
@@ -435,7 +435,7 @@ class CashRegisterUtil extends Util
             // DB::raw("CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, '')) as user_name"),
             // DB::raw("SUM(IF(pay_method='gift_card', IF(transaction_type='sell', amount, 0), 0)) as total_gift"),
             DB::raw("SUM(IF(line_discount_amount > 0.00 && unit_price > 0,unit_price, 0)) as discount_given"),
-            DB::raw("SUM(IF(unit_price = 0.00,unit_price_before_discount, 0)) as less_unit_price"),
+            DB::raw("SUM(IF(unit_price = 0.00,unit_price_before_discount, 0)) as less_unit_price")
             // 'u.email'
         )->first();
         dd($register_details);
