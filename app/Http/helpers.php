@@ -94,7 +94,7 @@ if (! function_exists('updateRewardPointsInWebsite')) {
                 ->update(['reward' => $objContact->bonus_points]);
             return $status;
         } catch (\Exception $exception) {
-            Log::info($exception->getMessage() . ' Line: ' . $exception->getLine() . ' File: ' . $exception->getFile());
+            \Illuminate\Support\Facades\Log::info($exception->getMessage() . ' Line: ' . $exception->getLine() . ' File: ' . $exception->getFile());
         }
     }
 }
