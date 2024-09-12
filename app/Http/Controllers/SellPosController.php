@@ -624,7 +624,7 @@ class SellPosController extends Controller
 
                 Media::uploadMedia($business_id, $transaction, $request, 'documents');
 
-                updateRewardPointsInWebsite($business_id, $transaction->contact_id);
+                updateRewardPointsInWebsite($business_id, $contact_id);
                 DB::commit();
 
                 $msg = '';
@@ -1291,7 +1291,7 @@ class SellPosController extends Controller
                     }
 
                     Contact::where($dataWhere)->update($dataUpdate);
-                    updateRewardPointsInWebsite($transaction->business_id, $transaction->contact_id);
+                    updateRewardPointsInWebsite($business_id, $contact_id);
                 }
                 
 
@@ -1704,7 +1704,7 @@ class SellPosController extends Controller
                     }
 
                     Contact::where($dataWhere)->update($dataUpdate);
-                    updateRewardPointsInWebsite($transaction->business_id, $transaction->contact_id);
+                    updateRewardPointsInWebsite($business_id, $contact_id);
                 }
                 
 
