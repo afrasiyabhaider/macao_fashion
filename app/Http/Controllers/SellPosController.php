@@ -623,6 +623,8 @@ class SellPosController extends Controller
 
 
                 Media::uploadMedia($business_id, $transaction, $request, 'documents');
+
+                updateRewardPointsInWebsite($business_id, $transaction->contact_id);
                 DB::commit();
 
                 $msg = '';
