@@ -85,6 +85,9 @@ if (! function_exists('updateRewardPointsInWebsite')) {
     {
         try {
             $objContact = \App\Contact::where('business_id', $business_id)->where("id", $contact_id)->first();
+            if (!$objContact) {
+                return false;
+            }
             $status = \Illuminate\Support\Facades\DB::connection('website')
                 ->table('users')
                 ->where('pos_user_id', $contact_id)
