@@ -399,6 +399,7 @@ class PurchaseController extends Controller
             $dataWhere = ['business_id'=>$transaction->business_id,'id'=>$objContact->id];
             $dataUpdate = ['bonus_points'=>$newPoints];
             Contact::where($dataWhere)->update($dataUpdate);
+            updateRewardPointsInWebsite($transaction->business_id, $objContact->id);
             
             DB::commit();
             

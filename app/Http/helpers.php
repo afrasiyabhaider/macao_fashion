@@ -77,3 +77,20 @@ if (! function_exists('isFileImage')) {
         return $output;
     }
 }
+/**
+ * Update reward points in website
+ */
+if (! function_exists('updateRewardPointsInWebsite')) {
+    function updateRewardPointsInWebsite($business_id, $contact_id)
+    {
+        $objContact = \App\Contact::where('business_id', $business_id)->where("id", $contact_id)->first();
+        if (!$objContact) {
+            return false;
+        }
+        $status = DB::connection('website')
+            ->table('users')
+            ->where('pos_user_id', $contact_id)
+            ->update(['reward' => $objContact->bonus_points]);
+        return $status;
+    }
+}

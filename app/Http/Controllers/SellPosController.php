@@ -623,7 +623,6 @@ class SellPosController extends Controller
 
 
                 Media::uploadMedia($business_id, $transaction, $request, 'documents');
-
                 DB::commit();
 
                 $msg = '';
@@ -1290,6 +1289,7 @@ class SellPosController extends Controller
                     }
 
                     Contact::where($dataWhere)->update($dataUpdate);
+                    updateRewardPointsInWebsite($transaction->business_id, $transaction->contact_id);
                 }
                 
 
@@ -1702,6 +1702,7 @@ class SellPosController extends Controller
                     }
 
                     Contact::where($dataWhere)->update($dataUpdate);
+                    updateRewardPointsInWebsite($transaction->business_id, $transaction->contact_id);
                 }
                 
 
