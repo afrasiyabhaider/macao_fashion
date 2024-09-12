@@ -2882,7 +2882,7 @@ class ReportController extends Controller
                 ->setRowAttr([
                     'data-href' => function ($row) {
                         if (auth()->user()->can("product.view")) {
-                            return  action('ProductController@viewProductDetailWithSale', [$row->product()->first()->id]);
+                            return  action('ProductController@viewProductDetailWithSale', [$row->product()->first()->id,$row->location_id],);
                             // return  action('ProductController@view', [$row->product()->first()->id]);
                         } else {
                             return '';
@@ -6270,9 +6270,14 @@ class ReportController extends Controller
                     return '<span class="display_currency row_subtotal" data-currency_symbol = true data-orig-value="' . $row->subtotal . '">' . $row->subtotal . '</span>';
                 })
                 ->setRowAttr([
-                    'data-href' => function ($row) {
+                    'data-href' => function ($row) use ($location_id) {
+                    
                         if (auth()->user()->can("product.view")) {
-                            return  action('ProductController@viewProductRefDetailWithSale', [$row->refference]);
+                            if (is_null($location_id)) {
+                                return action('ProductController@viewProductRefDetailWithSale', [$row->refference]);
+                            } else {
+                                return action('ProductController@viewProductDetailWithSale', [$row->product()->first()->id, $location_id]);
+                            }
                             // return  action('ProductController@view', [$row->product_id]);
                         } else {
                             return '';

@@ -94,7 +94,7 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::post('/products/save-selling-prices', 'ProductController@saveSellingPrices');
     Route::post('/products/mass-delete', 'ProductController@massDestroy');
     Route::get('/products/view/{id}', 'ProductController@view');
-    Route::get('/products/viewDetail/{id}', 'ProductController@viewProductDetailWithSale');
+    Route::get('/products/viewDetail/{id}/{location_id}', 'ProductController@viewProductDetailWithSale');
     Route::get('/products/viewRefDetail/{refference}', 'ProductController@viewProductRefDetailWithSale');
     Route::get('/product/color-detail/{name}/{id}', 'ProductController@viewColorDetailByRefrenceID');
     Route::get('/product/color-detail/{name}/{start_date}/{end_date}/{refference}', 'ProductController@viewColorDetail');
