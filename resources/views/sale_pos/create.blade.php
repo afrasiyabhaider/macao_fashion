@@ -729,7 +729,7 @@
                             const bonusePoint = @json(config('app.discount_amount'));
                             total_amountOfbonus = bonusePoint * objData['bonus_points'];
 
-                            console.log(objData);
+                            // console.log(objData);
                             // console.log('total bonus Points'+bonusePoint+total_amountOfbonus);
                             $('input#total_points').val(total_amountOfbonus.toFixed(2));
                             $('input#cust_points').val(0);
@@ -787,7 +787,7 @@
                 // var subtract_price = value*discount
                 const spanText = $('input[name=final_total]').val().replace(',', '.');
                 var total_price = parseFloat(spanText) != 0 ? parseFloat(spanText) - subtract_price : 0;
-                console.log(spanText, total_price, parseFloat(spanText));
+                // console.log(spanText, total_price, parseFloat(spanText));
                 $('#total_payable').text(total_price.toFixed(2).replace('.', ','));
             } else {
                 $('input#cust_points').val(total_point);
@@ -823,7 +823,7 @@
         }
 
         function changePayment(obj, rowIndex) {
-            console.log(obj);
+            // console.log(obj);
             var discount = $('input#cust_discount').val();
             var amount_bonus_points = obj.value * 0.5;
             $("#amount_" + rowIndex).val(amount_bonus_points).change();
