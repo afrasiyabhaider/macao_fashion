@@ -624,9 +624,11 @@ class SellPosController extends Controller
 
                 Media::uploadMedia($business_id, $transaction, $request, 'documents');
 
-                updateRewardPointsInWebsite($business_id, $transaction->contact_id);
                 DB::commit();
-
+                if ($contact_id) {
+                    updateRewardPointsInWebsite($business_id, $contact_id);
+                    # code...
+                }
                 $msg = '';
                 $receipt = '';
                 if ($input['status'] == 'draft' && $input['is_quotation'] == 0) {
@@ -1291,7 +1293,9 @@ class SellPosController extends Controller
                     }
 
                     Contact::where($dataWhere)->update($dataUpdate);
-                    updateRewardPointsInWebsite($transaction->business_id, $transaction->contact_id);
+                    if ($contact_id) {
+                        updateRewardPointsInWebsite($business_id, $contact_id);
+                    }
                 }
                 
 
@@ -1704,7 +1708,9 @@ class SellPosController extends Controller
                     }
 
                     Contact::where($dataWhere)->update($dataUpdate);
-                    updateRewardPointsInWebsite($transaction->business_id, $transaction->contact_id);
+                    if ($contact_id) {
+                        updateRewardPointsInWebsite($business_id, $contact_id);
+                    }
                 }
                 
 
