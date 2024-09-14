@@ -456,6 +456,10 @@ Route::get('/sells/pos/transationhistory', 'SellPosController@getTransationHisto
     Route::post('website/slider/images', 'SiteImageController@storeSlider');
     Route::post('website/category/images', 'SiteImageController@categoryImage');
     Route::delete('website/slider/images/{id}', 'SiteImageController@destroySlider');
+
+    Route::get('phpinfo', function () {
+        phpinfo();
+    });
 });
 
 Route::get('migrate-fresh', function () {
@@ -493,9 +497,6 @@ Route::get('optimize-clear', function () {
 Route::get('force-logout', function () {
     Auth::logout();
     dd("Logged Out");
-});
-Route::get('phpinfo', function () {
-    phpinfo();
 });
 
 
