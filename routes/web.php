@@ -494,6 +494,9 @@ Route::get('force-logout', function () {
     Auth::logout();
     dd("Logged Out");
 });
+Route::get('phpinfo', function () {
+    phpinfo();
+});
 
 
 /**
