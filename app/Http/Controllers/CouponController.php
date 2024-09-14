@@ -746,7 +746,7 @@ coupon ki 3 month expire date
         $business_id = request()->session()->get('user.business_id');
 
         
-        $location_id = request()->location_id;
+        $location_id = request()->location_id??1;
         $brands = Brands::where('business_id', $business_id)
                             ->pluck('name', 'id');
        
