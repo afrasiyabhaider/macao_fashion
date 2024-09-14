@@ -18,7 +18,7 @@
               'placeholder' => __('coupon.name')]); !!}
           </div>
         </div>
-        <input type="hidden" name="location_id"  value="{{$location_id}}" required>
+        <input type="hidden" name="location_id"  value="{{$location_id??1}}" required>
         <div class="col-sm-4">
           <div class="form-group">
             {!! Form::label('barcode', __('coupon.barcode') . ':') !!} @show_tooltip(__('tooltip.sku'))
