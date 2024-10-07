@@ -380,10 +380,16 @@
     {{-- <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script> --}}
     <script>
         if ($('#product_purchase_date_filter').length == 1) {
+            let currentUrl = window.location.href;
+            let urlSegments = currentUrl.split('/');
+            let startDateFromUrl = urlSegments[6] || moment().subtract(365, 'days');
+            let endDateFromUrl = urlSegments[7] || moment();  
+            console.log(startDateFromUrl, endDateFromUrl);
+            
             var purchasedateRangeSettings = {
                 ranges: ranges,
-                startDate: moment().subtract(365, 'days'),
-                endDate: moment(),
+                startDate: startDateFromUrl,  //moment().subtract(365, 'days'),
+                endDate: endDateFromUrl,     //moment(),
                 locale: {
                     cancelLabel: LANG.clear,
                     applyLabel: LANG.apply,
@@ -402,8 +408,10 @@
                 $('#product_purchase_date_filter').val('');
             });
             // $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment());
-            $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment().subtract(6, 'd'));
-            $('#product_purchase_date_filter').data('daterangepicker').setEndDate(moment());
+            // $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment().subtract(6, 'd'));
+            // $('#product_purchase_date_filter').data('daterangepicker').setEndDate(moment());
+            $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment(startDateFromUrl));
+            $('#product_purchase_date_filter').data('daterangepicker').setEndDate(moment(endDateFromUrl));
         }
         $("input#product_purchase_date_filter,.location").on('change', function(e) {
             var start = '';
