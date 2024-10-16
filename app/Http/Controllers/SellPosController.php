@@ -378,7 +378,7 @@ class SellPosController extends Controller
                 'customer_groups',
                 'accounts',
                 'objBusiness',
-                'price_groups'
+                'price_groups',
             ));
     }
 
@@ -591,7 +591,6 @@ class SellPosController extends Controller
                             $amount_bonus_point = $request_bonus_point;
                             $leftAmount_total = $amount_bonus_point;
                         }
-                // dd($input['payment']);
                         $this->cashRegisterUtil->addSellPayments($transaction, $input['payment'],$leftAmount_total,$request);
                     }
 
@@ -624,7 +623,6 @@ class SellPosController extends Controller
 
                 Media::uploadMedia($business_id, $transaction, $request, 'documents');
 
-                updateRewardPointsInWebsite($business_id, $contact_id);
                 DB::commit();
 
                 $msg = '';
@@ -1291,7 +1289,6 @@ class SellPosController extends Controller
                     }
 
                     Contact::where($dataWhere)->update($dataUpdate);
-                    updateRewardPointsInWebsite($business_id, $contact_id);
                 }
                 
 
@@ -1704,7 +1701,6 @@ class SellPosController extends Controller
                     }
 
                     Contact::where($dataWhere)->update($dataUpdate);
-                    updateRewardPointsInWebsite($business_id, $contact_id);
                 }
                 
 
