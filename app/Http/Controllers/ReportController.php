@@ -6262,13 +6262,11 @@ class ReportController extends Controller
         if (!auth()->user()->can('purchase_n_sell_report.view')) {
             abort(403, 'Unauthorized action.');
         }
-
         $business_id = $request->session()->get('user.business_id');
         if ($request->ajax()) {
             $variation_id = $request->get('variation_id', null);
 
             $location_id = $request->get('location_id', null);
-
             $vld_str = '';
             if (!empty($location_id)) {
                 $vld_str = "AND vld.location_id=$location_id";
@@ -6516,6 +6514,8 @@ class ReportController extends Controller
 
         $business_id = $request->session()->get('user.business_id');
         $location_id = $request->get('location_id', null);
+        // todo add on 17 oct 2024
+        $request->session()->put('location_id', $location_id);
         // dd($location_id);
         $location_filter = '';
         if (!empty($location_id)) {
@@ -7921,6 +7921,11 @@ class ReportController extends Controller
             abort(403, 'Unauthorized action.');
         }
         $business_id = $request->session()->get('user.business_id');
+        $business = BusinessLocation::forDropdown($business_id, true);
+        
+        $user = auth()->user();
+        $roles = $user->getRoleNames();
+
         //Return the details in ajax call
         if ($request->ajax()) {
             $registers = CashRegister::join(
@@ -8024,6 +8029,12 @@ class ReportController extends Controller
                 $registers->where('cash_registers.location_id', $request->input('location_id'));
             }
 
+       
+
+            if (empty($request->input('location_id')) && $roles[0] !== "Admin#1") {
+                $registers->where('cash_registers.location_id', $business->first());
+            }
+
 
 
             if (!empty($start_date) && !empty($end_date)) {
@@ -8070,9 +8081,10 @@ class ReportController extends Controller
                 ->make(true);
         }
 
+        
         $users = User::forDropdown($business_id, false);
 
-        $business = BusinessLocation::forDropdown($business_id, true);
+    
         return view('report.daily_sales', compact('business'));
     }
     /**

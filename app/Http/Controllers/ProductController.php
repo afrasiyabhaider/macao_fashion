@@ -3787,6 +3787,7 @@ class ProductController extends Controller
         // $business_id = $request->session()->get('user.business_id');
         // $variation_id = $request->get('variation_id', null);
 
+        $location_id = request()->session()->get('location_id');
         // $location_id = $request->get('location_id', null);
 
         $vld_str = '';
@@ -3890,6 +3891,10 @@ class ProductController extends Controller
         // if (!empty($supplier_id)) {
         //     $query->where('p.supplier_id', $supplier_id);
         // }
+        // todo add at 17 Oct
+        if (!empty($location_id)) {
+            $query->where('t.location_id', $location_id);
+        }
 
         $query = $query->get();
 
