@@ -6004,6 +6004,7 @@ class ProductController extends Controller
 
         $module_form_parts = $this->moduleUtil->getModuleData('product_form_part');
 
+        // dd($duplicate_product);
         return view('product.bulkAdd')
             ->with(compact('categories', 'suppliers', 'noRefferenceProducts', 'brands', 'refferenceCount', 'pnc', 'suppliers', 'sizes', 'sub_sizes', 'colors', 'units', 'taxes', 'barcode_types', 'default_profit_percent', 'tax_attributes', 'barcode_default', 'business_locations', 'duplicate_product', 'sub_categories', 'rack_details', 'selling_price_group_count', 'module_form_parts', 'dd_sizes'));
     }
@@ -6529,10 +6530,67 @@ class ProductController extends Controller
     }
     public function generateUniqueProductname($name)
     {
-        do {
-            $randomName = $name . rand(10, 1000);
-        } while (ProductNameCategory::where('name', $randomName)->exists());
+        // do {
+        //     $randomName = $name . rand(10, 1000);
+        // } while (ProductNameCategory::where('name', $randomName)->exists());
 
+        $randomName = $this->generateUniqueMeaningfulName(2);
         return response()->json(['name' => $randomName]);
+    }
+
+
+
+
+    /**
+     * Generate a unique, meaningful name.
+     *
+     * @param int $wordCount
+     * @return string
+     */
+    function generateUniqueMeaningfulName($wordCount = 2)
+    {
+        $path = public_path('Product Name Categories.csv');
+        $data = array_map('str_getcsv', file($path));
+
+        // Extract the first column of words, skipping the header row
+        $words = array_column(array_slice($data, 1), 0);
+
+        // Cache existing product names
+        $existingNames = DB::table('products')->pluck('name')->toArray();
+
+        // Generate a unique name by splitting and combining parts of existing words
+        $uniqueName = $this->createSplitAndCombinedName($words, $wordCount);
+
+        // Ensure the generated name is unique
+        while (in_array($uniqueName, $existingNames)) {
+            $uniqueName = $this->createSplitAndCombinedName($words, $wordCount);
+        }
+
+        return $uniqueName;
+    }
+
+    /**
+     * Create a new name by splitting and combining word parts.
+     *
+     * @param array $words
+     * @param int $wordCount
+     * @return string
+     */
+    function createSplitAndCombinedName($words, $wordCount)
+    {
+        $splitParts = [];
+
+        // Split each word into two parts
+        foreach ($words as $word) {
+            $splitPoint = intdiv(strlen($word), 2); // Get the middle of the word
+            $splitParts[] = substr($word, 0, $splitPoint);  // First half
+            $splitParts[] = substr($word, $splitPoint);      // Second half
+        }
+
+        // Shuffle the split parts and take the required number of them
+        $randomParts = collect($splitParts)->shuffle()->take($wordCount);
+
+        // Join the random parts together to form the new name
+        return $randomParts->join('');
     }
 }
