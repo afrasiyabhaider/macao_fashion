@@ -531,9 +531,12 @@ class ProductUtil extends Util
         // dd($qty_difference);
         $product = Product::find($product_id);
 
+        if(is_null($product )){
+            return false;
+        }
         //Check if stock is enabled or not.
         // dd($product_id);
-        if ($product['enable_stock'] == 1) {
+        if ($product &&$product['enable_stock'] == 1) {
             //Decrement Quantity in variations location table
             $data[] = VariationLocationDetails::where('variation_id', $variation_id)
                 ->where('product_id', $product_id)
