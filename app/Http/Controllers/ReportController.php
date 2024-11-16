@@ -3346,7 +3346,8 @@ class ReportController extends Controller
                 ->setRowAttr([
                     'data-href' => function ($row) {
                         if (auth()->user()->can("product.view")) {
-                            return  action('ProductController@viewProductDetailWithSale', [$row->product()->first()->id]);
+                            $location_id = request()->get('location_id', 0);
+                            return  action('ProductController@viewProductDetailWithSale', [$row->product()->first()->id,$location_id]);
                             // return  action('ProductController@view', [$row->product()->first()->id]);
                         } else {
                             return '';
@@ -3894,8 +3895,9 @@ class ReportController extends Controller
                 ->removeColumn('unit')
                 ->setRowAttr([
                     'data-href' => function ($row) {
+                        $location_id = request()->get('location_id', 0);
                         if (auth()->user()->can("product.view")) {
-                            return  action('ProductController@viewProductDetailWithSale', [$row->product()->first()->id]);
+                            return  action('ProductController@viewProductDetailWithSale', [$row->product()->first()->id ,$location_id]);
                             // return  action('ProductController@view', [$row->product()->first()->id]);
                         } else {
                             return '';
