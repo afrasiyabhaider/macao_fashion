@@ -176,7 +176,7 @@ class ContactController extends Controller
         return Datatables::of($contact)
             ->editColumn(
                 'landmark',
-                '{{implode(array_filter([$landmark, $city, $state, $country]), ", ")}}'
+                '{{implode(", ", array_filter([$landmark, $city, $state, $country]))}}'
             )
             ->addColumn(
                 'due',

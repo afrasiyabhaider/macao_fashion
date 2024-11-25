@@ -951,6 +951,11 @@ class ReportController extends Controller
                 // dd($category_id);
                 $query->where('p.category_id', $category_id);
             }
+            if (!empty($request->input('sub_category_id'))) {
+                $sub_category_id = $request->input('sub_category_id');
+                // dd($category_id);
+                $query->where('p.sub_category_id', $sub_category_id);
+            }
             $from_date = request()->get('from_date', null);
             $to_date = request()->get('to_date', null);
             // dd($to_date);

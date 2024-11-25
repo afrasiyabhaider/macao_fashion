@@ -15,11 +15,26 @@
                'sub_category_filter_form' ]) !!}
                <div class="col-md-3">
                     <div class="form-group">
-                         {!! Form::label('category_id', 'Category' . ':') !!}
-                         {!! Form::select('category_id', $categories, null, ['class' => 'form-control select2',
-                         'style' => 'width:100%']); !!}
-                    </div>
+                         {!! Form::label('category_id', __('category.category') . ':') !!}
+                         {!! Form::select('category', $categories, null, [
+                             'placeholder' => __('messages.all'),
+                             'class' => 'form-control select2',
+                             'style' => 'width:100%',
+                             'id' => 'category_id',
+                         ]) !!}
+                     </div>
                </div>
+               <div class="col-md-3">
+                    <div class="form-group">
+                        {!! Form::label('sub_category_id', __('product.sub_category') . ':') !!}
+                        {!! Form::select('sub_category', [], null, [
+                            'placeholder' => __('messages.all'),
+                            'class' => 'form-control select2',
+                            'style' => 'width:100%',
+                            'id' => 'sub_category_id',
+                        ]) !!}
+                    </div>
+                </div>
                <div class="col-md-3">
                     <div class="form-group">
                          {!! Form::label('location_id', __('purchase.business_location') . ':') !!}
@@ -87,6 +102,7 @@
             data: function(d) {
                 d.location_id = $('#location_id').val();
                 d.category_id = $('#category_id').val();
+                d.sub_category_id = $('#sub_category_id').val();
                     var start = '';
                     var end = '';
                     // var start = $.datepicker.formatDate('yy-mm-dd', new Date());
@@ -154,7 +170,7 @@
             $('#product_purchase_date_filter').data('daterangepicker').setEndDate(moment());
         }
     $(
-        '#sub_category_filter_form #location_id,#product_list_to_date,#category_id'
+        '#sub_category_filter_form #location_id,#product_list_to_date,#category_id,#sub_category_id'
     ).change(function() {
      sub_category_table.ajax.reload();
     });
