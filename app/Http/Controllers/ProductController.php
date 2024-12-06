@@ -3608,6 +3608,7 @@ class ProductController extends Controller
      */
     public function viewProductDetailWithSale($id,$location_id)
     {
+        
         if (!auth()->user()->can('purchase_n_sell_report.view') && !auth()->user()->can('product.view')) {
             abort(403, 'Unauthorized action.');
         }
@@ -3787,9 +3788,9 @@ class ProductController extends Controller
         // $business_id = $request->session()->get('user.business_id');
         // $variation_id = $request->get('variation_id', null);
 
-        $location_id = request()->session()->get('location_id');
-        // $location_id = $request->get('location_id', null);
-
+        // $location_id = request()->session()->get('location_id');
+        // $location_id = request()->session()->get('location_id');
+        // $location_id =  request()->get('location_id', null);
         $vld_str = '';
         // if (!empty($location_id)) {
         //     $vld_str = "AND vld.location_id=$location_id";
@@ -3836,6 +3837,7 @@ class ProductController extends Controller
                 'c.name as customer',
                 't.id as transaction_id',
                 't.invoice_no',
+                't.location_id',
                 't.transaction_date as transaction_date',
                 'transaction_sell_lines.unit_price_before_discount as unit_price',
                 'transaction_sell_lines.unit_price_inc_tax as unit_sale_price',
@@ -3877,10 +3879,10 @@ class ProductController extends Controller
         //     $query->whereIn('t.location_id', $permitted_locations);
         // }
 
-        // $location_id = $request->get('location_id', null);
-        // if (!empty($location_id)) {
-        //     $query->where('t.location_id', $location_id);
-        // }
+        $location_id = request()->get('location_id', null);
+        if (!is_null($location_id)) {
+            $query->where('t.location_id', $location_id);
+        }
 
         // $customer_id = $request->get('customer_id', null);
         // if (!empty($customer_id)) {
@@ -3891,11 +3893,6 @@ class ProductController extends Controller
         // if (!empty($supplier_id)) {
         //     $query->where('p.supplier_id', $supplier_id);
         // }
-        // todo add at 17 Oct
-        if (!empty($location_id)) {
-            $query->where('t.location_id', $location_id);
-        }
-
         $query = $query->get();
 
         // $business_locations = BusinessLocation::forDropdown($business_id);
@@ -5852,6 +5849,366 @@ class ProductController extends Controller
         // return redirect()->back()->with(['status' => $output]);
     }
 
+    public function posToMassTransfer(Request $request)
+    {
+        if (!auth()->user()->can('product.update')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $selected_products = collect(json_decode($request->products));
+        $product_ids = $selected_products->pluck('product_id')->all();
+        // dd($selected_products->all());
+        try {
+            if (!empty($request->input('selected_products_bulkTransfer'))) {
+                $business_id = $request->session()->get('user.business_id');
+                $user_location_id = $request->session()->get('user.business_location_id');
+                if ($request->input('current_location')) {
+                    if ($request->input('current_location') == 0) {
+                        $output = [
+                            'success' => 0,
+                            'msg' => "All Location is Invalid Select Valid Location"
+                        ];
+                        return redirect()->back()->with('status', $output);
+                    }
+                    $user_location_id = $request->input('current_location');
+                }
+                $user_id = $request->session()->get('user.id');
+                // $selected_products = $request->products;
+                $business_location_id = $request->input('bussiness_bulkTransfer');
+                $location_id = $business_location_id;
+
+                
+                foreach ($selected_products as $key => $objProduct) {
+                    # code...
+                    $purchase_total = 0;
+                    // $arr = explode("@", $objProduct);
+                    // $productId = $arr[0];
+                    // $productQty = $arr[1];
+                    // $productOrignalQty = $arr[2];
+                    $productId = $objProduct->product_id;
+                    $productQty = $objProduct->quantity;
+                    $productOrignalQty = $objProduct->available_qty;
+                    dd($productId,$productQty,$productOrignalQty);
+                    $LeftQty = $productOrignalQty - $productQty;
+                    if (strcmp($productQty, $productOrignalQty) == 0) {
+                        // dd($arr,$location_id);
+                        DB::beginTransaction();
+                        $objOldPurchaseLine = PurchaseLine::join('transactions as t', 't.id', '=', 'purchase_lines.transaction_id')->where("purchase_lines.product_id", $productId)->first();
+
+                        /**
+                         * ---------------IMPORTANT------------------
+                         * 
+                         * If Uncommented below 'if()' and other comments of location
+                         * Id then product will not be save as 0 qty
+                         *
+                         * */
+                        if (false) {
+                            // if (empty($objOldPurchaseLine)) {
+                            $objPurchaseLine = PurchaseLine::join('transactions as t', 't.id', '=', 'purchase_lines.transaction_id')->where("t.location_id", $user_location_id)->where("purchase_lines.product_id", $productId)->first();
+
+                            $objTransaction = \App\Transaction::where("id", $objPurchaseLine->transaction_id)->update(['location_id' => $business_location_id]);
+
+                            $oldPurchaseLine = VariationLocationDetails::where("location_id", $user_location_id)->where("variation_id", $objPurchaseLine->variation_id)->where("product_id", $productId)->update(['location_id' => $business_location_id]);
+                        } elseif (!empty($objOldPurchaseLine)) {
+                            // dd($arr,$location_id);
+                            // PL with new bussiness location id 
+                            $objNewPurchaseLine = $objOldPurchaseLine;
+                            $qtyForPurchaseLine = $productQty;
+                            // $qtyForPurchaseLine = $productQty + $objNewPurchaseLine->quantity;
+                            // PL with exisiting  location id 
+                            $objOldPurchaseLine = PurchaseLine::join('transactions as t', 't.id', '=', 'purchase_lines.transaction_id')->where("purchase_lines.product_id", $productId)->first();
+                            // ->where("t.location_id", $user_location_id)
+
+                            $oldPurchaseLine = PurchaseLine::where("transaction_id", $objOldPurchaseLine->transaction_id)->where("product_id", $objOldPurchaseLine->product_id)->where("variation_id", $objOldPurchaseLine->variation_id)->update(['quantity' => $LeftQty]); //Update OLD ONE AND THEN NEW ONE
+                            $oldPurchaseLine = PurchaseLine::where("transaction_id", $objNewPurchaseLine->transaction_id)->where("product_id", $objNewPurchaseLine->product_id)->where("variation_id", $objNewPurchaseLine->variation_id)->update(['quantity' => $qtyForPurchaseLine]);
+
+                            //Update Variation_location_details Qty Remaining 
+                            $old_qty_of_product = VariationLocationDetails::where("location_id", $user_location_id)->where("variation_id", $objOldPurchaseLine->variation_id)->where("product_id", $objOldPurchaseLine->product_id);
+                            $old_qty_of_product->update(['qty_available' => $LeftQty]);
+
+                            // Commented below for checking
+                            $after_transfer = VariationLocationDetails::where("location_id", $business_location_id)->where("variation_id", $objNewPurchaseLine->variation_id)->where("product_id", $objNewPurchaseLine->product_id);
+
+                            $before_transfer_qty = VariationLocationDetails::where("location_id", $business_location_id)->where("variation_id", $objNewPurchaseLine->variation_id)->where("product_id", $objNewPurchaseLine->product_id)->first();
+
+                            $product_detail = Product::find($objNewPurchaseLine->product_id);
+                            
+                            if (!is_null($before_transfer_qty)) {
+                                $new_qty = $before_transfer_qty->qty_available + $productQty;
+
+                                $before_transfer_qty->update([
+                                    'location_print_qty' => $productQty,
+                                    'qty_available' => $new_qty,
+                                    'product_updated_at' => Carbon::now()
+                                ]);
+                            } else {
+                                $variation_location_d = new VariationLocationDetails();
+                                $variation_location_d->variation_id = $objNewPurchaseLine->variation_id;
+                                $variation_location_d->product_refference = $product_detail->refference;
+                                $variation_location_d->product_id = $product_detail->id;
+                                $variation_location_d->location_id = $business_location_id;
+                                $variation_location_d->product_variation_id = $objNewPurchaseLine->variation_id;
+                                $variation_location_d->qty_available = $productQty;
+                                $variation_location_d->location_print_qty = $productQty;
+                                $variation_location_d->product_updated_at = Carbon::now();
+                                $variation_location_d->save();
+                            }
+                        }
+                        $ref = Product::find($objOldPurchaseLine->product_id)->refference;
+                        $all_products = VariationLocationDetails::where('product_refference', $ref)->where("product_id", $objOldPurchaseLine->product_id)->where("location_id", $location_id)->get();
+                        foreach ($all_products as $all_product) {
+                            $all_product->update([
+                                'updated_at' => Carbon::now(),
+                                'product_updated_at' => Carbon::now(),
+                            ]);
+                        }
+                        $all_products = VariationLocationDetails::where('product_refference', $ref)->where("product_id", $objOldPurchaseLine->product_id)->where("location_id", $user_location_id)->get();
+                        foreach ($all_products as $all_product) {
+                            $all_product->update([
+                                'updated_at' => Carbon::now(),
+                                'product_updated_at' => Carbon::now(),
+                            ]);
+                        }
+                        $location_transfer_detail = new LocationTransferDetail();
+                        $location_transfer_detail->variation_id = $objOldPurchaseLine->variation_id;
+                        $location_transfer_detail->product_id = $objOldPurchaseLine->product_id;
+                        $location_transfer_detail->product_refference = $ref;
+                        $location_transfer_detail->transfered_from = $user_location_id;
+                        // transfer to
+                        $location_transfer_detail->location_id = $location_id;
+
+                        $location_transfer_detail->product_variation_id = $objOldPurchaseLine->variation_id;
+
+                        $location_transfer_detail->quantity = (float)$productQty;
+
+                        $location_transfer_detail->transfered_on = Carbon::now();
+
+                        $location_transfer_detail->save();
+
+                        DB::commit();
+                    } else {
+                        DB::beginTransaction();
+                        $tempProduct = Product::with(['variations', 'purchase_lines', 'product_tax'])->findOrFail($productId);
+                        $oldTranscationLine = $tempProduct->purchase_lines;
+
+                        // $user_location_id;
+                        $location_main = 1;
+                        $objOrignalPurchaseLine = PurchaseLine::join('transactions as t', 't.id', '=', 'purchase_lines.transaction_id')->where("t.location_id", $location_main)->where("purchase_lines.product_id", $productId)->first();
+
+                        $objOrignalPurchaseLine = PurchaseLine::where(
+                            "transaction_id",
+                            $objOrignalPurchaseLine->transaction_id
+                        )->where("product_id", $objOrignalPurchaseLine->product_id)->first();
+
+                        $objOldPurchaseLine = PurchaseLine::join('transactions as t', 't.id', '=', 'purchase_lines.transaction_id')->where("t.location_id", $business_location_id)->where("purchase_lines.product_id", $productId)->first();
+
+                        $isPurchaseLineExist = false;
+                        if (!empty($objOldPurchaseLine)) {
+                            $isPurchaseLineExist = true;
+                            $ExisitngPurchaseLine = $objOldPurchaseLine;
+                        }
+
+                        $ProductVariation = $tempProduct->variations[count($tempProduct->variations) - 1];
+                        $product = $tempProduct;
+
+                        $tax_percent = !empty($product->product_tax->amount) ? $product->product_tax->amount : 0;
+                        $tax_id = !empty($product->product_tax->id) ? $product->product_tax->id : null;
+                        $product_details = $tempProduct->toArray();
+                        $product_details['id'] = NULL;
+                        $product_details['business_location_id'] = $business_location_id;
+
+                        $objVariation = $ProductVariation;
+                        $k = $objVariation->id;
+                        $purchase_price = $this->productUtil->num_uf(trim($objVariation->default_purchase_price));
+                        $item_tax = $this->productUtil->calc_percentage($objVariation->default_purchase_price, 0);
+                        $purchase_price_inc_tax = $purchase_price + $item_tax;
+
+                        $qty_remaining = $this->productUtil->num_uf(trim($productQty));
+
+                        $exp_date = null;
+                        $lot_number = null;
+                        $purchase_line = null;
+
+                        if ($isPurchaseLineExist) {
+                            $purchase_line = PurchaseLine::where("transaction_id", $ExisitngPurchaseLine->transaction_id)->where("product_id", $ExisitngPurchaseLine->product_id)->first();
+                            //Quantity = remaining + used
+                            $qty_remaining = $qty_remaining + $purchase_line->quantity_used;
+                            $purchase_total += ($purchase_price_inc_tax * $qty_remaining);
+                            $old_qty = $purchase_line->quantity;
+
+                        } else {
+                            if ($qty_remaining != 0) {
+                                //create newly added purchase lines
+                                $purchase_line = new PurchaseLine();
+                                $purchase_line->product_id = $product->id;
+                                $purchase_line->variation_id = $k;
+
+                                //Calculate transaction total
+                                $purchase_total += ($purchase_price_inc_tax * $qty_remaining);
+                            }
+                        }
+                        if (!is_null($purchase_line)) {
+                            $purchase_line->item_tax = $item_tax;
+                            $purchase_line->tax_id = $tax_id;
+                            $purchase_line->quantity = $qty_remaining;
+                            $purchase_line->pp_without_discount = $purchase_price;
+                            $purchase_line->purchase_price = $purchase_price;
+                            $purchase_line->purchase_price_inc_tax = $purchase_price_inc_tax;
+                            $purchase_line->exp_date = $exp_date;
+                            $purchase_line->lot_number = $lot_number;
+                        }
+
+                        //create transaction & purchase lines
+                        $transaction_date = request()->session()->get("financial_year.start");
+                        $transaction_date = \Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
+                        $is_new_transaction = false;
+
+                        if ($isPurchaseLineExist) {
+                            $transaction = \App\Transaction::findOrFail($ExisitngPurchaseLine->transaction->id);
+                            if (!empty($transaction)) {
+                                $transaction->total_before_tax = $purchase_total;
+                                $transaction->final_total = $purchase_total;
+                                $transaction->update();
+                            }
+                            $transaction_id = $transaction->id;
+                            $old_available_qty = VariationLocationDetails::where("location_id", $business_location_id)->where("variation_id", $objOldPurchaseLine->variation_id)->where("product_id", $product->id)->first();
+                            $qtyForPurchaseLine = $productQty;
+  
+                        } else {
+                            $old_available_qty = VariationLocationDetails::where("location_id", $location_id)->where("product_id", $product->id)->first();
+                            $qtyForPurchaseLine = (float)$productQty;
+                            $transaction = \App\Transaction::where('type', 'opening_stock')
+                                ->where('business_id', $business_id)
+                                ->where('opening_stock_product_id', $product->id)
+                                ->where('location_id', $business_location_id)
+                                ->first();
+                            if (!empty($transaction)) {
+                                $transaction->total_before_tax = $purchase_total;
+                                $transaction->final_total = $purchase_total;
+                                $transaction->update();
+                            } else {
+                                $is_new_transaction = true;
+                                $transaction = \App\Transaction::create(
+                                    [
+                                        'type' => 'opening_stock',
+                                        'opening_stock_product_id' => $product->id,
+                                        'status' => 'received',
+                                        'business_id' => $business_id,
+                                        'transaction_date' => $transaction_date,
+                                        'total_before_tax' => $purchase_total,
+                                        'document' => "Transfer At " . date("Y-m-d"),
+                                        'location_id' => $business_location_id,
+                                        'final_total' => $purchase_total,
+                                        'payment_status' => 'paid',
+                                        'created_by' => $user_id
+                                    ]
+                                );
+                            }
+                            $transaction_id = $transaction->id;
+                            $purchase_line->transaction_id = $transaction->id;
+                            $objOldPurchaseLine = $purchase_line;
+                        }
+                        $purchase_line->quantity = $qtyForPurchaseLine;
+                        $purchase_line->save();
+                        //Adjust stock over selling if found
+                        //adjust it 
+                        if ($isPurchaseLineExist) {
+                            $oldPurchaseLine = PurchaseLine::where("id", $objOrignalPurchaseLine->id)->update(['quantity' => $LeftQty]);
+                            $oldPurchaseLine = PurchaseLine::where("transaction_id", $objOldPurchaseLine->transaction_id)->where("product_id", $product->id)->update(['quantity' => $qtyForPurchaseLine]);
+                        } else {
+                            $oldPurchaseLine = PurchaseLine::where("id", $objOrignalPurchaseLine->id)->update(['quantity' => $LeftQty]); //Update OLD ONE AND THEN NEW ONE
+                            $oldPurchaseLine = PurchaseLine::where("transaction_id", $objOldPurchaseLine->transaction_id)->where("product_id", $product->id)->update(['quantity' => $qtyForPurchaseLine]);
+                        }
+                
+                        //Update Variation_location_details Qty Remaining 
+               
+                        /**
+                         * Qty for Location is Updating here 
+                         * 
+                         **/
+                        $oldPurchaseLine = VariationLocationDetails::where("location_id", $user_location_id)->where("variation_id", $objOrignalPurchaseLine->variation_id)->where("product_id", $product->id)->update(['qty_available' => $LeftQty]);
+
+                        $transfer_to_location = VariationLocationDetails::where("location_id", $business_location_id)->where("variation_id", $objOldPurchaseLine->variation_id)->where("product_id", $product->id)->first();
+                        if (!is_null($transfer_to_location)) {
+                            $new_qty = (float)$transfer_to_location->qty_available + (float)$qtyForPurchaseLine;
+
+                            $transfer_to_location->qty_available = $new_qty;
+                            $transfer_to_location->location_print_qty = $productQty;
+                            $transfer_to_location->product_updated_at = Carbon::now();
+                            $transfer_to_location->save();
+                        } else {
+                            $variation_location_d = new VariationLocationDetails();
+                            $variation_location_d->variation_id = $objOldPurchaseLine->variation_id;
+                            $variation_location_d->product_refference = $product->refference;
+                            $variation_location_d->product_id = $product->id;
+                            $variation_location_d->location_id = $business_location_id;
+                            $variation_location_d->location_print_qty = $productQty;
+                            $variation_location_d->product_variation_id = $objOldPurchaseLine->variation_id;
+                            $variation_location_d->qty_available = $productQty;
+                            $variation_location_d->product_updated_at = Carbon::now();
+                            $variation_location_d->save();
+                        }
+
+                        $product->product_updated_at = Carbon::now();
+                        $product->save();
+
+                        // New table for Purchase Report
+                        $transfer_new_location = VariationLocationDetails::where("location_id", $business_location_id)->where("variation_id", $objOldPurchaseLine->variation_id)->where("product_id", $product->id)->first();
+                        $ref = Product::find($objOldPurchaseLine->product_id)->refference;
+                        $all_products = VariationLocationDetails::where('product_refference', $ref)->where("product_id", $product->id)->where("location_id", $location_id)->get();
+                        foreach ($all_products as $all_product) {
+                            $all_product->update([
+                                'updated_at' => Carbon::now(),
+                                'product_updated_at' => Carbon::now(),
+                            ]);
+                        } 
+                        $all_products = VariationLocationDetails::where('product_refference', $ref)->where("product_id", $product->id)->where("location_id", $user_location_id)->get();
+                        foreach ($all_products as $all_product) {
+                            $all_product->update([
+                                'updated_at' => Carbon::now(),
+                                'product_updated_at' => Carbon::now(),
+                            ]);
+                        }
+                        $location_transfer_detail = new LocationTransferDetail();
+                        $location_transfer_detail->variation_id = $objOldPurchaseLine->variation_id;
+                        $location_transfer_detail->product_id = $product->id;
+                        $location_transfer_detail->product_refference = $ref;
+                        $location_transfer_detail->transfered_from = $user_location_id;
+                        // transfer to
+                        $location_transfer_detail->location_id = $location_id;
+                        $location_transfer_detail->product_variation_id = $transfer_new_location->product_variation_id;
+
+                        $location_transfer_detail->quantity = (float)$qtyForPurchaseLine;
+                        $location_transfer_detail->transfered_on = Carbon::now();
+                        $location_transfer_detail->save();
+
+                        //create transaction & purchase lines
+                        DB::commit();
+                    }
+                }
+                $output = [
+                    'success' => 1,
+                    'msg' => "TRANSFER SUCCESSFULY !"
+                ];
+            }
+
+            $output = [
+                'success' => 1,
+                'msg' => "TRANSFER SUCCESSFULY !"
+            ];
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
+
+            $output = [
+                'success' => 0,
+                'msg' => __("messages.something_went_wrong") . "Message:" . $e->getMessage() . ' on Line: ' . $e->getLine() . ' of ' . $e->getFile()
+            ];
+        }
+
+        return response()->json( $output);
+    }
     /**
      * Activates the specified resource from storage.
      *

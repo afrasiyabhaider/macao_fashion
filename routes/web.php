@@ -11,10 +11,10 @@
 |
 */
 
+use App\Product;
 use Illuminate\Support\Facades\Auth;
 
 include_once('install_r.php');
-
 
 Route::middleware(['IsInstalled'])->group(function () {
     Route::get('/', function () {
@@ -87,6 +87,7 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::post('/products/mass-print', 'ProductController@massBulkPrint');
     Route::post('/products/selected-mass-print', 'ProductController@selectedBulkPrint');
     Route::post('/products/mass-transfer', 'ProductController@massTransfer');
+    Route::post('/products/pos/mass-transfer', 'ProductController@posToMassTransfer');
  
     Route::get('/products/activate/{id}', 'ProductController@activate');
     Route::get('/products/view-product-group-price/{id}', 'ProductController@viewGroupPrice');
@@ -94,7 +95,7 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::post('/products/save-selling-prices', 'ProductController@saveSellingPrices');
     Route::post('/products/mass-delete', 'ProductController@massDestroy');
     Route::get('/products/view/{id}', 'ProductController@view');
-    Route::get('/products/viewDetail/{id}/{location_id}', 'ProductController@viewProductDetailWithSale');
+    Route::get('/products/viewDetail/{id}/{location_id}','ProductController@viewProductDetailWithSale');
     Route::get('/products/viewRefDetail/{refference}', 'ProductController@viewProductRefDetailWithSale');
     Route::get('/product/color-detail/{name}/{id}', 'ProductController@viewColorDetailByRefrenceID');
     Route::get('/product/color-detail/{name}/{start_date}/{end_date}/{refference}', 'ProductController@viewColorDetail');
@@ -456,10 +457,6 @@ Route::get('/sells/pos/transationhistory', 'SellPosController@getTransationHisto
     Route::post('website/slider/images', 'SiteImageController@storeSlider');
     Route::post('website/category/images', 'SiteImageController@categoryImage');
     Route::delete('website/slider/images/{id}', 'SiteImageController@destroySlider');
-
-    Route::get('phpinfo', function () {
-        phpinfo();
-    });
 });
 
 Route::get('migrate-fresh', function () {

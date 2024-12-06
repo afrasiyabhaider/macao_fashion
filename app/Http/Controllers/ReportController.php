@@ -901,36 +901,12 @@ class ReportController extends Controller
         }
         $business_id = $request->session()->get('user.business_id');
 
-        // $query = Product::join('categories as cat', 'products.sub_category_id', '=', 'cat.id')
-        //         ->join('purchase_lines as pl', 'products.id', '=', 'pl.product_id')
-        //         ->join('variation_location_details as vld', 'vld.variation_id', '=', 'pl.variation_id');
-
-        // $data = $query->groupBy('cat.name')->select(
-        //     'cat.name as id',
-        //     DB::raw("COUNT(products.id) as num_of_products"),
-        //     DB::raw("SUM(pl.quantity_sold) as quantity_sold"),
-        //     DB::raw("SUM(vld.qty_available) as quantity_available"),
-        //     DB::raw("SUM(pl.quantity_sold)+SUM(vld.qty_available) as total"),
-        //     DB::raw("COUNT(vld.id) as transfered"),
-        // )->get();
-
-        // dd($data);
         if ($request->ajax()) {
 
             $query = Variation::join('products as p', 'p.id', '=', 'variations.product_id')
-                ->join(
-                    'units',
-                    'p.unit_id',
-                    '=',
-                    'units.id'
-                )
+                ->join('units','p.unit_id','=','units.id')
                 ->join('colors', 'p.color_id', '=', 'colors.id')
-                ->join(
-                    'sizes',
-                    'p.sub_size_id',
-                    '=',
-                    'sizes.id'
-                )
+                ->join('sizes','p.sub_size_id','=','sizes.id')
                 ->join('suppliers', 'p.supplier_id', '=', 'suppliers.id')
                 ->join('categories', 'p.category_id', '=', 'categories.id')
                 ->join('categories as sub_cat', 'p.sub_category_id', '=', 'sub_cat.id')
@@ -939,6 +915,7 @@ class ReportController extends Controller
                 ->join('product_variations as pv', 'variations.product_variation_id', '=', 'pv.id')
                 ->where('p.business_id', $business_id)
                 ->whereIn('p.type', ['single', 'variable']);
+
             $location_filter = null;
 
             if (!empty($request->input('location_id'))) {
@@ -948,12 +925,10 @@ class ReportController extends Controller
             }
             if (!empty($request->input('category_id'))) {
                 $category_id = $request->input('category_id');
-                // dd($category_id);
                 $query->where('p.category_id', $category_id);
             }
             if (!empty($request->input('sub_category_id'))) {
                 $sub_category_id = $request->input('sub_category_id');
-                // dd($category_id);
                 $query->where('p.sub_category_id', $sub_category_id);
             }
             $from_date = request()->get('from_date', null);
@@ -966,9 +941,6 @@ class ReportController extends Controller
             }
 
             $products = $query->select(
-                // DB::raw("(SELECT SUM(quantity) FROM transaction_sell_lines LEFT JOIN transactions ON transaction_sell_lines.transaction_id=transactions.id WHERE transactions.status='final' $location_filter AND
-                // transaction_sell_lines.product_id=products.id) as total_sold"),
-
                 DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions
                 JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
                 WHERE transactions.status='final' AND transactions.type='sell' $location_filter
@@ -1007,10 +979,11 @@ class ReportController extends Controller
                 'variations.name as variation_name',
                 'vld.updated_at',
                 // 'vld.qty_available as current_stock'
-                DB::raw('SUM(vld.qty_available) as current_stock')
+                // DB::raw('SUM(vld.qty_available) as current_stock')
             )->groupBy('p.sub_category_id')
                 ->orderBy('vld.product_updated_at', 'DESC');
 
+            
             return DataTables::of($products)
                 ->editColumn('total_sold', function ($row) {
                     $total_sold = 0;
@@ -6663,7 +6636,7 @@ class ReportController extends Controller
                     return '<span data-is_quantity="true" class="display_currency sell_qty" data-currency_symbol=false data-orig-value="' . (int) $row->total_qty_sold . '" data-unit="' . $row->unit . '" >' . (int) $row->total_qty_sold . '</span> ' . $row->unit;
                 })
                 ->editColumn('image', function ($row) {
-                    return '<div style="display: flex;"><img src="' . $row->image_url . '" alt="Product image" class="product-thumbnail-small"></div>';
+                    return '<div style="display: flex;"><img src="' . $row->image_url .'" alt="Product image" class="product-thumbnail-small"></div>';
                 })
                 ->editColumn('product_updated_at', function ($row) {
                     return Carbon::parse($row->product_updated_at)->format('d-M-Y H:i');
@@ -6725,11 +6698,11 @@ class ReportController extends Controller
                             // return  action('ProductController@viewProductRefDetailWithSale', [$row->refference]);
                             // return  action('ProductController@viewProductDetailWithSale', [$row->product()->first()->id,$location_id],);
                             if (is_null($location_id)) {
-                                return action('ProductController@viewProductRefDetailWithSale', [$row->refference]);
+                                return action('ProductController@viewProductRefDetailWithSale', [$row->refference,'location_id'=> $location_id]);
                             } else {
                                 // todo it is comment by hamza on sir adnan demand to show product according to refrence
                                 // return action('ProductController@viewProductDetailWithSale', [$row->product()->first()->id, $location_id]);
-                                return action('ProductController@viewProductRefDetailWithSale', [$row->refference]);
+                                return action('ProductController@viewProductRefDetailWithSale', [$row->refference,'location_id'=> $location_id]);
                             }
                             // return  action('ProductController@view', [$row->product_id]);
                         } else {

@@ -67,11 +67,22 @@
                                     {{-- <strong><i class="fa fa-asl-interpreting"></i></strong> --}}
                                     {{-- RETURN --}}
                                 </a>
-                                <button type="button" onclick="openPopupWindow('/products/transfer');"
+                                {{-- <button type="button" onclick="openPopupWindow('/products/transfer');"
                                     title="Transfer Products" data-toggle="tooltip" data-placement="bottom"
                                     class="btn btn-warning ">
                                     <strong><i class="fa fa-random fa-lg"></i></strong>
                                     Transfer
+                                </button> --}}
+                                {{-- <button type="button" onclick="TransferSelected();"
+                                    title="Transfer Products" data-toggle="tooltip" data-placement="bottom"
+                                    class="btn btn-warning ">
+                                    <strong><i class="fa fa-random fa-lg"></i></strong>
+                                    Transfer
+                                </button> --}}
+
+                                <button type="submit" class="btn btn-warning" id="bulkTransfer-selected">
+                                    <i class="fa fa-random"></i>
+                                    Transfer Selected
                                 </button>
                                 <button type="button" title="Gift Card" data-toggle="tooltip" data-placement="bottom"
                                     class="btn btn-success pos_add_quick_product  btn-3"
@@ -537,6 +548,43 @@
         </div>
     </div>
 </div> --}}
+
+<div>
+</section>
+<!-- modal-dialog -->
+<div class="modal fade in" tabindex="-1" role="dialog" id="transferModal" >
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button"  id="closeThis" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">SELECT BUSSINESS</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {!! Form::label('category_id', 'Business :') !!}
+                            @foreach ($business_locations as $key=>$value)
+                                @if ($key != 1 && $value != "Main Shop")
+                                    @php
+                                        $newBusiness_locations[$key] = $value;
+                                    @endphp
+                                @endif
+                            @endforeach
+                            {!! Form::select('category_id', collect($newBusiness_locations), null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'transferBussiness', 'placeholder' => __('lang_v1.all')]); !!}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="TransferSelected();">Finalize Transfer</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- -->
+</div>
 {{-- Price Change Stop --}}
 @stop
 
@@ -946,6 +994,70 @@
             // $('#cust_points').hide();
                 // window.location.href = "{{ url('pos/create') }}";
             }
+
+        let productData = [];
+
+        function TransferSelected() {
+            const data = JSON.stringify( productData);
+            const select_location_id = $('#select_location_id').val();
+            var category_id = $('select#transferBussiness').val();
+            $.ajax({
+                method: 'POST',
+                url: "{{url('/products/pos/mass-transfer')}}",
+                data: {
+                    products:data,
+                    current_location:select_location_id,
+                    bussiness_bulkTransfer:category_id,
+                },
+                success: function (result) {
+                    if (result.success == 1) {
+                        toastr.success(result.msg);
+                        $('#transferModal').modal('hide'); 
+                        reset_pos_form()
+                    } else {
+                        toastr.error(result.msg);
+                        $('#transferModal').modal('hide'); 
+                        reset_pos_form()
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Handle errors here
+                    console.error('AJAX Error:', status, error);
+                }
+            });
+                     
+        }
+
+
+        $(document).on('click', '#bulkTransfer-selected', function(e){
+            e.preventDefault();
+            productData = [];
+            // Select all rows in the table
+            const rows = document.querySelectorAll('#pos_table tbody tr');
+            // Loop through each row to extract product ID and quantity
+            rows.forEach(row => {
+                const productId = row.querySelector('.product_id')?.value;
+                const availableQty = row.querySelector('.available_qty')?.value;
+                const quantity = row.querySelector('.input_quantity')?.value;
+
+                if (productId && quantity) {
+                    productData.push({
+                        product_id: productId,
+                        available_qty: availableQty,
+                        quantity: quantity
+                    });
+                }
+            });
+
+            if(productData.length > 0){
+                $('#transferModal').modal('show'); 
+            } else{
+                productData = [];
+                swal('@lang("lang_v1.no_row_selected")');
+            }    
+        });
+
+
 </script>
 
 <script src="{{ asset('js/pos.js?v=' . $asset_v) }}"></script>

@@ -2792,18 +2792,9 @@ class SellPosController extends Controller
             }
 
             $business_id = request()->session()->get('user.business_id');
-            // dd($location_id);
 
             // $product = $this->productUtil->getDetailsFromVariation($variation_id, $business_id, 3);
             $product = $this->productUtil->getDetailsFromVariation($variation_id, $business_id, $location_id);
-
-            // dd($product);
-            // $product = $this->productUtil->getDetailsFromVariation($variation_id, $business_id, $location_id);
-
-            // dd($product);
-            // /Here
-
-            // return json_encode($product);
 
             $product->formatted_qty_available = $this->productUtil->num_f($product->qty_available, false, null, true);
 
@@ -2813,18 +2804,9 @@ class SellPosController extends Controller
             $customer_id = request()->get('customer_id', null);
             $cg = $this->contactUtil->getCustomerGroup($business_id, $customer_id);
             $percent = (empty($cg) || empty($cg->amount)) ? 0 : $cg->amount;
-            // dd($product);
-            // $product->default_sell_price = $product->sell_price_inc_tax + ($percent * $product->sell_price_inc_tax / 100);
             $product->default_sell_price = $product->sell_price + ($percent * $product->sell_price / 100);
-
-            // unit_price_before_discount
-            // dd($product->default_sell_price);
-            // $product->default_sell_price = $product->default_sell_price + ($percent * $product->default_sell_price / 100);
-
             $product->sell_price_inc_tax = $product->sell_price + ($percent * $product->sell_price / 100);
-
             $tax_dropdown = TaxRate::forBusinessDropdown($business_id, true, true);
-
             $enabled_modules = $this->transactionUtil->allModulesEnabled();
 
             //Get lot number dropdown if enabled
@@ -3253,6 +3235,7 @@ class SellPosController extends Controller
                 DB::raw("(SELECT purchase_price_inc_tax FROM purchase_lines WHERE 
                         variation_id=variations.id ORDER BY id DESC LIMIT 1) as last_purchased_price")
             )
+                ->distinct()
                 ->where("p_type", "product")
                 ->where("products.sub_size_id", '!=', 'null')
 
@@ -3264,9 +3247,6 @@ class SellPosController extends Controller
                 // ->get();
                 ->paginate(50);
 
-
-            // dd($products[2]);
-                // dd($location_id);
 
             return view('sale_pos.partials.product_list')->with(compact('products'));
         }

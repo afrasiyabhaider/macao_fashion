@@ -176,6 +176,7 @@
 		}
 		@endphp
 		<input type="hidden" name="products[{{$row_count}}][product_id]" class="form-control product_id" value='{{$productId}}'>
+		<input type="hidden" name="products[{{$row_count}}][available_qty]" class="form-control available_qty" value='{{$max_qty_rule}}'>
 
 		<input type="hidden" value="{{$variationId}}" 
 			name="products[{{$row_count}}][variation_id]" class="row_variation_id">
