@@ -4356,7 +4356,6 @@ class ReportController extends Controller
 
         if (!empty($date_range)) {
             $date_range_array = explode(' - ', $date_range);
-            // dd($date_range_array);
             $filters['start_date'] = $this->transactionUtil->uf_date(trim($date_range_array[0]));
             $filters['end_date'] = $this->transactionUtil->uf_date(trim($date_range_array[1]));
         }
@@ -4379,8 +4378,6 @@ class ReportController extends Controller
             $labels[] = $product->product . ' (' . $product->unit . ')';
             $product_id[] = $product->product_id;
         }
-
-        // dd($id);
 
         $chart = Charts::create('bar', 'highcharts')
             ->title(" ")
@@ -4464,7 +4461,13 @@ class ReportController extends Controller
                 DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=transaction_sell_lines.variation_id $vld_str) as current_stock"),
                 'p.product_updated_at as product_updated_at',
                 'transaction_sell_lines.original_amount as original_amount',
-                DB::raw('(SUM(transaction_sell_lines.quantity) - SUM(transaction_sell_lines.quantity_returned)) as sell_qty'),
+                // DB::raw('(SUM(transaction_sell_lines.quantity) - SUM(transaction_sell_lines.quantity_returned)) as sell_qty'),
+
+                DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
+                JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
+                WHERE transactions.status='final' AND transactions.type='sell' $vld_str 
+                AND TSL.product_refference = p.refference) as sell_qty "),
+
                 'transaction_sell_lines.line_discount_type as discount_type',
                 'transaction_sell_lines.line_discount_amount as discount_amount',
                 'transaction_sell_lines.item_tax',
@@ -4478,6 +4481,7 @@ class ReportController extends Controller
         // ->orderBy('t.invoice_no','DESC')
         // ->groupBy('transaction_sell_lines.product_id');
         // ->groupBy('transaction_sell_lines.id');
+
         // dd($query->first());
         if (!empty($variation_id)) {
             $query->where('transaction_sell_lines.variation_id', $variation_id);

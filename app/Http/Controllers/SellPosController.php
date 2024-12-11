@@ -3025,12 +3025,7 @@ class SellPosController extends Controller
         $location_id = $request->session()->get('user.business_location_id');
         $user_id = $request->session()->get('user.id');
         $transaction_status = $request->get('status');
-        // $location_id = $request->location_id;
-        // return $location_id;
         $register = $this->cashRegisterUtil->getCurrentCashRegister($user_id);
-        // return $location_id;
-        // dd($transaction_status);
-
         $query = Transaction::where('business_id', $business_id)
             // ->where('transactions.created_by', $user_id)
             ->where('transactions.location_id', $location_id)
@@ -3060,13 +3055,7 @@ class SellPosController extends Controller
             ->with(['contact'])
             // ->limit(10)
             ->get();
-        // dd($transactions->first()->sell_lines()->pluck('quantity'));
-        // dd($transactions->sum('final_total'));
-        // dd($transactions->first(),$transactions->first()->payment_lines()->first());
-        // dd($transactions->first()->cash_register_payments()->first()->cash_register()->first()->user()->first());
-        // dd($transactions->first()->cash_register_payments()->first()->cash_register()->first());
-        // dd($transactions->first()->cash_register_payments()->first()->pay_method);
-        // dd($transactions);
+
         return view('sale_pos.partials.recent_transactions')
             ->with(compact('transactions'));
     }

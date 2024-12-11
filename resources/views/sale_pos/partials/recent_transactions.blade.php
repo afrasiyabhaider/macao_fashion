@@ -92,11 +92,14 @@
 					}}
 				</td> --}}
 				<td>
-					<a href="{{action('SellPosController@edit', [$transaction->id])}}">
-	    				<i class="fa fa-pencil text-muted" aria-hidden="true" title="{{__('lang_v1.click_to_edit')}}"></i>
-	    			</a>
-	    			
-	    			<a href="{{url('/pos/transaction/'.$transaction->id.'/delete')}}" class="delete-sale" style="padding-left: 20px; padding-right: 20px"><i class="fa fa-trash text-danger" title="{{__('lang_v1.click_to_delete')}}"></i></a>
+					@if (auth()->user()->can('sell.update')) 
+						<a href="{{action('SellPosController@edit', [$transaction->id])}}">
+							<i class="fa fa-pencil text-muted" aria-hidden="true" title="{{__('lang_v1.click_to_edit')}}"></i>
+						</a>
+					@endif
+	    			@if (auth()->user()->can('sell.delete')) 
+	    				<a href="{{url('/pos/transaction/'.$transaction->id.'/delete')}}" class="delete-sale" style="padding-left: 20px; padding-right: 20px"><i class="fa fa-trash text-danger" title="{{__('lang_v1.click_to_delete')}}"></i></a>
+					@endif
 	    			{{-- <a href="{{action('SellPosController@delete_transaction', $transaction->id)}}" class="delete-sale" style="padding-left: 20px; padding-right: 20px"><i class="fa fa-trash text-danger" title="{{__('lang_v1.click_to_delete')}}"></i></a> --}}
 
 	    			<a href="{{action('SellPosController@printInvoice', [$transaction->id])}}" class="print-invoice-link">

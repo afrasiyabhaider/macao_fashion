@@ -1172,7 +1172,6 @@ class ProductController extends Controller
 
             $product_image = $product->image;
             $location_id = $request->input('location_id');
-            // dd($location_id);
             // if ($request->hasFile('file')) {
             //     $file = $request->file();
             //     $file['file'];
@@ -1225,7 +1224,7 @@ class ProductController extends Controller
             $product->refference = $request->input('refference');
             // $product->color_id = $request->input('color');
             // $product->size_id = $size->parent_id;
-            // $product->sub_size_id = $request->input('size');   // comment by hamza due to adding in 
+            // $product->sub_size_id = $request->input('size');   //todo comment by hamza due to adding in 
             $product->sku = $request->input('sku');
             $product->print_price_check = $request->print_price_check ? true : false;
             $product->description = $request->input('description');
@@ -1235,10 +1234,7 @@ class ProductController extends Controller
 
             $variation = Variation::where('product_id', '=', $request->input('product_id'))->first();
             // $unit = str_replace($request->input('unit_price'),'.',',');
-            // dd($this->productUtil->num_uf($request->input('unit_price')));
-            // dd($unit);
             $variation->sub_sku = $product->sku;
-            // dd($variation);
            
             if ($request->allow_price_qty) {
                 $variation->dpp_inc_tax = $this->productUtil->num_uf($request->input('unit_price'));
@@ -1248,7 +1244,6 @@ class ProductController extends Controller
             $variation->save();
 
             if($location_id === 'all'){
-                // dd($request->input('custom_price'));
                 $price_change = VariationLocationDetails::where('product_refference', $product->refference)->get();
                 foreach ($price_change as $price_changes){
                     $price_changes->update([
@@ -1257,7 +1252,6 @@ class ProductController extends Controller
                     ]);
                     } 
             }else{
-                // dd(1);
             $price_change = VariationLocationDetails::where('product_refference', $product->refference)->where('location_id', $location_id)->get();
             foreach ($price_change as $price_changes){
             $price_changes->update([
@@ -1282,9 +1276,7 @@ class ProductController extends Controller
             //     ->get();
             $product_sizes = Product::where('products.refference', $product->refference)
                 ->get();
-            // dd($product_sizes);
             $message = 'Product Updated Successfully. ';
-            // dd($request->productColor);
             // update unit price and custom price same reference prodeucts
             foreach ($product_sizes as $product_size) {
                 $record = Variation::where('product_id', '=', $product_size->id)->first();
@@ -1301,12 +1293,7 @@ class ProductController extends Controller
                 $findColorArray = $product_sizes->where('id', $updateColorArray['product_id'])->first();
                 if (!is_null($findColorArray)) {
                     $new_qty = !is_null($updateColorArray['new_qty']) ? $updateColorArray['new_qty'] : 0;
-                    // dd($new_qty);
                     if ($request->allow_price_qty) {
-
-                        // dd($updateColorArray['old_qty'] ,  $updateColorArray['new_qty']);
-
-                        // dd($findColorArray->qty +  $newColorArray['new_qty'],$findColorArray,$findColorArray->qty,$newColorArray,isset($newColorArray['new_qty']) && $request->allow_price_qty,isset($newColorArray['new_qty']) , $request->allow_price_qty);
                         // $purchase_line = VariationLocationDetails::where('product_id', '=', $findColorArray->id)->first();
                         $purchase_line = VariationLocationDetails::where('product_id', '=', $findColorArray->id)->where('location_id', 1)->first();
                        if($new_qty != 0){
@@ -1350,11 +1337,9 @@ class ProductController extends Controller
                             $product_quantity_d->quantity = $new_qty;
                             $product_quantity_d->created_at = Carbon::now();
                             $product_quantity_d->updated_at = Carbon::now();
-                            // dd($product_quantity_d);
                             $product_quantity_d->save();
                         }
                     }
-                    // dd(isset($request->color_file));
                     if (isset($request->color_file)) {
                         foreach ($request->color_file as $key => $file_name) {
                             if ($key === $updateColorArray['color_name']) {
@@ -1382,7 +1367,6 @@ class ProductController extends Controller
                     }
                 }
             }
-            // dd($request->newColor);
             // add new multi color with quantity  
             if (!is_null($request->newColor)) {
                 foreach ($request->newColor as $key => $new_color_array) {
@@ -1390,7 +1374,6 @@ class ProductController extends Controller
                     if (!is_null($new_color_array['new_qty'])) {
                         $qty = $new_color_array['new_qty'];
                     }
-                    // dd(isset($new_color_array['file']),!is_null($new_color_array['new_qty']),$qty);
                     $new_color = Color::where('name', $new_color_array['color_name'])->first();
                     $size = Size::find($new_color_array['size_id']);
                     $lastId = Product::orderBy('id', 'desc')->first();
@@ -1408,12 +1391,10 @@ class ProductController extends Controller
                     ]);
 
                     $user_id = Auth::id();
-                    //  dd($lastId);
                     if ($new_product->type == 'single') {
                         $variation = $product->variations->first();
                         $this->productUtil->createSingleProductVariation2($new_product, $new_product->sku, $variation->dpp_inc_tax, $variation->dpp_inc_tax, $variation->profit_percent, $variation->default_sell_price, $variation->sell_price_inc_tax);
                     }
-                    // dd($new_product->variations);
                     if ($product->enable_stock == 1) {
                         $transaction_date = $request->session()->get("financial_year.start");
                         $transaction_date = \Carbon::createFromFormat('Y-m-d', $transaction_date)->toDateTimeString();
@@ -1430,7 +1411,6 @@ class ProductController extends Controller
                 }
             }
 
-
             DB::commit();
             $this->update_on_website($product->name);
             $output = [
@@ -1439,7 +1419,6 @@ class ProductController extends Controller
             ];
         } catch (\Exception $e) {
             DB::rollBack();
-            // dd($e->getMessage());
             \Log::emergency("File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage());
 
             $output = [
@@ -1447,7 +1426,6 @@ class ProductController extends Controller
                 'msg' => __("messages.something_went_wrong" . ' ' . "File:" . $e->getFile() . "Line:" . $e->getLine() . "Message:" . $e->getMessage())
             ];
         }
-        // dd($location);
         return redirect(url('products/' . $product->id . '/edit'))->with('status', $output)->with('location_id_set', $location);
 
         $business_id = $request->session()->get('user.business_id');
@@ -5454,7 +5432,6 @@ class ProductController extends Controller
                     $productId = $arr[0];
                     $productQty = $arr[1];
                     $productOrignalQty = $arr[2];
-                    // dd($arr,$location_id);
                     $LeftQty = $productOrignalQty - $productQty;
                     if (strcmp($productQty, $productOrignalQty) == 0) {
                         // dd($arr,$location_id);
@@ -5856,10 +5833,8 @@ class ProductController extends Controller
         }
 
         $selected_products = collect(json_decode($request->products));
-        $product_ids = $selected_products->pluck('product_id')->all();
-        // dd($selected_products->all());
         try {
-            if (!empty($request->input('selected_products_bulkTransfer'))) {
+            if (!empty($selected_products)) {
                 $business_id = $request->session()->get('user.business_id');
                 $user_location_id = $request->session()->get('user.business_location_id');
                 if ($request->input('current_location')) {
@@ -5873,7 +5848,7 @@ class ProductController extends Controller
                     $user_location_id = $request->input('current_location');
                 }
                 $user_id = $request->session()->get('user.id');
-                // $selected_products = $request->products;
+
                 $business_location_id = $request->input('bussiness_bulkTransfer');
                 $location_id = $business_location_id;
 
@@ -5881,15 +5856,11 @@ class ProductController extends Controller
                 foreach ($selected_products as $key => $objProduct) {
                     # code...
                     $purchase_total = 0;
-                    // $arr = explode("@", $objProduct);
-                    // $productId = $arr[0];
-                    // $productQty = $arr[1];
-                    // $productOrignalQty = $arr[2];
                     $productId = $objProduct->product_id;
                     $productQty = $objProduct->quantity;
                     $productOrignalQty = $objProduct->available_qty;
-                    dd($productId,$productQty,$productOrignalQty);
-                    $LeftQty = $productOrignalQty - $productQty;
+                    $LeftQty = (int)$productOrignalQty -  (int)$productQty;
+
                     if (strcmp($productQty, $productOrignalQty) == 0) {
                         // dd($arr,$location_id);
                         DB::beginTransaction();
