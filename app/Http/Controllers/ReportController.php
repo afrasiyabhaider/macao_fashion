@@ -4435,6 +4435,7 @@ class ReportController extends Controller
             // ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
             ->join('products as p', 'transaction_sell_lines.product_id', '=', 'p.id')
             ->leftjoin('units as u', 'u.id', '=', 'p.unit_id')
+            ->leftJoin('variation_location_details as vld', 'vld.variation_id', '=', 'transaction_sell_lines.variation_id') // Add this join
             ->where('t.business_id', $business_id)
             ->where('t.type', 'sell')
             ->where('t.status', 'final')
@@ -4450,6 +4451,7 @@ class ReportController extends Controller
                 'p.refference as refference',
                 'p.type as product_type',
                 'p.sku as barcode',
+                'p.product_updated_at as product_updated_at',
                 // 'pv.name as product_variation',
                 // 'v.name as variation_name',
                 // 'c.name as customer',
@@ -4459,15 +4461,12 @@ class ReportController extends Controller
                 'transaction_sell_lines.unit_price_before_discount as unit_price',
                 'transaction_sell_lines.unit_price_inc_tax as unit_sale_price',
                 DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=transaction_sell_lines.variation_id $vld_str) as current_stock"),
-                'p.product_updated_at as product_updated_at',
                 'transaction_sell_lines.original_amount as original_amount',
                 // DB::raw('(SUM(transaction_sell_lines.quantity) - SUM(transaction_sell_lines.quantity_returned)) as sell_qty'),
-
                 DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
                 JOIN transaction_sell_lines AS TSL ON transactions.id=TSL.transaction_id
                 WHERE transactions.status='final' AND transactions.type='sell' $vld_str 
                 AND TSL.product_refference = p.refference) as sell_qty "),
-
                 'transaction_sell_lines.line_discount_type as discount_type',
                 'transaction_sell_lines.line_discount_amount as discount_amount',
                 'transaction_sell_lines.item_tax',
@@ -4512,13 +4511,13 @@ class ReportController extends Controller
             $purchase_end_date = $this->transactionUtil->uf_date(trim($purchase_date_array[1]));
 
             if (!empty($purchase_start_date) && !empty($purchase_end_date)) {
-                $query->whereBetween(DB::raw('date(product_updated_at)'), [$purchase_start_date, $purchase_end_date]);
+                $query->whereBetween(DB::raw('date(p.product_updated_at)'), [$purchase_start_date, $purchase_end_date]);
             }
         } else {
             $start_year = Carbon::now()->startOfYear();
             $now = Carbon::now();
 
-            $query->whereBetween(DB::raw('date(product_updated_at)'), [
+            $query->whereBetween(DB::raw('date(p.product_updated_at)'), [
                 $start_year,
                 $now
             ]);
