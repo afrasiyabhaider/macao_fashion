@@ -122,15 +122,15 @@
                                 <th>Supplier</th>
                                 <th>Before Force Price</th>
                                 <th>@lang('sale.unit_price')</th>
-                                <th>After Discount</th>
-                                <th>@lang('sale.discount')</th>
+                                {{-- <th>After Discount</th> --}}
+                                {{-- <th>@lang('sale.discount')</th> --}}
                                 <th>@lang('sale.total')</th>
-                                <th>Barcode</th>
-                                <th>@lang('messages.date')</th>
+                                {{-- <th>Barcode</th> --}}
+                                {{-- <th>@lang('messages.date')</th> --}}
                                 <th>Purchase Date</th>
-                                {{-- <th>@lang('sale.customer_name')</th> --}}
+                                {{-- <th>@lang('sale.customer_name')</th>
                                 <th>@lang('sale.invoice_no')</th>
-                                {{-- <th>@lang('sale.tax')</th> --}}
+                                 <th>@lang('sale.tax')</th> --}}
                             </tr>
                         </thead>
                         <tbody>
@@ -204,7 +204,7 @@
                                     <td>
                                         <span class="display_currency" data-currency_symbol = true>{{$detail->unit_price}}</span>
                                     </td>
-                                    <td>
+                                    {{-- <td>
                                         <span class="display_currency" data-currency_symbol = true>{{$detail->unit_sale_price}}</span>
                                     </td>
                                     <td>
@@ -213,29 +213,29 @@
                                         @elseif($detail->discount_type == "fixed")
                                         {{@number_format($detail->discount_amount)}}
                                         @endif
-                                    </td>
+                                    </td> --}}
                                     <td>
                                         <span class="display_currency row_subtotal" data-currency_symbol="true" data-orig-value=" {{$detail->subtotal}}">{{$detail->subtotal}}</span>
                                         @php
                                             $price_total += $detail->subtotal;
                                         @endphp
                                     </td>
-                                    <td>
+                                    {{-- <td>
                                         {{$detail->barcode}}
-                                    </td>
+                                    </td> --}}
                                     <td>
                                         {{
                                             Carbon::parse($detail->transaction_date)->format('d-M-Y H:i')
                                         }}
                                     </td>
-                                    <td>
+                                    {{-- <td>
                                         {{
                                             Carbon::parse($detail->product_updated_at)->format('d-M-Y H:i')
                                         }}
-                                    </td>
-                                    <td>
+                                    </td> --}}
+                                    {{-- <td>
                                         <a data-href="{{action('SellController@show', [$detail->transaction_id])}}" href="#" data-container=".view_modal" class="btn-modal">{{$detail->invoice_no}}</a>
-                                    </td>
+                                    </td> --}}
                                 </tr>
                             @endforeach
                         </tbody>
