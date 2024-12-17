@@ -868,10 +868,39 @@ $(document).ready(function() {
         serverSide: true,
         ajax: {
             url: '/reports/grouped-stock-report',
+            // data: function(d) {
+            //     var start = '';
+            //     var end = '';
+            //     if ($('#product_purchase_date_filter').val()) {
+            //         start = $('input#product_purchase_date_filter')
+            //             .data('daterangepicker')
+            //             .startDate.format('YYYY-MM-DD');
+            //         end = $('input#product_purchase_date_filter')
+            //             .data('daterangepicker')
+            //             .endDate.format('YYYY-MM-DD');
+            //     }
+            //     d.start_date = start;
+            //     d.end_date = end;
+
+            //     d.location_id = $('#location_id').val();
+            //     d.category_id = $('#category_id').val();
+            //     d.sub_category_id = $('#sub_category_id').val();
+            //     d.supplier_id = $('#suppliers').val();
+            //     // d.from_date = $('#product_list_from_date').val();
+            //     // d.to_date = $('#product_list_to_date').val();
+            //     d.unit_id = $('#unit').val();
+            // },
             data: function(d) {
+                
                 var start = '';
                 var end = '';
                 if ($('#product_purchase_date_filter').val()) {
+                    // start = $('input#product_purchase_date_filter')
+                    //     .data('daterangepicker')
+                    //     .moment().subtract(10, 'years').format('YYYY-MM-DD');
+                    // end = $('input#product_purchase_date_filter')
+                    //     .data('daterangepicker')
+                    //     .endDate.format('YYYY-MM-DD');
                     start = $('input#product_purchase_date_filter')
                         .data('daterangepicker')
                         .startDate.format('YYYY-MM-DD');
@@ -889,9 +918,10 @@ $(document).ready(function() {
                 // d.from_date = $('#product_list_from_date').val();
                 // d.to_date = $('#product_list_to_date').val();
                 d.unit_id = $('#unit').val();
+                
             },
         },
-        pageLength: 100,
+        pageLength: 300,
         lengthMenu: [
             [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, -1],
             [30, 40, 60, 80, 90, 100, 150, 300, 500, 1000, 'All'],
@@ -1302,6 +1332,7 @@ $(document).ready(function() {
         stock_report_table.ajax.reload();
         grouped_stock_report_table.ajax.reload();
         stock_expiry_report_table.ajax.reload();
+        product_in_top_report_table.ajax.reload();
     });
 
     $('#purchase_sell_location_filter').change(function() {
@@ -1340,7 +1371,7 @@ $(document).ready(function() {
             $('input#register_sr_date_filter').val(
                 start.format(moment_date_format) + ' ~ ' + end.format(moment_date_format)
             );
-            register_report_table.ajax.reload();
+            // register_report_table.ajax.reload();
         });
         $('input#register_sr_date_filter').on('apply.daterangepicker', function(ev, picker) {
             $(this).val(
@@ -1894,8 +1925,8 @@ $(document).ready(function() {
             product_purchase_report.ajax.reload();
         });
         // $('#product_pr_date_filter').data('daterangepicker').setStartDate('08/01/2020');
-        // $('#product_pr_date_filter').data('daterangepicker').setEndDate('08/31/2020');
-        $('#product_pr_date_filter').data('daterangepicker').setStartDate(moment());
+        // $('#product_pr_date_filter').data('daterangepicker').setEndDate('08/31/2020'); 
+        $('#product_pr_date_filter').data('daterangepicker').setStartDate(moment().subtract(6, 'd'));
         $('#product_pr_date_filter').data('daterangepicker').setEndDate(moment());
         // moment()
     }
@@ -2062,10 +2093,16 @@ $(document).ready(function() {
 
     // Product Purchase Date
     if ($('#product_purchase_date_filter').length == 1) {
+
+        let currentUrl = window.location.href;
+        let urlSegments = currentUrl.split('/');
+        let startDateFromUrl = urlSegments[5] || moment().subtract(365, 'days');
+        let endDateFromUrl = urlSegments[6] || moment();  
+
         var purchasedateRangeSettings = {
             ranges: ranges,
-            startDate: moment().subtract(365, 'days'),
-            endDate: moment(),
+            startDate: startDateFromUrl,  //moment().subtract(365, 'days'),
+            endDate: endDateFromUrl,     //moment(),
             locale: {
                 cancelLabel: LANG.clear,
                 applyLabel: LANG.apply,
@@ -2339,7 +2376,7 @@ $(document).ready(function() {
                 d.variation_id = $('#variation_id').val();
                 d.supplier_id = $('select#supplier_id').val();
                 d.location_id = $('select#location_id').val();
-                 d.category_id = $('select#category_id').val();
+                d.category_id = $('select#category_id').val();
                 d.sub_category_id = $('select#sub_category_id').val();
             },
         },
@@ -2420,7 +2457,7 @@ $(document).ready(function() {
                 searchable: false
             },
         ],
-        fnDrawCallback: function(oSettings) {
+        fnDrawCallback: function() {
             $('#footer_grouped_subtotal').text(
                 sum_table_col($('#product_sell_grouped_report_table'), 'row_subtotal')
             );

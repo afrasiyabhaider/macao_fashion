@@ -10078,6 +10078,8 @@ class ReportController extends Controller
 
         //Return the details in ajax call
         if ($request->ajax()) {
+
+
             $registers = CashRegister::join(
                 'cash_register_transactions as ct',
                 'ct.cash_register_id',
@@ -10178,9 +10180,39 @@ class ReportController extends Controller
             $totalDiscountSum = $totaldiscount->sum();
             $totalinvoicesSum = $totainvoices->sum();
         }
+
+        $couponQuery = Coupon::where('business_id',$business_id)->when($request->location_id,function($query)  {
+                    $query->where('location_id',request()->location_id);
+            })     
+        ->whereBetween('updated_at', [$start_date, $end_date]);
+
+
+        $coupon_created = $couponQuery->cloneWithoutBindings([])->count();
+
+        $coupon_used = $couponQuery->cloneWithoutBindings([])
+        ->where('isActive','consumed')
+        ->count();
+
+        $item_returned = TransactionSellLine::where('quantity_returned','>=', 1.00)
+        ->whereBetween('updated_at', [$start_date, $end_date])->sum('quantity_returned');
+
+        // Ensure $start_date and $end_date are Carbon instances
+        $start_date = Carbon::parse($start_date)->startOfDay();
+        $end_date = Carbon::parse($end_date)->endOfDay();
+        
+        $unknown_reduction = Transaction::where('discount_type','fixed')
+        ->whereNotNull('discount_amount')
+        ->whereBetween('created_at', [$start_date, $end_date])
+        ->sum('discount_amount');
+        
+
         $ajaxResponse = [
             'totalDiscountSum' => $totalDiscountSum,
             'totalinvoicesSum' => $totalinvoicesSum,
+            'coupon_used' =>  $coupon_used,
+            'coupon_created' =>  $coupon_created,
+            'item_returned' =>  $item_returned,
+            'unknown_reduction' => round( $unknown_reduction,2),
         ];
 
         // Return the response as JSON
@@ -10801,9 +10833,14 @@ class ReportController extends Controller
         $units = Unit::where('business_id', $business_id)
             ->pluck('short_name', 'id');
         $business_locations = BusinessLocation::forDropdown($business_id, true);
+        $coupon_used = Coupon::where('business_id',$business_id)->when($request->location_id,function($query)  {
+                $query->where('location_id',request()->location_id);
+        })     
+        ->where('isActive','consumed')
+        ->count();
 
         return view('report.stock_in_out')
-            ->with(compact('categories', 'suppliers', 'units', 'business_locations'));
+            ->with(compact('categories', 'suppliers', 'units', 'business_locations','coupon_used'));
     }
 
 
