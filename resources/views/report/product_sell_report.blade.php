@@ -190,6 +190,7 @@
                                             <th>A.T Purchased</th>
                                             <th>@lang('report.current_stock')</th>
                                             <th>Unit Price</th>
+                                            <th>Price</th>
                                             {{-- <th>Sale %</th> --}}
                                             <th>Total</th>
                                         </tr>

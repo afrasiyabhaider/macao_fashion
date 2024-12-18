@@ -2442,6 +2442,10 @@ $(document).ready(function() {
                 data: 'unit_price',
                 name: 'unit_price'
             },
+            {
+                data: 'discounted_amount',
+                name: 'discounted_amount'
+            },
             // { data: 'total_sold', searchable: false, orderable: false },
             // { data: 'barcode', name: 'p.sku' },
             // { data: 'transaction_date', name: 't.transaction_date' },
