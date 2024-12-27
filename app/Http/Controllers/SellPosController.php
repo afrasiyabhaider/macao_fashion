@@ -390,17 +390,13 @@ class SellPosController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
         if (!auth()->user()->can('sell.create') && !auth()->user()->can('direct_sell.access')) {
             abort(403, 'Unauthorized action.');
         }
-
         $is_direct_sale = false;
         if (!empty($request->input('is_direct_sale'))) {
             $is_direct_sale = true;
         }
-
-        // dd($is_direct_sale,$this->cashRegisterUtil->countOpenedRegister(),request()->session()->get('user.business_location_id'));
 
         //Check if there is a open register, if no then redirect to Create Register screen.
         if (!$is_direct_sale && $this->cashRegisterUtil->countOpenedRegister() == 0) {
@@ -455,11 +451,8 @@ class SellPosController extends Controller
                 ];
                 $invoice_total = $this->productUtil->calculateInvoiceTotal($input['products'], $input['tax_rate_id'], $discount);
 
-
-
                 $checkGift = $this->GiftCardCheck($input['products']);
                 $checkCoupon = $this->CouponCheck($input['products'],$request);
-                // dd($checkCoupon);
 
                 DB::beginTransaction();
 
@@ -501,7 +494,7 @@ class SellPosController extends Controller
                 }
 
                 $transaction = $this->transactionUtil->createSellTransaction($business_id, $input, $invoice_total, $user_id);
-                // dd($transaction);
+                
                 $this->transactionUtil->createOrUpdateSellLines($transaction, $input['products'], $input['location_id']);
 
                 if (!$is_direct_sale) {
@@ -511,7 +504,6 @@ class SellPosController extends Controller
                     // $change_return['amount'] = $input['change_return'];
                     $change_return['is_return'] = 1;
                     $input['payment'][] = $change_return;
-                    // dd($input['payment']);
                 }
 
                 if (!$transaction->is_suspend && !empty($input['payment'])) {
@@ -520,7 +512,6 @@ class SellPosController extends Controller
                     // dd($input['payment'][0]['method']);
                     $new_coupon = $this->transactionUtil->createOrUpdatePaymentLines2($transaction, $input['payment'], $request);
                 }
-                // dd($transaction);
                 // ADD BONUS POINTS 
                 // if ($transaction->contact_id != '1') {
                 //     $objContact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
@@ -578,7 +569,6 @@ class SellPosController extends Controller
                         }
                     }
 
-
                     //Add payments to Cash Register
                     if (!$is_direct_sale && !$transaction->is_suspend && !empty($input['payment'])) {
                         $leftAmount_total = 0;
@@ -597,8 +587,7 @@ class SellPosController extends Controller
                     //Update payment status
                     $this->transactionUtil->updatePaymentStatus($transaction->id, $transaction->final_total);
 
-                    //Allocate the quantity from purchase and add mapping of
-                    //purchase & sell lines in
+                    //Allocate the quantity from purchase and add mapping of purchase & sell lines in
                     //transaction_sell_lines_purchase_lines table
                     $business_details = $this->businessUtil->getDetails($business_id);
                     $pos_settings = empty($business_details->pos_settings) ? $this->businessUtil->defaultPosSettings() : json_decode($business_details->pos_settings, true);
@@ -793,13 +782,11 @@ class SellPosController extends Controller
                     $price[$j] = (float)$current_product[0]->price;
                     $all_product++;
                 }
-                // dd($current_product);
                 // Create Product here
                 // if (!Product::where('name', $current_product[0]->name)->first()) {
                 //     $data = new Product;
                 $wproduct = $web->table('products')->where('name', $value[0]->name)->first();
                 if ($wproduct) {
-                    // dd($wproduct,$value[0]);
                     // $web_product = $web->table('products')->find($wproduct->id);
                     $input = [];
                     // $input['name'] = $current_product[0]->name;

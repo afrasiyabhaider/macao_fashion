@@ -32,6 +32,7 @@ return [
     'view_contact' => 'View Members',
     'contact_info' => ':contact info',
     'all_purchases_linked_to_this_contact' => 'All purchases related to this contact',
+    'all_bonus_linked_to_this_contact' => 'All bonus related to this contact',
     'all_sells_linked_to_this_contact' => 'All sells related to this contact',
     'total_purchase_due' => 'Total Purchase Due',
     'pay_due_amount' => 'Pay Due Amount',
@@ -40,4 +41,5 @@ return [
     'total_sale_paid' => 'Total Sale Payment',
     'total_sale_due' => 'Total Sale Due',
     'customer' => 'Members',
+    'bonus_point' => 'Bonus Point',
 ];

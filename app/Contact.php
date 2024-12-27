@@ -156,4 +156,24 @@ class Contact extends Authenticatable
 
         return  isset($value)?$value: '';
     }
+
+    public function loyaltyPointsHistories()
+    {
+        return $this->hasMany(LoyaltyPointsHistory::class);
+    }
+
+    public function totalUsedLoyaltyPoints()
+    {
+        return $this->loyaltyPointsHistories()->where('transaction_type','add')
+        ->sum('points');
+    }
+
+
+    public function totalLoyaltyPoints()
+    {
+        return $this->loyaltyPointsHistories()->where('transaction_type','consume')
+        ->sum('points');
+    }
+
+
 }

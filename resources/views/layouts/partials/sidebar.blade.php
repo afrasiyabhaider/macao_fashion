@@ -210,7 +210,12 @@
         href="{{action('ContactController@index', ['type' => 'customer'])}}"><i class="fa fa-star"></i>
         @lang('report.customer')</a></li>
 
-    <li class="{{ $request->segment(1) == 'customer-group' ? 'active' : '' }}"><a
+    <li class="{{ $request->url() == '/bonus-points' ? 'active' : '' }}"><a
+        href="{{url('/bonus-points')}}"><i class="fa fa-star"></i>
+        @lang('contact.bonus_point')
+        </a></li>
+
+    <li class="{{ $request->segment(1) == '' ? 'active' : '' }}"><a
         href="{{action('CustomerGroupController@index')}}"><i class="fa fa-users"></i>
         @lang('lang_v1.customer_groups')</a></li>
     @endcan

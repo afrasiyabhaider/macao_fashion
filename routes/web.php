@@ -64,6 +64,7 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::post('/contacts/import', 'ContactController@postImportContacts');
     Route::post('/contacts/check-contact-id', 'ContactController@checkContactId');
     Route::get('/contacts/customers', 'ContactController@getCustomers');
+    Route::get('/bonus-points', 'ContactController@bonusPointReport');
     Route::get('/contacts/saleReport/{id}', 'ContactController@saleReport');
     Route::resource('contacts', 'ContactController');
 

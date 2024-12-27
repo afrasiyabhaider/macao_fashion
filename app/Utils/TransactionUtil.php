@@ -509,15 +509,12 @@ class TransactionUtil extends Util
         $new_coupon = true;
         foreach ($payments as $payment) {
             //Check if transaction_sell_lines_id is set.
-            // dd("Hello on 472");
-            // dd($payment);
             if (!empty($payment['payment_id'])) {
                 $edit_ids[] = $payment['payment_id'];
                 $this->editPaymentLine($payment, $transaction, $uf_data);
             } else {
                 $payment_amount = (float)$payment['amount'];
                 // $payment_amount = $uf_data ? $this->num_uf($payment['amount']) : $payment['amount'];
-                // dd($payment_amount,$payment['amount']);
                 //If amount is 0 then skip.
                 // if ($payment_amount != 0) {
                 if (true) {
@@ -706,10 +703,8 @@ class TransactionUtil extends Util
                             'amount' => $payment_amount,
                             'method' => 'coupon'
                         ];
-                        // dd($new_coupon);
                     } else if ($payment['method'] == "bonus_points") {
-                        // dd($payment);
-                        $objContact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
+                        $contact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
                         $discount = config('app.discount_amount');
                         $request_bonus_point = $payment['bonus_points'];
                         $amount_bonus_point = $request_bonus_point * $discount;
@@ -720,22 +715,17 @@ class TransactionUtil extends Util
 
                         // $leftAmount = $payment_amount - ($transaction->final_total - $totalAmountByRows);
 
-                        $newPoints = $left_amount_after_discount + ($objContact->bonus_points - $request_bonus_point);
+                        $newPoints = $left_amount_after_discount + ($contact->bonus_points - $request_bonus_point);
                         // $newPoints = $objContact->bonus_points - $leftAmount;
-                        $newUsedPoints = $objContact->used_points + $request_bonus_point;
-
-                        // dd($amount_bonus_point, $transaction->final_total, $leftAmount, $left_amount_after_discount, $newPoints, $newUsedPoints, $totalAmountByRows);
-
+                        $newUsedPoints = $contact->used_points + $request_bonus_point;
                         // $newUsedPoints = $objContact->used_points + $payment_amount;
 
-                        $dataUpdate = ['bonus_points' => $objContact->bonus_points - $request_bonus_point, 'used_points' => $newUsedPoints];
-
                         $currentDate = date('Y-m-d');
-                        if ($newPoints > 0) {
-                            $dataUpdate['bp_expiry'] = date("Y-m-d", strtotime($currentDate . "+6 months"));
-                        }
-                        $dataWhere = ['business_id' => $transaction->business_id, 'id' => $objContact->id];
-                        Contact::where($dataWhere)->update($dataUpdate);
+                        $contact->update([
+                            'bonus_points' => $contact->bonus_points - $request_bonus_point, 'used_points' => $newUsedPoints,
+                            'bp_expiry' => $newPoints > 0 ? date("Y-m-d", strtotime($currentDate . "+6 months")) : $contact->bp_expiry
+                        ]);
+
                         $payment_data['is_convert'] = 'bonus_points';
                         $payment_data = [
                             'amount' => $amount_bonus_point,
@@ -744,7 +734,6 @@ class TransactionUtil extends Util
                         ];
                     }
                     if ($cash && $card) {
-                        // dd("hello");
                         $payments_formatted[] = new TransactionPayment($payment_data);
                     }
                     $account_transactions[$c] = [];
@@ -783,52 +772,63 @@ class TransactionUtil extends Util
         }
 
         return $new_coupon;
-        // return true;
     }
     public function createOrUpdatePaymentLines2($transaction, $payments, $request, $business_id = null, $user_id = null, $uf_data = true)
     {
-        $request_bonus_point = (int)$request->cust_bonus_point;
 
+        $request_bonus_point = (int)$request->cust_bonus_point;
         $custom_discount_amount = 0;
-        // dd($payments);
         foreach ($request['products'] as $key => $product_check) {
             if ($product_check['line_discount_amount'] != '0') {
                 $custom_discount_check = true;
             } else {
                 $custom_discount_amount += $product_check['unit_price'];
             }
-            // dd($product_check);
         }
         $leftAmount_total = 0;
 
         if ($request_bonus_point != 0) {
-            $objContact = Contact::where('business_id', $transaction->business_id)
-                ->where("id", $transaction->contact_id)->first();
+            $contact = Contact::where('business_id', $transaction->business_id)
+                ->where("id", $transaction->contact_id)
+                ->with('loyaltyPointsHistories')
+                ->first();
             $discount = config('app.discount_amount');
-
-            // request bonus point
-            // $request_bonus_point = $request->cust_bonus_point;
             // amount deduct on points
+            // 1 point is equal to 1 pound or euro
             $amount_bonus_point = $request_bonus_point;
             // $amount_bonus_point = $request_bonus_point * $discount;
+            // in request request_bonus_point is value in price  1 = 20 bonus_point
             $bonus_point_on_amount = $request_bonus_point * 20;
             // left amount 
             $leftAmount = $transaction->final_total - $amount_bonus_point;
             // used points
-            $newUsedPoints = $objContact->used_points + $request_bonus_point;
-            // dd($request_bonus_point,$amount_bonus_point,$leftAmount);
-            $dataUpdate = ['bonus_points' => $objContact->bonus_points - $bonus_point_on_amount, 'used_points' => $newUsedPoints];
-            $currentDate = date('Y-m-d');
-            $dataWhere = ['business_id' => $transaction->business_id, 'id' => $objContact->id];
+            $newUsedPoints = $contact->used_points + $request_bonus_point;
 
-            Contact::where($dataWhere)->update($dataUpdate);
+        // dd( $newUsedPoints, $leftAmount,      $bonus_point_on_amount);
+
+            $contact->update([
+                'bonus_points' => $contact->bonus_points - $bonus_point_on_amount, 
+                'used_points' => $newUsedPoints
+            ]);
+
+            // $contact->loyaltyPointsHistories()->create([
+            //     'points' => $request_bonus_point,
+            //     'transaction_type' => 'add',
+            //     'description' => '',
+            // ]);
+
+            $contact->loyaltyPointsHistories()->create([
+                'points' => $request_bonus_point,
+                'transaction_type' => 'consume',
+                'description' => '',
+            ]);
+
             $leftAmount_total = $amount_bonus_point;
             $transaction->update([
                 'final_total' => $leftAmount,
             ]);
         }
 
-        $contact_id = $business_id;
         $payments_formatted = [];
         $edit_ids = [0];
         $account_transactions = [];
@@ -843,15 +843,12 @@ class TransactionUtil extends Util
         }
         $c = 0;
         $totalAmountByRows = 0;
-        // dd($payments);
         $cash = true;
         $card = true;
         $new_coupon = true;
-        // dd($payments);
+
         foreach ($payments as $payment) {
             //Check if transaction_sell_lines_id is set.
-            // dd("Hello on 472");
-            // dd($payment);
             $direct_cash = $request->direct_cash;
             if (!empty($payment['payment_id'])) {
                 $edit_ids[] = $payment['payment_id'];
@@ -906,16 +903,10 @@ class TransactionUtil extends Util
                             'payment_ref_no' => $payment_ref_no,
                             'account_id' => !empty($payment['account_id']) ? $payment['account_id'] : null
                         ];
-                        // if($request->discount_type){
-
-                        // }\
-                        // dd(1);
-
                         $payments_formatted[] = new TransactionPayment($payment_data);
                         $cash = false;
                     }
                     if ($payment['method'] === 'card') {
-                        // dd(2);
                         $payment_data = [
                             // 'amount' => $transaction->final_total,
                             // 'amount' => $payment_amount != 0.00 ? $payment_amount - $leftAmount_total : $payment_amount,
@@ -1086,10 +1077,8 @@ class TransactionUtil extends Util
                             // 'method' => $payment['method'],
                             'is_convert' => 'coupon',
                         ];
-                        // dd($new_coupon);
                     } else if ($payment['method'] === "bonus_points") {
-                        // dd($payment);
-                        $objContact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
+                        $contact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
                         $discount = config('app.discount_amount');
                         $request_bonus_point = $payment['bonus_points'];
                         // $request_bonus_point = $request->cust_bonus_point;
@@ -1101,23 +1090,16 @@ class TransactionUtil extends Util
 
                         // $leftAmount = $payment_amount - ($transaction->final_total - $totalAmountByRows);
 
-                        $newPoints = $left_amount_after_discount + ($objContact->bonus_points - $request_bonus_point);
+                        $newPoints = $left_amount_after_discount + ($contact->bonus_points - $request_bonus_point);
                         // $newPoints = $objContact->bonus_points - $leftAmount;
-                        $newUsedPoints = $objContact->used_points + $request_bonus_point;
-
-                        // dd($amount_bonus_point, $transaction->final_total, $leftAmount, $left_amount_after_discount, $newPoints, $newUsedPoints, $totalAmountByRows);
-
+                        $newUsedPoints = $contact->used_points + $request_bonus_point;
                         // $newUsedPoints = $objContact->used_points + $payment_amount;
-
-                        $dataUpdate = ['bonus_points' => $objContact->bonus_points - $request_bonus_point, 'used_points' => $newUsedPoints];
-
-
                         $currentDate = date('Y-m-d');
-                        if ($newPoints > 0) {
-                            $dataUpdate['bp_expiry'] = date("Y-m-d", strtotime($currentDate . "+6 months"));
-                        }
-                        $dataWhere = ['business_id' => $transaction->business_id, 'id' => $objContact->id];
-                        Contact::where($dataWhere)->update($dataUpdate);
+                
+                        $contact->update([
+                            'bonus_points' => $contact->bonus_points - $request_bonus_point, 'used_points' => $newUsedPoints,
+                            'bp_expiry' => $newPoints > 0 ? date("Y-m-d", strtotime($currentDate . "+6 months")):$contact->bp_expiry,
+                        ]);
                         $transaction->update([
                             'final_total' => $leftAmount,
                         ]);
@@ -1129,7 +1111,6 @@ class TransactionUtil extends Util
                         ];
                     }
                     if ($cash && $card) {
-                        // dd("hello");
                         $payments_formatted[] = new TransactionPayment($payment_data);
                     }
                     $account_transactions[$c] = [];
@@ -1139,11 +1120,9 @@ class TransactionUtil extends Util
                         $account_transactions[$c] = $payment_data;
                     }
 
-
                     $c++;
                     $totalAmountByRows += $payment_amount;
                 }
-                // }
             }
         }
 
@@ -1166,30 +1145,35 @@ class TransactionUtil extends Util
         });
         // todo commment by hamza at 15 Oct
 
-        // dd(!$hasGiftCard && empty($hasBonusPoints) && empty($hasCoupon));
         // if ($request->discount_type === 'percentage' && $cash != true || $card != true) {
         if ($request->discount_type === 'percentage' && !$hasGiftCard && empty($hasBonusPoints) && empty($hasCoupon)) {
         // todo commment by hamza at 16 Oct
             // if ($request->direct_cash === '1') {
-                $objContact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
-                $discount = config('app.discount_amount');
-                //  add bonus point
-                // dd(100);
-                // $discount = $objContact->discount;
-                $leftAmount = $custom_discount_amount;
-                // $leftAmount = $amount_bonus_point - ($transaction->final_total - $totalAmountByRows);
-                $left_amount_after_discount = $leftAmount * $discount;
-                $total_amount_bunus_point = $left_amount_after_discount * 20;
-                // dd($leftAmount, $left_amount_after_discount, $discount);
-                // $leftAmount = $payment_amount - ($transaction->final_total - $totalAmountByRows);
-                $newPoints = $objContact->bonus_points + $total_amount_bunus_point;
-                // $newPoints = $objContact->bonus_points - $leftAmount;
-                $dataUpdate = ['bonus_points' => $newPoints];
-                $dataWhere = ['business_id' => $transaction->business_id, 'id' => $objContact->id];
-                if ($transaction->contact_id != '1') {
-                    Contact::where($dataWhere)->update($dataUpdate);
-                }
-            // }
+            $contact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
+            $discount = config('app.discount_amount');
+            //  add bonus point
+            $leftAmount = $custom_discount_amount;
+            // $leftAmount = $amount_bonus_point - ($transaction->final_total - $totalAmountByRows);
+            $left_amount_after_discount = $leftAmount * $discount;
+            $total_amount_bunus_point = $left_amount_after_discount * 20;
+            // $leftAmount = $payment_amount - ($transaction->final_total - $totalAmountByRows);
+            $newPoints = $contact->bonus_points + $total_amount_bunus_point;
+            // $newPoints = $objContact->bonus_points - $leftAmount;
+
+            
+            // this is beacuse 1 is id for admin me walk customer adnan
+            if ($transaction->contact_id != '1') {
+
+                $contact->loyaltyPointsHistories()->create([
+                    'points' => $total_amount_bunus_point,
+                    'transaction_type' => 'add',
+                    'description' => '',
+                ]);
+                
+                $contact->update([
+                    'bonus_points' => $newPoints
+                ]);
+            }
         }
 
         //Delete the payment lines removed.
@@ -1206,7 +1190,6 @@ class TransactionUtil extends Util
 
         if (!empty($payments_formatted)) {
             $transaction->payment_lines()->saveMany($payments_formatted);
-
             foreach ($transaction->payment_lines as $key => $value) {
                 if (!empty($account_transactions[$key])) {
                     event(new TransactionPaymentAdded($value, $account_transactions[$key]));
@@ -1215,7 +1198,6 @@ class TransactionUtil extends Util
         }
 
         return $new_coupon;
-        // return true;
     }
 
     // return function
@@ -1224,20 +1206,17 @@ class TransactionUtil extends Util
         $request_bonus_point = (int)$request->cust_bonus_point;
 
         $custom_discount_amount = 0;
-        // dd($transaction);
-
-        // dd(1);
         foreach ($request['products'] as $key => $product_check) {
             if (isset($product_check['line_discount_amount']) != '0') {
                 $custom_discount_check = true;
             } else {
                 $custom_discount_amount += isset($product_check['unit_price']);
             }
-            // dd($product_check);
         }
         $leftAmount_total = 0;
         if ($request_bonus_point != 0) {
-            $objContact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
+            $contact = Contact::where('business_id', $transaction->business_id)
+            ->find($transaction->contact_id)->first();
             $discount = config('app.discount_amount');
             // request bonus point
             // $request_bonus_point = $request->cust_bonus_point;
@@ -1248,19 +1227,26 @@ class TransactionUtil extends Util
             // left amount 
             $leftAmount = $transaction->final_total - $amount_bonus_point;
             // used points
-            $newUsedPoints = $objContact->used_points + $request_bonus_point;
-            // dd($request_bonus_point,$amount_bonus_point,$leftAmount);
-            $dataUpdate = ['bonus_points' => $objContact->bonus_points - $bonus_point_on_amount, 'used_points' => $newUsedPoints];
+            $newUsedPoints = $contact->used_points + $request_bonus_point;
             $currentDate = date('Y-m-d');
-            $dataWhere = ['business_id' => $transaction->business_id, 'id' => $objContact->id];
-            Contact::where($dataWhere)->update($dataUpdate);
+            
+            $contact->update( [
+                'bonus_points' => $contact->bonus_points - $bonus_point_on_amount, 
+                'used_points' => $newUsedPoints
+            ]);
+
+
+            $contact->loyaltyPointsHistories()->create([
+                'points' => $request_bonus_point,
+                'transaction_type' => 'consume',
+                'description' => '',
+            ]);
+
             $leftAmount_total = $amount_bonus_point;
             $transaction->update([
                 'final_total' => $leftAmount,
             ]);
         }
-
-        $contact_id = $business_id;
         $payments_formatted = [];
         $edit_ids = [0];
         $account_transactions = [];
@@ -1275,15 +1261,11 @@ class TransactionUtil extends Util
         }
         $c = 0;
         $totalAmountByRows = 0;
-        // dd($payments);
         $cash = true;
         $card = true;
         $new_coupon = true;
-        // dd($payments);
         foreach ($payments as $payment) {
             //Check if transaction_sell_lines_id is set.
-            // dd("Hello on 472");
-            // dd($payment);
             if (!empty($payment['payment_id'])) {
                 $edit_ids[] = $payment['payment_id'];
                 $this->editPaymentLine($payment, $transaction, $uf_data);
@@ -1291,7 +1273,6 @@ class TransactionUtil extends Util
                 $payment_amount = (float)$payment['amount'];
                 // $payment_amount =$leftAmount_total!=0? (float)$leftAmount_total:(float)$payment['amount'];
                 // $payment_amount = $uf_data ? $this->num_uf($payment['amount']) : $payment['amount'];
-                // dd($payment_amount,$payment['amount']);
                 //If amount is 0 then skip.
                 // if ($payment_amount != 0) {
                 if (true) {
@@ -1302,9 +1283,7 @@ class TransactionUtil extends Util
                     $ref_count = $this->setAndGetReferenceCount($prefix_type, $business_id);
                     //Generate reference number
                     $payment_ref_no = $this->generateReferenceNumber($prefix_type, $ref_count, $business_id);
-                    // dd($payment);
                     if ($payment['method'] === 'cash') {
-                        // dd('cash');
                         $payment_data = [
                             // 'amount' => $transaction->final_total,
                             'amount' => $payment_amount != 0.00 ? $payment_amount - $leftAmount_total : $payment_amount,
@@ -1331,16 +1310,10 @@ class TransactionUtil extends Util
                             'payment_ref_no' => $payment_ref_no,
                             'account_id' => !empty($payment['account_id']) ? $payment['account_id'] : null
                         ];
-                        // if($request->discount_type){
-
-                        // }\
-                        // dd(1);
-
                         $payments_formatted[] = new TransactionPayment($payment_data);
                         $cash = false;
                     }
                     if ($payment['method'] === 'card') {
-                        // dd(2);
                         $payment_data = [
                             // 'amount' => $transaction->final_total,
                             'amount' => $payment_amount != 0.00 ? $payment_amount - $leftAmount_total : $payment_amount,
@@ -1402,7 +1375,6 @@ class TransactionUtil extends Util
                         $leftAmount = $objGiftCards->value - ($transaction->final_total - $totalAmountByRows);
                         $dataUpdate = ['consume_date' => date('Y-m-d H:i:s'), 'transaction_id' => $transaction->id];
                         if ($leftAmount > 0) {
-                            // ['name', 'barcode', 'business_id', 'gift_card_id', 'value', 'barcode_type', 'isActive', 'transaction_id','start_date', 'created_by', 'isUsed'] 
                             $crCoupon = array(
                                 "name" => $objGiftCards->name . " Coupon ",
                                 "barcode" => $this->RandomId(),
@@ -1432,7 +1404,6 @@ class TransactionUtil extends Util
                         })->update($dataUpdate);
                         $payment_data['is_convert'] = 'gift_card';
                     } else if ($payment['method'] === "coupon") {
-                        // dd($payment);
                         $getCoupon = $payment['coupon'];
                         $attributes = ['name' => $getCoupon, 'barcode' => $getCoupon];
                         $objCoupon = Coupon::where(function ($query) use ($attributes) {
@@ -1501,38 +1472,39 @@ class TransactionUtil extends Util
                             'amount' => $payment_amount,
                             'method' => 'coupon'
                         ];
-                        // dd($new_coupon);
                     } else if ($payment['method'] === "bonus_points") {
-                        // dd($payment);
-                        $objContact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
+                        $contact = Contact::where('business_id', $transaction->business_id)
+                        ->find($transaction->contact_id);
+
                         $discount = config('app.discount_amount');
                         $request_bonus_point = $payment['bonus_points'];
-                        // $request_bonus_point = $request->cust_bonus_point;
                         $amount_bonus_point = $request_bonus_point * $discount;
 
-                        $leftAmount = $transaction->final_total - $amount_bonus_point;
                         // $leftAmount = $amount_bonus_point - ($transaction->final_total - $totalAmountByRows);
-                        $left_amount_after_discount = $leftAmount / $discount;
-
                         // $leftAmount = $payment_amount - ($transaction->final_total - $totalAmountByRows);
 
-                        $newPoints = $left_amount_after_discount + ($objContact->bonus_points - $request_bonus_point);
+                        $leftAmount = $transaction->final_total - $amount_bonus_point;
+                        $left_amount_after_discount = $leftAmount / $discount;
+
+
+                        $newPoints = $left_amount_after_discount + ($contact->bonus_points - $request_bonus_point);
+                        $newUsedPoints = $contact->used_points + $request_bonus_point;
+
                         // $newPoints = $objContact->bonus_points - $leftAmount;
-                        $newUsedPoints = $objContact->used_points + $request_bonus_point;
-
-                        // dd($amount_bonus_point, $transaction->final_total, $leftAmount, $left_amount_after_discount, $newPoints, $newUsedPoints, $totalAmountByRows);
-
                         // $newUsedPoints = $objContact->used_points + $payment_amount;
 
-                        $dataUpdate = ['bonus_points' => $objContact->bonus_points - $request_bonus_point, 'used_points' => $newUsedPoints];
-
-
                         $currentDate = date('Y-m-d');
-                        if ($newPoints > 0) {
-                            $dataUpdate['bp_expiry'] = date("Y-m-d", strtotime($currentDate . "+6 months"));
-                        }
-                        $dataWhere = ['business_id' => $transaction->business_id, 'id' => $objContact->id];
-                        Contact::where($dataWhere)->update($dataUpdate);
+                        $contact->update([
+                            'bonus_points' => $contact->bonus_points - $request_bonus_point, 'used_points' => $newUsedPoints,
+                            'bp_expiry' => $newPoints > 0?  date("Y-m-d", strtotime($currentDate . "+6 months")):  $contact->bp_expiry,
+                        ]);
+                        //todo
+                        $contact->loyaltyPointsHistories()->create([
+                            'points' => $request_bonus_point,
+                            'transaction_type' => 'consume',
+                            'description' => '',
+                        ]);
+                     
                         $transaction->update([
                             'final_total' => $leftAmount,
                         ]);
@@ -1545,11 +1517,10 @@ class TransactionUtil extends Util
                     }
                     if ($transaction['final_total'] < 0) {
                         // $getCoupon = $payment['coupon'];
-
                         $crCoupon = array(
                             "name" =>  " Sell Return",
                             "barcode" => $this->RandomId(),
-                            "barcode" => 1,
+                            // "barcode" => 1,
                             "business_id" => request()->session()->get('user.business_id'),
                             // "coupon_id" => $objCoupon->barcode,
                             "value" => abs($transaction['final_total']),
@@ -1577,10 +1548,8 @@ class TransactionUtil extends Util
                         $transaction->update([
                             'final_total' => 0.00,
                         ]);
-                        // dd($new_coupon);
                     };
                     if ($cash && $card) {
-                        // dd("hello");
                         $payments_formatted[] = new TransactionPayment($payment_data);
                     }
                     $account_transactions[$c] = [];
@@ -1590,412 +1559,30 @@ class TransactionUtil extends Util
                         $account_transactions[$c] = $payment_data;
                     }
 
-
                     $c++;
                     $totalAmountByRows += $payment_amount;
                 }
-                // }
             }
         }
         if ($request->discount_type === 'percentage' && $cash != true || $card != true) {
-            $objContact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
+            $contact = Contact::where('business_id', $transaction->business_id)
+            ->find($transaction->contact_id);
+
             $discount = config('app.discount_amount');
             //  add bonus point
-            // dd();
             // $discount = $objContact->discount;
             $leftAmount = $custom_discount_amount;
             // $leftAmount = $amount_bonus_point - ($transaction->final_total - $totalAmountByRows);
             $left_amount_after_discount = $leftAmount * $discount;
             $total_amount_bunus_point = $left_amount_after_discount * 20;
-            // dd($leftAmount, $left_amount_after_discount, $discount);
             // $leftAmount = $payment_amount - ($transaction->final_total - $totalAmountByRows);
-            $newPoints = $objContact->bonus_points + $total_amount_bunus_point;
+            $newPoints = $contact->bonus_points + $total_amount_bunus_point;
             // $newPoints = $objContact->bonus_points - $leftAmount;
-            $dataUpdate = ['bonus_points' => $newPoints];
-            $dataWhere = ['business_id' => $transaction->business_id, 'id' => $objContact->id];
-            Contact::where($dataWhere)->update($dataUpdate);
-        }
-        //Delete the payment lines removed.
-        if (!empty($edit_ids)) {
-            $deleted_transaction_payments = $transaction->payment_lines()->whereNotIn('id', $edit_ids)->get();
-            $transaction->payment_lines()->whereNotIn('id', $edit_ids)->delete();
-            //Fire delete transaction payment event
-            foreach ($deleted_transaction_payments as $deleted_transaction_payment) {
-                if (!empty($deleted_transaction_payment->account_id)) {
-                    event(new TransactionPaymentDeleted($deleted_transaction_payment->id, $deleted_transaction_payment->account_id));
-                }
-            }
-        }
 
-        if (!empty($payments_formatted)) {
-            $transaction->payment_lines()->saveMany($payments_formatted);
-
-            foreach ($transaction->payment_lines as $key => $value) {
-                if (!empty($account_transactions[$key])) {
-                    event(new TransactionPaymentAdded($value, $account_transactions[$key]));
-                }
-            }
-        }
-
-        return $new_coupon;
-        // return true;
-    }
-
-    public function createOrUpdatePaymentLines3OLD($transaction, $payments, $request, $business_id = null, $user_id = null, $uf_data = true)
-    {
-        $request_bonus_point = (int)$request->cust_bonus_point;
-
-        $custom_discount_amount = 0;
-        // dd($request['products']);
-        foreach ($request['products'] as $key => $product_check) {
-            if (isset($product_check['line_discount_amount']) != '0') {
-                $custom_discount_check = true;
-            } else {
-                $custom_discount_amount += isset($product_check['unit_price']);
-            }
-            // dd($product_check);
-        }
-        $leftAmount_total = 0;
-        if ($request_bonus_point != 0) {
-            $objContact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
-            $discount = config('app.discount_amount');
-            // request bonus point
-            // $request_bonus_point = $request->cust_bonus_point;
-            // amount deduct on points
-            $amount_bonus_point = $request_bonus_point;
-            // $amount_bonus_point = $request_bonus_point * $discount;
-            $bonus_point_on_amount = $request_bonus_point * 20;
-            // left amount 
-            $leftAmount = $transaction->final_total - $amount_bonus_point;
-            // used points
-            $newUsedPoints = $objContact->used_points + $request_bonus_point;
-            // dd($request_bonus_point,$amount_bonus_point,$leftAmount);
-            $dataUpdate = ['bonus_points' => $objContact->bonus_points - $bonus_point_on_amount, 'used_points' => $newUsedPoints];
-            $currentDate = date('Y-m-d');
-            $dataWhere = ['business_id' => $transaction->business_id, 'id' => $objContact->id];
-            Contact::where($dataWhere)->update($dataUpdate);
-            $leftAmount_total = $amount_bonus_point;
-            $transaction->update([
-                'final_total' => $leftAmount,
+            $contact->update([
+                'bonus_points' => $newPoints
             ]);
         }
-
-        $contact_id = $business_id;
-        $payments_formatted = [];
-        $edit_ids = [0];
-        $account_transactions = [];
-
-        if (!is_object($transaction)) {
-            $transaction = Transaction::findOrFail($transaction);
-        }
-
-        //If status is draft don't add payment
-        if ($transaction->status == 'draft') {
-            return true;
-        }
-        $c = 0;
-        $totalAmountByRows = 0;
-        // dd($payments);
-        $cash = true;
-        $card = true;
-        $new_coupon = true;
-        // dd($payments);
-        foreach ($payments as $payment) {
-            //Check if transaction_sell_lines_id is set.
-            // dd("Hello on 472");
-            // dd($payment);
-            if (!empty($payment['payment_id'])) {
-                $edit_ids[] = $payment['payment_id'];
-                $this->editPaymentLine($payment, $transaction, $uf_data);
-            } else {
-                $payment_amount = (float)$payment['amount'];
-                // $payment_amount =$leftAmount_total!=0? (float)$leftAmount_total:(float)$payment['amount'];
-                // $payment_amount = $uf_data ? $this->num_uf($payment['amount']) : $payment['amount'];
-                // dd($payment_amount,$payment['amount']);
-                //If amount is 0 then skip.
-                // if ($payment_amount != 0) {
-                if (true) {
-                    $prefix_type = 'sell_payment';
-                    if ($transaction->type == 'purchase') {
-                        $prefix_type = 'purchase_payment';
-                    }
-                    $ref_count = $this->setAndGetReferenceCount($prefix_type, $business_id);
-                    //Generate reference number
-                    $payment_ref_no = $this->generateReferenceNumber($prefix_type, $ref_count, $business_id);
-                    // dd($payment);
-                    if ($payment['method'] === 'cash') {
-
-                        $payment_data = [
-                            // 'amount' => $transaction->final_total,
-                            'amount' => $payment_amount != 0.00 ? $payment_amount - $leftAmount_total : $payment_amount,
-                            // 'amount' => $payment_amount,
-                            'method' => 'cash',
-                            'business_id' => $transaction->business_id,
-                            'is_return' => isset($payment['is_return']) ? $payment['is_return'] : 0,
-                            'gift_card' => isset($payment['gift_card']) ? isset($payment['gift_card']) : null,
-                            'coupon' => $payment['coupon'],
-                            'bonus_points' => $request_bonus_point,
-                            // 'bonus_points' => $payment['bonus_points'],
-                            'card_transaction_number' => $payment['card_transaction_number'],
-                            'card_number' => $payment['card_number'],
-                            'card_type' => $payment['card_type'],
-                            'card_holder_name' => $payment['card_holder_name'],
-                            'card_month' => $payment['card_month'],
-                            'card_security' => $payment['card_security'],
-                            'cheque_number' => $payment['cheque_number'],
-                            'bank_account_number' => $payment['bank_account_number'],
-                            'note' => $payment['note'],
-                            'paid_on' => !empty($payment['paid_on']) ? $payment['paid_on'] : \Carbon::now()->toDateTimeString(),
-                            'created_by' => empty($user_id) ? auth()->user()->id : $user_id,
-                            'payment_for' => $transaction->contact_id,
-                            'payment_ref_no' => $payment_ref_no,
-                            'account_id' => !empty($payment['account_id']) ? $payment['account_id'] : null
-                        ];
-                        // if($request->discount_type){
-
-                        // }\
-                        // dd(1);
-
-                        $payments_formatted[] = new TransactionPayment($payment_data);
-                        $cash = false;
-                    }
-                    if ($payment['method'] === 'card') {
-                        // dd(2);
-                        $payment_data = [
-                            // 'amount' => $transaction->final_total,
-                            'amount' => $payment_amount != 0.00 ? $payment_amount - $leftAmount_total : $payment_amount,
-                            // 'amount' => $payment_amount,
-                            'method' => 'card',
-                            'business_id' => $transaction->business_id,
-                            'is_return' => isset($payment['is_return']) ? $payment['is_return'] : 0,
-                            'gift_card' => isset($payment['gift_card']) ? isset($payment['gift_card']) : null,
-                            'coupon' => $payment['coupon'],
-                            'bonus_points' => $request_bonus_point,
-                            // 'bonus_points' => $payment['bonus_points'],
-                            'card_transaction_number' => $payment['card_transaction_number'],
-                            'card_number' => 1122334455,
-                            'card_type' => 'Master/Visa',
-                            'card_holder_name' => 'Customer',
-                            'card_month' => Carbon::now()->format('M'),
-                            'card_security' => 3344,
-                            'cheque_number' => $payment['cheque_number'],
-                            'bank_account_number' => $payment['bank_account_number'],
-                            'note' => $payment['note'],
-                            'paid_on' => !empty($payment['paid_on']) ? $payment['paid_on'] : Carbon::now()->toDateTimeString(),
-                            'created_by' => empty($user_id) ? auth()->user()->id : $user_id,
-                            'payment_for' => $transaction->contact_id,
-                            'payment_ref_no' => $payment_ref_no,
-                            'account_id' => !empty($payment['account_id']) ? $payment['account_id'] : null
-                        ];
-                        $payments_formatted[] = new TransactionPayment($payment_data);
-                        $card = false;
-                    }
-                    if ($payment['method'] === 'custom_pay_1') {
-                        $payment_data['transaction_no'] = $payment['transaction_no_1'];
-                    } elseif ($payment['method'] === 'custom_pay_2') {
-                        $payment_data['transaction_no'] = $payment['transaction_no_2'];
-                    } elseif ($payment['method'] === 'custom_pay_3') {
-                        $payment_data['transaction_no'] = $payment['transaction_no_3'];
-                    }
-                    $payment_data['is_convert'] = 'no';
-
-                    if ($payment['method'] === "gift_card") {
-                        $getGiftCard = $payment['gift_card'];
-                        $attributes = ['name' => $getGiftCard, 'barcode' => $getGiftCard];
-                        $objGiftCards = GiftCard::where(function ($query) use ($attributes) {
-                            foreach ($attributes as $key => $value) {
-                                //you can use orWhere the first time, dosn't need to be ->where
-                                $query->orWhere($key, $value);
-                            }
-                        })->select(
-                            'gift_cards.id',
-                            'gift_cards.name',
-                            'gift_cards.value',
-                            'gift_cards.barcode',
-                            'gift_cards.start_date',
-                            'gift_cards.expiry_date',
-                            'gift_cards.details',
-                            'gift_cards.isActive',
-                            'gift_cards.isUsed'
-                        )->first();
-
-                        $leftAmount = $objGiftCards->value - ($transaction->final_total - $totalAmountByRows);
-                        $dataUpdate = ['consume_date' => date('Y-m-d H:i:s'), 'transaction_id' => $transaction->id];
-                        if ($leftAmount > 0) {
-                            // ['name', 'barcode', 'business_id', 'gift_card_id', 'value', 'barcode_type', 'isActive', 'transaction_id','start_date', 'created_by', 'isUsed'] 
-                            $crCoupon = array(
-                                "name" => $objGiftCards->name . " Coupon ",
-                                "barcode" => $this->RandomId(),
-                                "business_id" => request()->session()->get('user.business_id'),
-                                "gift_card_id" => $objGiftCards->id,
-                                "value" => $leftAmount,
-                                "orig_value" => $leftAmount,
-                                "barcode_type" => "C128",
-                                "isActive" => "active",
-                                "transaction_id" => $transaction->id,
-                                "start_date" => date("Y-m-d H:i:s"),
-                                "created_by" => request()->session()->get('user.id'),
-                                "isUsed" => "0"
-                            );
-                            $objCoupon = Coupon::create($crCoupon);
-                            $payment_data['is_convert'] = 'gift_card';
-                            $dataUpdate['isActive'] = "consumed";
-                        } else {
-                            $dataUpdate['isActive'] = "consumed";
-                        }
-
-                        GiftCard::where(function ($query) use ($attributes) {
-                            foreach ($attributes as $key => $value) {
-                                //you can use orWhere the first time, dosn't need to be ->where
-                                $query->orWhere($key, $value);
-                            }
-                        })->update($dataUpdate);
-                        $payment_data['is_convert'] = 'gift_card';
-                    } else if ($payment['method'] === "coupon") {
-                        $getCoupon = $payment['coupon'];
-                        $attributes = ['name' => $getCoupon, 'barcode' => $getCoupon];
-                        $objCoupon = Coupon::where(function ($query) use ($attributes) {
-                            foreach ($attributes as $key => $value) {
-                                //you can use orWhere the first time, dosn't need to be ->where
-                                $query->orWhere($key, $value);
-                            }
-                        })
-                            ->select(
-                                'coupons.id',
-                                'coupons.name',
-                                'coupons.value',
-                                'coupons.orig_value',
-                                'coupons.barcode',
-                                'coupons.start_date',
-                                'coupons.isActive',
-                                'coupons.transaction_id',
-                                'coupons.details',
-                                'coupons.isUsed'
-                            )->first();
-
-                        $leftAmount = $objCoupon->value - ($transaction->final_total - $totalAmountByRows);
-                        $upTransaction = $objCoupon->transaction_id . "," . $transaction->id;
-                        $upDetails = $objCoupon->details . "<br/> Used At " . date("Y-m-d h:i A");
-                        $dataUpdate = [
-                            'transaction_id' => $upTransaction,
-                            'details' => $upDetails
-                        ];
-                        if ($leftAmount <= 0) {
-                            $dataUpdate['value'] = 0;
-                            $dataUpdate['isActive'] = "consumed";
-                            $dataUpdate['isUsed'] = $objCoupon->isUsed + 1;
-                        } else {
-                            $dataUpdate['value'] = $leftAmount;
-                            $dataUpdate['isActive'] = "consumed";
-                            $dataUpdate['isUsed'] = $objCoupon->isUsed + 1;
-
-                            $crCoupon = array(
-                                "name" => $objCoupon->name . " - Re ",
-                                "barcode" => $this->RandomId(),
-                                "business_id" => request()->session()->get('user.business_id'),
-                                "coupon_id" => $objCoupon->barcode,
-                                "value" => $leftAmount,
-                                "orig_value" => $leftAmount,
-                                "barcode_type" => "C128",
-                                "isActive" => "active",
-                                "start_date" => date("Y-m-d H:i:s"),
-                                "created_by" => request()->session()->get('user.id'),
-                                "details" => $objCoupon->barcode . " Used and Generated New Coupon <br/> ",
-                                "isUsed" => "0"
-                            );
-                            $new_coupon = Coupon::create($crCoupon);
-                            //for auto barcode 
-                            if (!empty($crCoupon['barcode']) && $new_coupon->barcode == 1) {
-                                $barcode = $this->productUtil->generateProductSku($new_coupon->id);
-                                $new_coupon->barcode = $barcode;
-                            }
-                            $new_coupon->save();
-                        }
-                        $payment_data['is_convert'] = 'coupon';
-                        $cpn = Coupon::where('coupons.id', $objCoupon->id)->update($dataUpdate);
-                        $new_coupon = Coupon::where('coupons.id', $objCoupon->id)->first();
-                        $payment_data = [
-                            'amount' => $payment_amount,
-                            'method' => 'coupon'
-                        ];
-                        // dd($new_coupon);
-                    } else if ($payment['method'] === "bonus_points") {
-                        // dd($payment);
-                        $objContact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
-                        $discount = config('app.discount_amount');
-                        $request_bonus_point = $payment['bonus_points'];
-                        // $request_bonus_point = $request->cust_bonus_point;
-                        $amount_bonus_point = $request_bonus_point * $discount;
-
-                        $leftAmount = $transaction->final_total - $amount_bonus_point;
-                        // $leftAmount = $amount_bonus_point - ($transaction->final_total - $totalAmountByRows);
-                        $left_amount_after_discount = $leftAmount / $discount;
-
-                        // $leftAmount = $payment_amount - ($transaction->final_total - $totalAmountByRows);
-
-                        $newPoints = $left_amount_after_discount + ($objContact->bonus_points - $request_bonus_point);
-                        // $newPoints = $objContact->bonus_points - $leftAmount;
-                        $newUsedPoints = $objContact->used_points + $request_bonus_point;
-
-                        // dd($amount_bonus_point, $transaction->final_total, $leftAmount, $left_amount_after_discount, $newPoints, $newUsedPoints, $totalAmountByRows);
-
-                        // $newUsedPoints = $objContact->used_points + $payment_amount;
-
-                        $dataUpdate = ['bonus_points' => $objContact->bonus_points - $request_bonus_point, 'used_points' => $newUsedPoints];
-
-
-                        $currentDate = date('Y-m-d');
-                        if ($newPoints > 0) {
-                            $dataUpdate['bp_expiry'] = date("Y-m-d", strtotime($currentDate . "+6 months"));
-                        }
-                        $dataWhere = ['business_id' => $transaction->business_id, 'id' => $objContact->id];
-                        Contact::where($dataWhere)->update($dataUpdate);
-                        $transaction->update([
-                            'final_total' => $leftAmount,
-                        ]);
-                        $payment_data['is_convert'] = 'bonus_points';
-                        $payment_data = [
-                            'amount' => $amount_bonus_point,
-                            // 'amount' => $payment_amount,
-                            'method' => 'bonus_points'
-                        ];
-                    }
-                    if ($cash && $card) {
-                        // dd("hello");
-                        $payments_formatted[] = new TransactionPayment($payment_data);
-                    }
-                    $account_transactions[$c] = [];
-                    //create account transaction
-                    if (!empty($payment['account_id'])) {
-                        $payment_data['transaction_type'] = $transaction->type;
-                        $account_transactions[$c] = $payment_data;
-                    }
-
-
-                    $c++;
-                    $totalAmountByRows += $payment_amount;
-                }
-                // }
-            }
-        }
-        if ($request->discount_type === 'percentage' && $cash != true || $card != true) {
-            $objContact = Contact::where('business_id', $transaction->business_id)->where("id", $transaction->contact_id)->first();
-            $discount = config('app.discount_amount');
-            //  add bonus point
-            // dd();
-            // $discount = $objContact->discount;
-            $leftAmount = $custom_discount_amount;
-            // $leftAmount = $amount_bonus_point - ($transaction->final_total - $totalAmountByRows);
-            $left_amount_after_discount = $leftAmount * $discount;
-            $total_amount_bunus_point = $left_amount_after_discount * 20;
-            // dd($leftAmount, $left_amount_after_discount, $discount);
-            // $leftAmount = $payment_amount - ($transaction->final_total - $totalAmountByRows);
-            $newPoints = $objContact->bonus_points + $total_amount_bunus_point;
-            // $newPoints = $objContact->bonus_points - $leftAmount;
-            $dataUpdate = ['bonus_points' => $newPoints];
-            $dataWhere = ['business_id' => $transaction->business_id, 'id' => $objContact->id];
-            Contact::where($dataWhere)->update($dataUpdate);
-        }
         //Delete the payment lines removed.
         if (!empty($edit_ids)) {
             $deleted_transaction_payments = $transaction->payment_lines()->whereNotIn('id', $edit_ids)->get();
@@ -2021,7 +1608,6 @@ class TransactionUtil extends Util
         return $new_coupon;
         // return true;
     }
-
 
     public function RandomId()
     {
@@ -2490,10 +2076,8 @@ class TransactionUtil extends Util
                 }
                 // dd($o);
             }
-            // dd($o, $new_coupon);
             if ($il->show_payments == 1) {
                 // $payments = $transaction->payment_lines->toArray();
-                // dd($payments[0]['method']);
                 if (!empty($payments)) {
                     foreach ($payments as $value) {
                         if ($value['method'] == 'cash') {
@@ -2545,7 +2129,6 @@ class TransactionUtil extends Util
                                 ];
                         } elseif ($value['method'] == 'coupon') {
                             $arrCouponDetailsNew  = "";
-                            // dd($value['is_convert']);
                             if ($value['is_convert'] == "coupon") {
                                 $objCouponOld = Coupon::where("coupon_id", $value['coupon'])->orderBy('created_at', 'desc')
                                     ->select(
@@ -2573,7 +2156,6 @@ class TransactionUtil extends Util
                                 // $o['coupon'][] = $objCoupon->toArray();
                             }
 
-                            // dd($new_coupon);
                             $output['payments'][] =
                                 [
                                     'method' => 'Coupon' . (!empty($value['coupon']) ? (', Barcode:' . $value['coupon']) : '') . $arrCouponDetails,
@@ -2755,7 +2337,6 @@ class TransactionUtil extends Util
 
         $output['design'] = $il->design;
         $output['table_tax_headings'] = !empty($il->table_tax_headings) ? array_filter(json_decode($il->table_tax_headings), 'strlen') : null;
-        // dd($output);
 
         return (object) $output;
     }
@@ -4690,8 +4271,6 @@ class TransactionUtil extends Util
     {
 
         $qty_difference = $this->num_uf($new_quantity) - $this->num_uf($old_quantity);
-
-        // dd($qty_difference);
 
         if (true) {
             // if ($qty_difference != 0) {

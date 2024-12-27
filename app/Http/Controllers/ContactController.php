@@ -7,7 +7,7 @@ use App\CustomerGroup;
 use App\Transaction;
 use App\User;
 use App\Business;
-
+use App\LoyaltyPointsHistory;
 use App\Utils\ModuleUtil;
 use App\Utils\TransactionUtil;
 
@@ -143,6 +143,45 @@ class ContactController extends Controller
             ->removeColumn('purchase_return_paid')
             ->rawColumns([4, 5, 6])
             ->make(false);
+    }
+
+    /**
+     * Returns the database object for supplier
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function bonusPointReport()
+    {
+;        if (!auth()->user()->can('supplier.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = request()->session()->get('user.business_id');
+        $contacts = Contact::contactDropdown($business_id, true, false);
+        
+        $contact_id = request()->contact_id;
+        $contact = request()->contact_id ? Contact::find( $contact_id) :null;
+
+        if(request()->ajax()){
+
+            $from_date = request()->get('start_date', null);
+
+            $to_date = request()->get('end_date', null);
+
+            $contact = LoyaltyPointsHistory::when( $contact_id ,function($query) use($contact_id){
+                $query->where('contact_id',$contact_id);
+            })  
+            ->when(!empty($to_date),function($query) use($from_date,$to_date) {
+               $query->whereDate('created_at' ,'>=', $from_date)
+                ->whereDate('created_at', '<=', $to_date);
+            })
+            ->with('contact')
+            ->get();
+            return Datatables::of($contact)
+                ->make(true);
+        }
+
+        return view('contact.bonus-point',compact('contact','contacts'));
     }
 
     /**
