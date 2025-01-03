@@ -164,6 +164,14 @@
                                                 class="unknown_sold_price"data-currency_symbol="false"></span></h4>
                                         <h4>Total Invoices : <span
                                                 class="totalinvoicesSum"data-currency_symbol="false"></span></h4>
+                                        <h4>Total Coupon Used : <span
+                                                class="couponUsed"data-currency_symbol="false"></span></h4>
+                                        <h4>Total Coupon Created : <span
+                                                class="couponCreated"data-currency_symbol="false"></span></h4>
+                                        <h4>Total Item Returned : <span
+                                                class="itemReturned"data-currency_symbol="false"></span></h4>
+                                        <h4>Total Unknown Reduction : <span
+                                                class="unknownReduction"data-currency_symbol="false"></span></h4>
                                         {{-- @include('report.partials.stock_group_table') --}}
                                     </div>
                                 </div>
@@ -244,6 +252,9 @@
                     $('.total_refference1').text(response.totalReffernce);
                     $('.discount_amount11').text(Number(response.totalDiscountSum).toFixed(2));
                     $('.totalinvoicesSum').text(Number(response.totalinvoicesSum));
+                    $('.couponUsed').text(Number(response.coupon_used));
+                    $('.couponCreated').text(Number(response.coupon_created));
+                    $('.unknownReduction').text(Number(response.unknown_reduction));
                     // calculations();
                 },
                 error: function(xhr, status, error) {
