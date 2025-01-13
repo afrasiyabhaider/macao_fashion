@@ -291,6 +291,7 @@
                           </div>
                     </div>
                     <div class="col-sm-12">
+                        
                         <table class="table table-bordered table-striped ajax_view" id="sell_table">
                             <thead>
                                 <tr>
@@ -301,6 +302,8 @@
                                     <th>@lang('sale.total_amount')</th>
                                     <th>@lang('sale.total_paid')</th>
                                     <th>@lang('sale.total_remaining')</th>
+                                    <th>@lang('sale.total_add_points')</th>
+                                    <th>@lang('sale.total_consume_points')</th>
                                     <th>@lang('messages.action')</th>
                                 </tr>
                             </thead>
@@ -417,6 +420,8 @@ $(document).ready( function(){
             { data: 'final_total', name: 'final_total'},
             { data: 'total_paid', searchable: false},
             { data: 'total_remaining', name: 'total_remaining'},
+            { data: 'total_add_points', name: 'total_add_points'},
+            { data: 'total_consume_points', name: 'total_consume_points'},
             { data: 'action', name: 'action'}
         ],
         "fnDrawCallback": function (oSettings) {

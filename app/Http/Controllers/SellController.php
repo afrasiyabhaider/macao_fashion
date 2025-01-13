@@ -83,6 +83,7 @@ class SellController extends Controller
                     '=',
                     'bl.id'
                 )
+                   
                 ->leftJoin(
                     'transactions AS SR',
                     'transactions.id',
@@ -106,13 +107,17 @@ class SellController extends Controller
                     'transactions.discount_type',
                     'transactions.total_before_tax',
                     'tp.method',
+                    // 'lp.points',
+                    // 'lp.transaction_type',
                     DB::raw('SUM(IF(tp.is_return = 1,-1*tp.amount,tp.amount)) as total_paid'),
                     'bl.name as business_location',
                     DB::raw('COUNT(SR.id) as return_exists'),
                     DB::raw('(SELECT SUM(TP2.amount) FROM transaction_payments AS TP2 WHERE
                         TP2.transaction_id=SR.id ) as return_paid'),
                     DB::raw('COALESCE(SR.final_total, 0) as amount_return'),
-                    'SR.id as return_transaction_id'
+                    'SR.id as return_transaction_id',
+                    DB::raw('COALESCE((select sum(points) from loyalty_points_histories where transaction_id = transactions.id and transaction_type = \'add\'),0) as total_add_points'),
+                    DB::raw('COALESCE((select sum(points) from loyalty_points_histories where transaction_id = transactions.id and transaction_type = \'consume\'),0) as total_consume_points')         
                 );
 
 

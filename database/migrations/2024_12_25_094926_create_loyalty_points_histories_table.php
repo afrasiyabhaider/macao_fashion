@@ -16,6 +16,7 @@ class CreateLoyaltyPointsHistoryTable extends Migration
         Schema::create('loyalty_points_histories', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('contact_id');
+            $table->unsignedBigInteger('transaction_id');
             $table->integer('points');
             $table->enum('transaction_type', ['add', 'consume']);
             $table->text('description')->nullable(); // Optional description for the transaction

@@ -818,7 +818,8 @@ class TransactionUtil extends Util
             // ]);
 
             $contact->loyaltyPointsHistories()->create([
-                'points' => $request_bonus_point,
+                'points' => (int) $request_bonus_point * 20,
+                'transaction_id' => $transaction->id,
                 'transaction_type' => 'consume',
                 'description' => '',
             ]);
@@ -1166,6 +1167,7 @@ class TransactionUtil extends Util
 
                 $contact->loyaltyPointsHistories()->create([
                     'points' => $total_amount_bunus_point,
+                    'transaction_id' => $transaction->id,
                     'transaction_type' => 'add',
                     'description' => '',
                 ]);
@@ -1237,8 +1239,9 @@ class TransactionUtil extends Util
 
 
             $contact->loyaltyPointsHistories()->create([
-                'points' => $request_bonus_point,
+                'points' => (int) $request_bonus_point * 20,
                 'transaction_type' => 'consume',
+                'transaction_id' => $transaction->id,
                 'description' => '',
             ]);
 
@@ -1500,7 +1503,8 @@ class TransactionUtil extends Util
                         ]);
                         //todo
                         $contact->loyaltyPointsHistories()->create([
-                            'points' => $request_bonus_point,
+                            'points' => (int) $request_bonus_point * 20,
+                            'transaction_id' => $transaction->id,
                             'transaction_type' => 'consume',
                             'description' => '',
                         ]);

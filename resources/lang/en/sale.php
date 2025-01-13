@@ -32,6 +32,8 @@ return [
     'unit_price' => 'Unit Price',
     'qty' => 'Quantity',
     'subtotal' => 'Subtotal',
+    'total_add_points' => 'Total Add Points',
+    'total_consume_points' => 'Total Consume Points',
     'recent_transactions' => 'Your Recent Transactions',
     'pos_sale_added' => 'Sale added successfully',
     'price_inc_tax' => 'Price inc. tax',
