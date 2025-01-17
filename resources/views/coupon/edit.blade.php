@@ -14,7 +14,7 @@
 
 <!-- Main content -->
 <section class="content">
-{!! Form::open(['url' => action('GiftCardController@update' , [$product->id] ), 'method' => 'PUT', 'id' => 'product_add_form',
+{!! Form::open(['url' => action('CouponController@update' , [$product->id] ), 'method' => 'PUT', 'id' => 'product_add_form',
         'class' => 'product_form', 'files' => true ]) !!}
     <input type="hidden" id="product_id" value="{{ $product->id }}">
 

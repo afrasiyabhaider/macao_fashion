@@ -22,7 +22,6 @@
     <section class="content">
         <div class="row">
             <div class="col-md-12">
-                {{-- @dd($business_locations) --}}
                 @component('components.filters', ['title' => __('report.filters')])
                     {!! Form::open([
                         'url' => action('ReportController@getstockInOutReport'),
@@ -72,16 +71,6 @@
                             ]) !!}
                         </div>
                     </div>
-                    {{-- <div class="col-md-3">
-                        <div class="form-group">
-                            {!! Form::label('suppliers', 'Suppliers :') !!}
-                            {!! Form::select('suppliers', $suppliers, null, [
-                                'placeholder' => __('messages.all'),
-                                'class' => 'form-control select2',
-                                'style' => 'width:100%',
-                            ]) !!}
-                        </div>
-                    </div> --}}
                     <div class="col-md-3">
                         <div class="form-group">
                             {!! Form::label('suppliers', 'Suppliers :') !!}
@@ -122,7 +111,6 @@
                                         aria-hidden="true"></i>
                                     Stock In</a>
                             </li>
-
                             <li>
                                 <a href="#stock_out" data-toggle="tab" aria-expanded="true"><i class="fa fa-list"
                                         aria-hidden="true"></i> Stock Out</a>
@@ -138,66 +126,219 @@
                             </div>
                             <div class="tab-pane active" id="psr_grouped_tab">
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <h4>Total stock in: <span class="totalPurchaseSum" data-currency_symbol="false"></span>
-                                        </h4>
-                                        <h4>Total stock out: <span class="stockOUT" data-currency_symbol="false"></span></h4>
-                                        <h4 hidden>Total stock out: <span class="total_stock_out1"
-                                                data-currency_symbol="false"></span></h4>
-                                        <h4>Total Purchase Amount: <span class="total_purchase_amount"
-                                                data-currency_symbol="false"></span></h4>
-                                        <h4>Total Sold Amount: <span class="total_buying_amount"
-                                                data-currency_symbol="false"></span></h4>
-                                        <h4>Total Sell Amount: <span class="sold_price" data-currency_symbol="false"></span>
-                                        </h4>
-                                        <h4 hidden>Total sale price: <span class="total_sell_price1"
-                                                data-currency_symbol="false"></span></h4>
-                                        {{-- <h4>Total reference: <span class="total_refference1"data-currency_symbol="false"></span>
-                                        </h4> --}}
-                                        <h4>Total Discount Amount : <span
-                                                class="discount_amount11"data-currency_symbol="false"></span></h4>
-                                        <h4>Total unknown product sold : <span
-                                                class="unknown_soldUnknown"data-currency_symbol="false"></span></h4>
-                                        <h4>Total unknown Amount : <span
-                                                class="unknown_amount"data-currency_symbol="false"></span></h4>
-                                        <h4 hidden>Total unknown price : <span
-                                                class="unknown_sold_price"data-currency_symbol="false"></span></h4>
-                                        <h4>Total Invoices : <span
-                                                class="totalinvoicesSum"data-currency_symbol="false"></span></h4>
-                                        <h4>Total Coupon Used : <span
-                                                class="couponUsed"data-currency_symbol="false"></span></h4>
-                                        <h4>Total Coupon Created : <span
-                                                class="couponCreated"data-currency_symbol="false"></span></h4>
-                                        <h4>Total Item Returned : <span
-                                                class="itemReturned"data-currency_symbol="false"></span></h4>
-                                        <h4>Total Unknown Reduction : <span
-                                                class="unknownReduction"data-currency_symbol="false"></span></h4>
-                                        {{-- @include('report.partials.stock_group_table') --}}
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                          <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+                                          <div class="info-box-content">
+                                            <span class="info-box-text">{{ __('Total stock in') }}</span>
+                                            <span class="info-box-number totalPurchaseSum"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                          </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                          <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+                                          <div class="info-box-content">
+                                            <span class="info-box-text">{{ __('Total stock out') }}</span>
+                                            <span class="info-box-number stockOUT"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                          </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                          <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+                                          <div class="info-box-content">
+                                            <span class="info-box-text">{{ __('Total Purchase Amount') }}</span>
+                                            <span class="info-box-number total_purchase_amount"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                          </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                          <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+                                          <div class="info-box-content">
+                                            <span class="info-box-text">{{ __('Total Sold Amount') }}</span>
+                                            <span class="info-box-number total_buying_amount"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                          </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                          <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+                                          <div class="info-box-content">
+                                            <span class="info-box-text">{{ __('Total Sell Amount') }}</span>
+                                            <span class="info-box-number sold_price"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                          </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                          <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+                                          <div class="info-box-content">
+                                            <span class="info-box-text">{{ __('Total sale price') }}</span>
+                                            <span class="info-box-number total_sell_price1"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                          </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                          <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+                                          <div class="info-box-content">
+                                            <span class="info-box-text">{{ __('Total Discount Amount') }}</span>
+                                            <span class="info-box-number discount_amount11"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                          </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                          <span class="info-box-icon bg-aqua"><i class="ion ion-ios-cart-outline"></i></span>
+                                          <div class="info-box-content">
+                                            <span class="info-box-text">{{ __('Total unknown product sold') }}</span>
+                                            <span class="info-box-number unknown_soldUnknown"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                          </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                          <span class="info-box-icon bg-yellow">
+                                            <i class="ion ion-cash"></i>
+                                            <i class="fa fa-exclamation"></i>
+                                        </span>
+                                          <div class="info-box-content">
+                                            <span class="info-box-text">{{ __('Total unknown Amount') }}</span>
+                                            <span class="info-box-number unknown_amount"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                          </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                          <span class="info-box-icon bg-aqua"><i class="ion ion-ios-paper-outline"></i></span>
+                                          <div class="info-box-content">
+                                            <span class="info-box-text">{{ __('Total Invoices') }}</span>
+                                            <span class="info-box-number totalinvoicesSum"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                          </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                          <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+                                          <div class="info-box-content">
+                                            <span class="info-box-text">{{ __('Total Coupon Used') }}</span>
+                                            <span class="info-box-number couponUsed"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                          </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                          <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+                                          <div class="info-box-content">
+                                            <span class="info-box-text">{{ __('Total Coupon Created') }}</span>
+                                            <span class="info-box-number couponCreated"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                          </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                          <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+                                          <div class="info-box-content">
+                                            <span class="info-box-text">{{ __('Total Item Returned') }}</span>
+                                            <span class="info-box-number itemReturned"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                          </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
+                                        <div class="info-box">
+                                            <span class="info-box-icon bg-yellow">
+                                                <i class="fa fa-exclamation"></i>
+                                                <i class="ion ion-cash"></i>
+                                            </span>
+                                          <div class="info-box-content">
+                                            <span class="info-box-text">{{ __('Total Unknown Reduction') }}</span>
+                                            <span class="info-box-number unknownReduction"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                          </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="tab-pane" id="stock_in">
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <h4>Total stock in: <span class="totalPurchaseSum" data-currency_symbol="false"></span>
-                                        </h4>
-                                        <h4>Total Purchase Amount: <span class="total_purchase_amount"
-                                                data-currency_symbol="false"></span></h4>
-                                        <h4>Total Sold Amount: <span class="total_buying_amount"
-                                                data-currency_symbol="false"></span></h4>
-                                        @include('report.partials.stock_in_table')
+                                    <div class="col-md-12 mb-3">
 
+                                        <div class="col-md-3 col-sm-6 col-xs-12">
+                                            <div class="info-box">
+                                              <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+                                              <div class="info-box-content">
+                                                <span class="info-box-text">{{ __('Total stock in') }}</span>
+                                                <span class="info-box-number totalPurchaseSum"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                              </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-sm-6 col-xs-12">
+                                            <div class="info-box">
+                                              <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+                                              <div class="info-box-content">
+                                                <span class="info-box-text">{{ __('Total Purchase Amount') }}</span>
+                                                <span class="info-box-number total_purchase_amount"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="col-md-3 col-sm-6 col-xs-12">
+                                            <div class="info-box">
+                                              <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+                                              <div class="info-box-content">
+                                                <span class="info-box-text">{{ __('Total Sold Amount') }}</span>
+                                                <span class="info-box-number total_buying_amount"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        @include('report.partials.stock_in_table')
                                     </div>
                                 </div>
                             </div>
                             <div class="tab-pane" id="stock_out">
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <h4>Total stock out: <span class="stockOUT" data-currency_symbol="false"></span></h4>
-                                        <h4>Total Sell Amount: <span class="sold_price" data-currency_symbol="false"></span>
-                                        </h4>
-                                        <h4>Total unknown product sold : <span
-                                                class="unknown_soldUnknown"data-currency_symbol="false"></span></h4>
+                                    <div class="col-md-12 mb-3">
+
+                                        <div class="col-md-3 col-sm-6 col-xs-12">
+                                            <div class="info-box">
+                                              <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+                                              <div class="info-box-content">
+                                                <span class="info-box-text">{{ __('Total stock out') }}</span>
+                                                <span class="info-box-number stockOUT"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                              </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-sm-6 col-xs-12">
+                                            <div class="info-box">
+                                              <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+                                              <div class="info-box-content">
+                                                <span class="info-box-text">{{ __('Total Sell Amount') }}</span>
+                                                <span class="info-box-number sold_price"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="col-md-3 col-sm-6 col-xs-12">
+                                            <div class="info-box">
+                                              <span class="info-box-icon bg-aqua"><i class="ion ion-cash"></i></span>
+                                              <div class="info-box-content">
+                                                <span class="info-box-text">{{ __('Total Unknown Product Sold') }}</span>
+                                                <span class="info-box-number unknown_soldUnknown"><i class="fa fa-refresh fa-spin fa-fw margin-bottom"></i></span>
+                                              </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mt-3">
                                         @include('report.partials.stock_out_table')
                                     </div>
                                 </div>
@@ -255,6 +396,7 @@
                     $('.couponUsed').text(Number(response.coupon_used));
                     $('.couponCreated').text(Number(response.coupon_created));
                     $('.unknownReduction').text(Number(response.unknown_reduction));
+                    $('.itemReturned').text(Number(response.item_returned));
                     // calculations();
                 },
                 error: function(xhr, status, error) {
