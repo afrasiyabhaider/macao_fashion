@@ -14,7 +14,7 @@ return [
 
     'name' => env('APP_NAME', 'MacaoBe POS'),
     'site' => env('SITE_NAME', 'MacaoBe'),
-     'discount_amount' => 0.05,
+     'discount_amount' => 0.10,
 
     /*
     |--------------------------------------------------------------------------
