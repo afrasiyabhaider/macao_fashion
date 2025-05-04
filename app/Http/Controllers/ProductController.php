@@ -3965,23 +3965,16 @@ class ProductController extends Controller
         $sevenDaySoldSubqueryforcolor = $this->generateSoldSubqueryforcolor($location_filter, 6, 'seven_day_sold');
         $fifteenDaySoldSubqueryforcolor = $this->generateSoldSubqueryforcolor($location_filter, 14, 'fifteen_day_sold');
         //product with color and sizes and 2nd table
-        $group_query =
-            TransactionSellLine::join(
-                'transactions as t',
-                'transaction_sell_lines.transaction_id',
-                '=',
-                't.id'
-            )
-            ->join(
-                'variations as v',
-                'transaction_sell_lines.variation_id',
-                '=',
-                'v.id'
-            )
-            // ->rightjoin('variation_location_details as vlds', 'v.id', '=', 'vlds.variation_id')
+        $today = $now->format("Y-m-d");
+        $sevenDaysAgo = $now->copy()->subDays(7)->format("Y-m-d");
+        $fifteenDaysAgo = $now->copy()->subDays(15)->format("Y-m-d");
+        $thirtyDaysAgo = $now->copy()->subDays(30)->format("Y-m-d");
+
+        $group_query = Product::from('products as p')
+            ->join('variations as v', 'p.id', '=', 'v.product_id')
+            ->leftjoin('transaction_sell_lines', 'transaction_sell_lines.variation_id', '=', 'v.id')
+            ->leftjoin('transactions as t', 'transaction_sell_lines.transaction_id', '=', 't.id')
             ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
-            ->join('products as p', 'pv.product_id', '=', 'p.id')
-            // ->join('suppliers as s', 'p.supplier_id', '=', 's.id')
             ->join('colors as c', 'p.color_id', '=', 'c.id')
             ->join('sizes', 'p.size_id', '=', 'sizes.id')
             ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
@@ -3991,6 +3984,16 @@ class ProductController extends Controller
             ->where('t.status', 'final')
             ->where('p.name', $name)
             ->where('p.refference', $refference)
+            ->leftJoin(DB::raw("(SELECT
+                tsl.product_id,
+                SUM(CASE WHEN date(t.transaction_date) = '{$today}' THEN tsl.quantity ELSE 0 END) as today_sold,
+                SUM(CASE WHEN date(t.transaction_date) BETWEEN '{$sevenDaysAgo}' AND '{$today}' THEN tsl.quantity  ELSE 0 END) as seven_day_sold,
+                SUM(CASE WHEN date(t.transaction_date) BETWEEN '{$fifteenDaysAgo}' AND '{$today}' THEN tsl.quantity ELSE 0 END) as fifteen_day_sold
+            FROM transaction_sell_lines tsl
+            JOIN transactions t ON tsl.transaction_id = t.id
+            WHERE date(t.transaction_date) BETWEEN '{$thirtyDaysAgo}' AND '{$today}'
+            GROUP BY tsl.product_id
+            ) as sales_data"), 'p.id', '=', 'sales_data.product_id')
             ->select(
                 'p.id as product_id',
                 'p.name as product_name',
@@ -4015,11 +4018,14 @@ class ProductController extends Controller
                         AND TSL.product_id = p.id) as all_time_sold "),
 
 
-                DB::raw($sevenDaySoldSubquery),
-                DB::raw($fifteenDaySoldSubquery),
+                // DB::raw($sevenDaySoldSubquery),
+                // DB::raw($fifteenDaySoldSubquery),
                 // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 15 day) as fifteen_day_sold"),
                 // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at > now() - INTERVAL 7 day) as seven_day_sold"),
-                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at  >= DATE_FORMAT(now(), '%Y-%m-%d')  ) as today_sold"),
+                DB::raw("sales_data.today_sold as today_sold"),
+                DB::raw("sales_data.seven_day_sold as seven_day_sold"),
+                DB::raw("sales_data.fifteen_day_sold as fifteen_day_sold"),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at  >= DATE_FORMAT(now(), '%Y-%m-%d')  ) as today_sold"),
                 // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference $vld_str GROUP BY p.color_id) as current_stock"),
                 DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
                 // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference  $vld_str) as current_stock"),
@@ -4034,19 +4040,30 @@ class ProductController extends Controller
                 DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
             );
 
-        $current_group_color = TransactionSellLine::join('transactions as t', 'transaction_sell_lines.transaction_id', '=', 't.id')
-            ->join('variations as v', 'transaction_sell_lines.variation_id', '=', 'v.id')
+        $current_group_color = Product::from('products as p')
+            ->join('variations as v', 'p.id', '=', 'v.product_id')
+            ->leftjoin('transaction_sell_lines', 'transaction_sell_lines.variation_id', '=', 'v.id')
+            ->leftjoin('transactions as t', 'transaction_sell_lines.transaction_id', '=', 't.id')
             ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
-            ->join('products as p', 'pv.product_id', '=', 'p.id')
             ->join('colors as c', 'p.color_id', '=', 'c.id')
             ->join('sizes', 'p.size_id', '=', 'sizes.id')
             ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
-            ->leftJoin('units as u', 'p.unit_id', '=', 'u.id')
+            ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
             ->where('t.business_id', $business_id)
             ->where('t.type', 'sell')
             ->where('t.status', 'final')
             ->where('p.name', $name)
             ->where('p.refference', $refference)
+            ->leftJoin(DB::raw("(SELECT
+                tsl.product_id,
+                SUM(CASE WHEN date(t.transaction_date) = '{$today}' THEN tsl.quantity ELSE 0 END) as today_sold,
+                SUM(CASE WHEN date(t.transaction_date) BETWEEN '{$sevenDaysAgo}' AND '{$today}' THEN tsl.quantity  ELSE 0 END) as seven_day_sold,
+                SUM(CASE WHEN date(t.transaction_date) BETWEEN '{$fifteenDaysAgo}' AND '{$today}' THEN tsl.quantity ELSE 0 END) as fifteen_day_sold
+            FROM transaction_sell_lines tsl
+            JOIN transactions t ON tsl.transaction_id = t.id
+            WHERE date(t.transaction_date) BETWEEN '{$thirtyDaysAgo}' AND '{$today}'
+            GROUP BY tsl.product_id
+            ) as sales_data"), 'p.id', '=', 'sales_data.product_id')
             ->select(
                 'p.id as product_id',
                 'p.name as product_name',
@@ -4069,36 +4086,38 @@ class ProductController extends Controller
                 DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
 
                 DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
-                JOIN transaction_sell_lines AS TSL ON transactions.id = TSL.transaction_id
-                WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
-                AND TSL.product_id = p.id
-                AND p.color_id = c.id
-            ) as all_time_sold"),
-
-                DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at >= DATE_FORMAT(now(), '%Y-%m-%d') ) as today_sold"),
+                    JOIN transaction_sell_lines AS TSL ON transactions.id = TSL.transaction_id
+                    WHERE transactions.status='final' AND transactions.type='sell' $location_filter 
+                    AND TSL.product_id = p.id
+                    AND p.color_id = c.id
+                ) as all_time_sold"),
+                DB::raw("sales_data.today_sold as today_sold"),
+                DB::raw("sales_data.seven_day_sold as seven_day_sold"),
+                DB::raw("sales_data.fifteen_day_sold as fifteen_day_sold"),
+                // DB::raw("(SELECT SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned)  FROM transaction_sell_lines WHERE transaction_sell_lines.product_id = p.id AND transaction_sell_lines.updated_at >= DATE_FORMAT(now(), '%Y-%m-%d') ) as today_sold"),
 
                 DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
                 DB::raw('DATE_FORMAT(p.created_at, "%Y-%m-%d %H:%i:%s") as purchase_date'),
                 DB::raw('DATE_FORMAT(transaction_sell_lines.updated_at, "%Y-%m-%d %H:%i:%s") as last_update_date'),
 
                 DB::raw('SUM((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal'),
-                DB::raw('SUM(
-                CASE
-                    WHEN t.transaction_date > CURDATE() - INTERVAL 6 DAY THEN transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned
-                    ELSE 0
-                END
-            ) as seven_day_sold'),
-                DB::raw('SUM(
-                CASE
-                    WHEN t.transaction_date > CURDATE() - INTERVAL 14 DAY THEN transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned
-                    ELSE 0
-                END
-            ) as fifteen_day_sold'),
+            //     DB::raw('SUM(
+            //     CASE
+            //         WHEN t.transaction_date > CURDATE() - INTERVAL 6 DAY THEN transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned
+            //         ELSE 0
+            //     END
+            // ) as seven_day_sold'),
+            //     DB::raw('SUM(
+            //     CASE
+            //         WHEN t.transaction_date > CURDATE() - INTERVAL 14 DAY THEN transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned
+            //         ELSE 0
+            //     END
+            // ) as fifteen_day_sold'),
             );
 
-        if (!empty($from_date) && !empty($to_date)) {
-            $current_group_color->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
-        }
+        // if (!empty($from_date) && !empty($to_date)) {
+        //     $current_group_color->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
+        // }
 
         if (isset($location_id)) {
             $current_group_color->where('location_id', $location_id);
@@ -4131,10 +4150,10 @@ class ProductController extends Controller
         $current_group = $group_query;
         // $current_group_color = $group_query_color;
         $history_group = $group_query->get();
-        if (!empty($from_date) && !empty($to_date)) {
-            $current_group = $current_group->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
-            // $current_group_color = $current_group_color->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
-        }
+        // if (!empty($from_date) && !empty($to_date)) {
+        //     $current_group = $current_group->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
+        //     // $current_group_color = $current_group_color->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
+        // }
         if (isset($location_id)) {
             $current_group = $current_group->where('location_id', $location_id);
             // $current_group_color = $current_group_color->where('location_id', $location_id);
@@ -4150,32 +4169,20 @@ class ProductController extends Controller
         //     ->get();
         // Log::info("Generated SQL Query: \n" . $current_group_color);
 
-        $query =
-            TransactionSellLine::join(
-                'transactions as t',
-                'transaction_sell_lines.transaction_id',
-                '=',
-                't.id'
-            )
-            ->join(
-                'variations as v',
-                'transaction_sell_lines.variation_id',
-                '=',
-                'v.id'
-            )
+        $query = Product::from('products as p')
+            ->join('variations as v', 'p.id', '=', 'v.product_id')
+            ->leftjoin('transaction_sell_lines', 'transaction_sell_lines.variation_id', '=', 'v.id')
+            ->leftjoin('transactions as t', 'transaction_sell_lines.transaction_id', '=', 't.id')
             ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
-            // ->join('contacts as c', 't.contact_id', '=', 'c.id')
-            ->join('products as p', 'transaction_sell_lines.product_id', '=', 'p.id')
-            // ->join('variation_location_details as vlds', 'pv.product_id', '=', 'vlds.product_id')
-            // ->join('suppliers as s', 's.id','=','p.supplier_id')
-            ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
             ->join('colors as c', 'p.color_id', '=', 'c.id')
-            ->leftjoin('tax_rates', 'transaction_sell_lines.tax_id', '=', 'tax_rates.id')
+            ->join('sizes', 'p.size_id', '=', 'sizes.id')
+            ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
             ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
             ->where('t.business_id', $business_id)
             ->where('t.type', 'sell')
             ->where('t.status', 'final')
             ->where('p.name', $name)
+            ->leftjoin('tax_rates', 'transaction_sell_lines.tax_id', '=', 'tax_rates.id')
             ->where('p.refference', $refference)
             ->select(
                 'p.id as product_id',
@@ -4215,12 +4222,12 @@ class ProductController extends Controller
         $current_detail = $query;
         $history_detail = $query->get();
         // dd(isset($location_id) && isset($location_id) != '0');
-        if (!empty($from_date)  && !empty($to_date)) {
-            // dd(isset($location_id) && isset($location_id) != '0');
-            $current_detail = $current_detail->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
+        // if (!empty($from_date)  && !empty($to_date)) {
+        //     // dd(isset($location_id) && isset($location_id) != '0');
+        //     $current_detail = $current_detail->whereBetween(DB::raw('date(transaction_date)'), [$from_date, $to_date]);
 
-            // dd($current_detail->get());
-        }
+        //     // dd($current_detail->get());
+        // }
         if (isset($location_id)) {
             $current_detail = $current_detail->where('location_id', $location_id);
         }
@@ -6742,9 +6749,11 @@ class ProductController extends Controller
      **/
     public function showPos(Request $request)
     {
+        // dd($request->all());
         try {
             DB::beginTransaction();
             $product = explode(",", $request->input('product_id'));
+            $location_id =$request->input('top_location_id');
             $show_pos = Product::orderBy('show_pos', 'DESC')->first()->show_pos + 1;
 
             foreach ($product as $key => $value) {
@@ -6761,6 +6770,7 @@ class ProductController extends Controller
 
                 $product->update([
                     'show_pos' => $show_pos,
+                    'business_location_id' => is_null($location_id) ? null : $location_id,
                 ]);
             }
 
