@@ -4175,13 +4175,13 @@ class ProductController extends Controller
             ->leftjoin('transactions as t', 'transaction_sell_lines.transaction_id', '=', 't.id')
             ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
             ->join('colors as c', 'p.color_id', '=', 'c.id')
-            ->join('sizes', 'p.size_id', '=', 'sizes.id')
+            // ->join('sizes', 'p.size_id', '=', 'sizes.id')
             ->join('sizes as sub_size', 'p.sub_size_id', '=', 'sub_size.id')
             ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
             ->where('t.business_id', $business_id)
             ->where('t.type', 'sell')
             ->where('t.status', 'final')
-            ->where('p.name', $name)
+            // ->where('p.name', $name)
             ->leftjoin('tax_rates', 'transaction_sell_lines.tax_id', '=', 'tax_rates.id')
             ->where('p.refference', $refference)
             ->select(
@@ -4217,7 +4217,7 @@ class ProductController extends Controller
             ->orderBy('color', 'DESC')
             // ->orderBy('transaction_date', 'DESC')
             // ->orderBy('t.invoice_no','DESC')
-            ->groupBy('t.id');
+            ->groupBy('transaction_sell_lines.id');
         // ->groupBy('transaction_sell_lines.id');
         $current_detail = $query;
         $history_detail = $query->get();
