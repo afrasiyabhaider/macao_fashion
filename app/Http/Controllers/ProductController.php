@@ -4235,6 +4235,10 @@ class ProductController extends Controller
             ->get();
         $business_locations = BusinessLocation::forDropdown($business_id, true);
         $select_date = date('d/m/y', strtotime($from_date)) . ' - ' . date('d/m/y', strtotime($to_date));
+
+        if(request()->ajax()){
+        return view('report.partials.filter_color_detail_by_name_dates', compact('current_group','merged_summed_values', 'select_date', 'name', 'business_locations', 'current_group_color', 'history_group', 'current_detail', 'history_detail', 'from_date', 'to_date','refference'));
+        }
         // dd( $select_date);
         return view('report.partials.color_report_by_name_dates', compact('current_group', 'merged_summed_values', 'select_date', 'name', 'business_locations', 'current_group_color', 'history_group', 'current_detail', 'history_detail', 'from_date', 'to_date','refference'));
         // return view('product.view-product-color-detail', compact('current_group', 'current_group_color', 'history_group', 'current_detail', 'history_detail', 'from_date', 'to_date'));

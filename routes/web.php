@@ -64,8 +64,8 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::post('/contacts/import', 'ContactController@postImportContacts');
     Route::post('/contacts/check-contact-id', 'ContactController@checkContactId');
     Route::get('/contacts/customers', 'ContactController@getCustomers');
-    Route::get('/bonus-points', 'ContactController@bonusPointReport');
     Route::get('/contacts/saleReport/{id}', 'ContactController@saleReport');
+    Route::get('/bonus-points', 'ContactController@bonusPointReport');
     Route::resource('contacts', 'ContactController');
 
     Route::get('fraudster', 'ContactController@fraudster');
@@ -89,18 +89,18 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::post('/products/selected-mass-print', 'ProductController@selectedBulkPrint');
     Route::post('/products/mass-transfer', 'ProductController@massTransfer');
     Route::post('/products/pos/mass-transfer', 'ProductController@posToMassTransfer');
- 
+
     Route::get('/products/activate/{id}', 'ProductController@activate');
     Route::get('/products/view-product-group-price/{id}', 'ProductController@viewGroupPrice');
     Route::get('/products/add-selling-prices/{id}', 'ProductController@addSellingPrices');
     Route::post('/products/save-selling-prices', 'ProductController@saveSellingPrices');
     Route::post('/products/mass-delete', 'ProductController@massDestroy');
     Route::get('/products/view/{id}', 'ProductController@view');
-    Route::get('/products/viewDetail/{id}/{location_id}','ProductController@viewProductDetailWithSale');
+    Route::get('/products/viewDetail/{id}/{location_id}', 'ProductController@viewProductDetailWithSale');
     Route::get('/products/viewRefDetail/{refference}', 'ProductController@viewProductRefDetailWithSale');
     Route::get('/product/color-detail/{name}/{id}', 'ProductController@viewColorDetailByRefrenceID');
     Route::get('/product/color-detail/{name}/{start_date}/{end_date}/{refference}', 'ProductController@viewColorDetail');
-    Route::get('/product/color-detail-by-filter/{name}/{start_date}/{end_date}/{refference}', 'ProductController@viewColorDetailByFilter');
+    // Route::get('/product/color-detail-by-filter/{name}/{start_date}/{end_date}/{refference}', 'ProductController@viewColorDetailByFilter');
     Route::get('/product/color-detail-stock/{name}/{start_date}/{end_date}/{location_id}', 'ProductController@viewColorDetailStock');
     Route::get('/products/nothing/{id}', 'ProductController@nothing');
     Route::get('/products/viewBulkPackage/{id}', 'ProductController@viewBulkPackage');
@@ -196,7 +196,7 @@ Route::middleware(['IsInstalled', 'auth', 'SetSessionData', 'language', 'timezon
     Route::post('/pos/bulkUnHide', 'SellPosController@bulkUnHide')->name("bulkUnHide");
     Route::post('/pos/hide/{transaction_id}', 'SellPosController@hide');
     Route::post('/pos/unhide/{transaction_id}', 'SellPosController@unhide');
-Route::get('/sells/pos/transationhistory', 'SellPosController@getTransationHistory');
+    Route::get('/sells/pos/transationhistory', 'SellPosController@getTransationHistory');
     Route::resource('pos', 'SellPosController');
 
     Route::post('/pos/transaction/{id}/delete', 'SellPosController@delete_transaction');
@@ -234,7 +234,7 @@ Route::get('/sells/pos/transationhistory', 'SellPosController@getTransationHisto
     Route::get('/reports/product-top-stock-report', 'ReportController@getProductInTopStockReport');
     Route::get('/reports/product-pos-stock-report', 'ReportController@getProductInPosStockReport');
     Route::get('/reports/grouped-stock-report', 'ReportController@getGroupedStockReport');
-     Route::get('/reports/grouped-color-detail-report', 'ReportController@getGroupedColorDetailReport');
+    Route::get('/reports/grouped-color-detail-report', 'ReportController@getGroupedColorDetailReport');
     Route::get('/reports/color-report', 'ReportController@getColorStockReport');
     Route::get('/reports/supplier-report', 'ReportController@supplier_report');
     Route::get('/reports/subcategory-report', 'ReportController@sub_category_report');
@@ -270,10 +270,11 @@ Route::get('/sells/pos/transationhistory', 'SellPosController@getTransationHisto
     Route::get('/reports/stock-in-out', 'ReportController@getstockInOutReport');
     Route::get('/reports/stock-out', 'ReportController@getstockOutReport');
     Route::get('/daily/sales', 'ReportController@dailySales');
-    Route::get('/monthly/sales', 'ReportController@monthlySales');    Route::get('/monthly/sales', 'ReportController@monthlySales');
+    Route::get('/monthly/sales', 'ReportController@monthlySales');
+    Route::get('/monthly/sales', 'ReportController@monthlySales');
     Route::post('/products/mass-price-change', 'ReportController@massVldSellPrice');
     Route::get('/reports/coupon_reports', 'ReportController@getCouponReport');
-    
+
     //Business Location Settings...
     Route::prefix('business-location/{location_id}')->name('location.')->group(function () {
         Route::get('settings', 'LocationSettingsController@index')->name('settings');
@@ -354,7 +355,9 @@ Route::get('/sells/pos/transationhistory', 'SellPosController@getTransationHisto
     Route::get('backup/download/{file_name}', 'BackUpController@download');
     Route::get('backup/delete/{file_name}', 'BackUpController@delete');
     Route::resource('backup', 'BackUpController', ['only' => [
-        'index', 'create', 'store'
+        'index',
+        'create',
+        'store'
     ]]);
 
 
@@ -538,8 +541,7 @@ Route::post('/contact-us', 'website\SiteController@sendMail');
  * Viva Payments
  *  
  **/
-Route::get('checkout', function ()
-{
+Route::get('checkout', function () {
     return redirect(url('/'));
 });
 // Route::get('checkout', 'CheckoutController@create');
