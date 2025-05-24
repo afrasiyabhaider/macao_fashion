@@ -3992,8 +3992,18 @@ class ProductController extends Controller
             FROM transaction_sell_lines tsl
             JOIN transactions t ON tsl.transaction_id = t.id
             WHERE date(t.transaction_date) BETWEEN '{$thirtyDaysAgo}' AND '{$today}'
+            $location_filter AND t.status='final' AND t.type='sell'
             GROUP BY tsl.product_id
             ) as sales_data"), 'p.id', '=', 'sales_data.product_id')
+            ->leftJoin(DB::raw("(SELECT
+                tsl.product_id,
+                SUM(tsl.quantity - tsl.quantity_returned) as all_qty_sold
+            FROM transaction_sell_lines tsl
+            JOIN transactions t ON tsl.transaction_id = t.id
+            WHERE date(t.transaction_date) BETWEEN '{$from_date}' AND '{$to_date}'
+            $location_filter AND t.status='final' AND t.type='sell'
+            GROUP BY tsl.product_id
+            ) as all_sales"), 'p.id', '=', 'all_sales.product_id')
             ->select(
                 'p.id as product_id',
                 'p.name as product_name',
@@ -4030,7 +4040,7 @@ class ProductController extends Controller
                 DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
                 // DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.product_refference=p.refference  $vld_str) as current_stock"),
 
-                DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
+                DB::raw('all_sales.all_qty_sold as total_qty_sold'),
                 DB::raw("(SELECT SUM(tsl.quantity) FROM transaction_sell_lines as tsl WHERE tsl.product_id = p.id) as total_sold"),
                 DB::raw('DATE_FORMAT(p.product_updated_at, "%Y-%m-%d %H:%i:%s") as product_updated_at'),
                 DB::raw('DATE_FORMAT(p.created_at, "%Y-%m-%d %H:%i:%s") as purchase_date'),
@@ -4062,8 +4072,18 @@ class ProductController extends Controller
             FROM transaction_sell_lines tsl
             JOIN transactions t ON tsl.transaction_id = t.id
             WHERE date(t.transaction_date) BETWEEN '{$thirtyDaysAgo}' AND '{$today}'
+            $location_filter AND t.status='final' AND t.type='sell'
             GROUP BY tsl.product_id
             ) as sales_data"), 'p.id', '=', 'sales_data.product_id')
+          ->leftJoin(DB::raw("(SELECT
+                    tsl.product_id,
+                    SUM(tsl.quantity - tsl.quantity_returned) as all_qty_sold
+                FROM transaction_sell_lines tsl
+                JOIN transactions t ON tsl.transaction_id = t.id
+                WHERE date(t.transaction_date) BETWEEN '{$from_date}' AND '{$to_date}'
+                $location_filter AND t.status='final' AND t.type='sell'
+                GROUP BY tsl.product_id
+                ) as all_sales"), 'p.id', '=', 'all_sales.product_id')
             ->select(
                 'p.id as product_id',
                 'p.name as product_name',
@@ -4083,7 +4103,7 @@ class ProductController extends Controller
 
                 DB::raw("(SELECT SUM(vld.qty_available) FROM variation_location_details as vld WHERE vld.variation_id=v.id $vld_str) as current_stock"),
 
-                DB::raw('SUM(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as total_qty_sold'),
+                DB::raw('all_sales.all_qty_sold as total_qty_sold'),
 
                 DB::raw("(SELECT SUM(TSL.quantity - TSL.quantity_returned) FROM transactions 
                     JOIN transaction_sell_lines AS TSL ON transactions.id = TSL.transaction_id
