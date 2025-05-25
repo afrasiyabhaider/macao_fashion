@@ -3986,22 +3986,22 @@ class ProductController extends Controller
             ->where('p.refference', $refference)
             ->leftJoin(DB::raw("(SELECT
                 tsl.product_id,
-                SUM(CASE WHEN date(t.transaction_date) = '{$today}' THEN tsl.quantity ELSE 0 END) as today_sold,
-                SUM(CASE WHEN date(t.transaction_date) BETWEEN '{$sevenDaysAgo}' AND '{$today}' THEN tsl.quantity  ELSE 0 END) as seven_day_sold,
-                SUM(CASE WHEN date(t.transaction_date) BETWEEN '{$fifteenDaysAgo}' AND '{$today}' THEN tsl.quantity ELSE 0 END) as fifteen_day_sold
+                SUM(CASE WHEN date(transactions.transaction_date) = '{$today}' THEN tsl.quantity ELSE 0 END) as today_sold,
+                SUM(CASE WHEN date(transactions.transaction_date) BETWEEN '{$sevenDaysAgo}' AND '{$today}' THEN tsl.quantity  ELSE 0 END) as seven_day_sold,
+                SUM(CASE WHEN date(transactions.transaction_date) BETWEEN '{$fifteenDaysAgo}' AND '{$today}' THEN tsl.quantity ELSE 0 END) as fifteen_day_sold
             FROM transaction_sell_lines tsl
-            JOIN transactions t ON tsl.transaction_id = t.id
-            WHERE date(t.transaction_date) BETWEEN '{$thirtyDaysAgo}' AND '{$today}'
-            $location_filter AND t.status='final' AND t.type='sell'
+            JOIN transactions ON tsl.transaction_id = transactions.id
+            WHERE date(transactions.transaction_date) BETWEEN '{$thirtyDaysAgo}' AND '{$today}'
+            $location_filter AND transactions.status='final' AND transactions.type='sell'
             GROUP BY tsl.product_id
             ) as sales_data"), 'p.id', '=', 'sales_data.product_id')
             ->leftJoin(DB::raw("(SELECT
                 tsl.product_id,
                 SUM(tsl.quantity - tsl.quantity_returned) as all_qty_sold
             FROM transaction_sell_lines tsl
-            JOIN transactions t ON tsl.transaction_id = t.id
-            WHERE date(t.transaction_date) BETWEEN '{$from_date}' AND '{$to_date}'
-            $location_filter AND t.status='final' AND t.type='sell'
+            JOIN transactions ON tsl.transaction_id = transactions.id
+            WHERE date(transactions.transaction_date) BETWEEN '{$from_date}' AND '{$to_date}'
+            $location_filter AND transactions.status='final' AND transactions.type='sell'
             GROUP BY tsl.product_id
             ) as all_sales"), 'p.id', '=', 'all_sales.product_id')
             ->select(
@@ -4066,22 +4066,22 @@ class ProductController extends Controller
             ->where('p.refference', $refference)
             ->leftJoin(DB::raw("(SELECT
                 tsl.product_id,
-                SUM(CASE WHEN date(t.transaction_date) = '{$today}' THEN tsl.quantity ELSE 0 END) as today_sold,
-                SUM(CASE WHEN date(t.transaction_date) BETWEEN '{$sevenDaysAgo}' AND '{$today}' THEN tsl.quantity  ELSE 0 END) as seven_day_sold,
-                SUM(CASE WHEN date(t.transaction_date) BETWEEN '{$fifteenDaysAgo}' AND '{$today}' THEN tsl.quantity ELSE 0 END) as fifteen_day_sold
+                SUM(CASE WHEN date(transactions.transaction_date) = '{$today}' THEN tsl.quantity ELSE 0 END) as today_sold,
+                SUM(CASE WHEN date(transactions.transaction_date) BETWEEN '{$sevenDaysAgo}' AND '{$today}' THEN tsl.quantity  ELSE 0 END) as seven_day_sold,
+                SUM(CASE WHEN date(transactions.transaction_date) BETWEEN '{$fifteenDaysAgo}' AND '{$today}' THEN tsl.quantity ELSE 0 END) as fifteen_day_sold
             FROM transaction_sell_lines tsl
-            JOIN transactions t ON tsl.transaction_id = t.id
-            WHERE date(t.transaction_date) BETWEEN '{$thirtyDaysAgo}' AND '{$today}'
-            $location_filter AND t.status='final' AND t.type='sell'
+            JOIN transactions ON tsl.transaction_id = transactions.id
+            WHERE date(transactions.transaction_date) BETWEEN '{$thirtyDaysAgo}' AND '{$today}'
+            $location_filter AND transactions.status='final' AND transactions.type='sell'
             GROUP BY tsl.product_id
             ) as sales_data"), 'p.id', '=', 'sales_data.product_id')
           ->leftJoin(DB::raw("(SELECT
                     tsl.product_id,
                     SUM(tsl.quantity - tsl.quantity_returned) as all_qty_sold
                 FROM transaction_sell_lines tsl
-                JOIN transactions t ON tsl.transaction_id = t.id
-                WHERE date(t.transaction_date) BETWEEN '{$from_date}' AND '{$to_date}'
-                $location_filter AND t.status='final' AND t.type='sell'
+                JOIN transactions ON tsl.transaction_id = transactions.id
+                WHERE date(transactions.transaction_date) BETWEEN '{$from_date}' AND '{$to_date}'
+                $location_filter AND transactions.status='final' AND transactions.type='sell'
                 GROUP BY tsl.product_id
                 ) as all_sales"), 'p.id', '=', 'all_sales.product_id')
             ->select(
