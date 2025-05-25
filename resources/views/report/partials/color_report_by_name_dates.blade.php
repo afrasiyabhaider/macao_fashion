@@ -62,11 +62,11 @@
                                                     <th>#</th>
                                                     <th>Name</th>
                                                     <th>Color</th>
-                                                    <th>All Time Sold</th>
+                                                    <th>Quantity Sold <small>(Date Filter)</small> </th>
                                                     <th>Today Sold</th>
                                                     <th>7-D Sold</th>
                                                     <th>15-D Sold</th>
-                                                    <th>Quantity Sold <small>(Date Filter)</small> </th>
+                                                    <th>All Time Sold</th>
                                                     <th>Current Stock</th>
                                                     <th>All Time Purchase</th>
                                                     <th>Purchase Date</th>
@@ -74,7 +74,7 @@
                                                 </tr>
                                                 {{-- @dd($current_group_color) --}}
                                                 @foreach ($merged_summed_values as $key => $item)
-                                                {{-- @dd($key,$item) --}}
+                                                    {{-- @dd($key,$item) --}}
                                                     <tr>
                                                         <td>
                                                             {{ $loop->iteration }}
@@ -86,8 +86,9 @@
                                                         <td>
                                                             {{ $item['color'] }}
                                                         </td>
-                                                        <td>
-                                                            {{ (int) $item['all_time_sold'] }}
+                                                        
+                                                         <td>
+                                                            {{ (int) $item['total_qty_sold'] }}
                                                         </td>
                                                         <td>
 
@@ -101,8 +102,8 @@
                                                             {{ (int) $item['fifteen_day_sold'] }}
 
                                                         </td>
-                                                        <td>
-                                                            {{ (int) $item['total_qty_sold'] }}
+                                                       <td>
+                                                            {{ (int) $item['all_time_sold'] }}
                                                         </td>
 
                                                         <td>
@@ -136,11 +137,11 @@
                                                     <th>Name</th>
                                                     <th>Color</th>
                                                     <th>Size</th>
-                                                    <th>All Time Sold</th>
+                                                    <th>Quantity Sold <small>(Date Filter)</small></th>
                                                     <th>Today Sold</th>
                                                     <th>7-D Sold</th>
                                                     <th>15-D Sold</th>
-                                                    <th>Quantity Sold <small>(Date Filter)</small></th>
+                                                    <th>All Time Sold</th>
                                                     <th>Current Stock</th>
                                                     <th>
                                                         All Time Purchase
@@ -163,8 +164,9 @@
                                                         <td>
                                                             {{ $item->size }}
                                                         </td>
+
                                                         <td>
-                                                            {{ (int) $item->all_time_sold }}
+                                                            {{ (int) $item->total_qty_sold }}
                                                         </td>
                                                         <td>
                                                             {{ (int) $item->today_sold }}
@@ -176,7 +178,7 @@
                                                             {{ (int) $item->fifteen_day_sold }}
                                                         </td>
                                                         <td>
-                                                            {{ (int) $item->total_qty_sold }}
+                                                            {{ (int) $item->all_time_sold }}
                                                         </td>
                                                         <td>
                                                             {{ (int) $item->current_stock }}
@@ -383,13 +385,13 @@
             let currentUrl = window.location.href;
             let urlSegments = currentUrl.split('/');
             let startDateFromUrl = urlSegments[6] || moment().subtract(365, 'days');
-            let endDateFromUrl = urlSegments[7] || moment();  
+            let endDateFromUrl = urlSegments[7] || moment();
             console.log(startDateFromUrl, endDateFromUrl);
-            
+
             var purchasedateRangeSettings = {
                 ranges: ranges,
-                startDate: startDateFromUrl,  //moment().subtract(365, 'days'),
-                endDate: endDateFromUrl,     //moment(),
+                startDate: moment(startDateFromUrl).format(moment_date_format), //moment().subtract(365, 'days'),
+                endDate: moment(endDateFromUrl).format(moment_date_format), //moment(),
                 locale: {
                     cancelLabel: LANG.clear,
                     applyLabel: LANG.apply,
@@ -404,7 +406,8 @@
 
                 );
             });
-            $('#product_purchase_date_filter').on('cancel.daterangepicker', function(ev, picker) {
+            $('#product_purchase_date_filter').on('cancel.daterangepicker', function(
+                ev, picker) {
                 $('#product_purchase_date_filter').val('');
             });
             // $('#product_purchase_date_filter').data('daterangepicker').setStartDate(moment());
@@ -417,7 +420,7 @@
             var start = '';
             var end = '';
             var location = $('.location').val() != 0 ? $('.location').val() : ''
-            var refference = $('.refference').val() 
+            var refference = $('.refference').val()
 
             start = $('input#product_purchase_date_filter')
                 .data('daterangepicker')
@@ -426,7 +429,7 @@
                 .data('daterangepicker')
                 .endDate.format('YYYY-MM-DD');
             $.ajax({
-                url: "{{ url('product/color-detail-by-filter') }}/" + @json($name) + '/' +
+                url: "{{ url('product/color-detail') }}/" + @json($name) + '/' +
                     start +
                     '/' + end + '/' + refference,
                 data: {
