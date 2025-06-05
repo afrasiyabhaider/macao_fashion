@@ -803,7 +803,6 @@ coupon ki 3 month expire date
             if (!empty($module_form_fields)) {
                 $form_fields = array_merge($form_fields, $module_form_fields);
             }
-            // dd($form_fields);
             $objDetails = $request->only($form_fields);
             $objDetails['business_id'] = $business_id;
             $objDetails['orig_value'] = $objDetails['value'];
@@ -812,17 +811,15 @@ coupon ki 3 month expire date
             $objDetails['isActive'] = 'inactive' ;
             $objDetails['isUsed'] = '0' ;
             $objDetails['barcode'] = $objDetails['barcode'];
-            // dd($objDetails);
             if(empty($objDetails['barcode'])){
                 $objDetails['barcode'] = 1;
             }
-            // dd($objDetails);
-            // if(empty($objDetails['barcode'])){
-            // //     $objDetails['barcode'] = $this->generateUUID(6);
+            if(empty($objDetails['barcode'])){
+                $objDetails['barcode'] = $this->generateUUID(6);
             // $objDetails['barcode'] = rand(11111,99999);
-            // }
-            DB::beginTransaction();
+            }
             // dd($objDetails);
+            DB::beginTransaction();
             $GiftCard = Coupon::create($objDetails);
             if(!empty($objDetails['barcode']) && $GiftCard->barcode == 1 ){
                     $barcode= $this->productUtil->generateProductSku($GiftCard->id);
