@@ -787,65 +787,74 @@ coupon ki 3 month expire date
         if (!auth()->user()->can('coupon.create')) {
             abort(403, 'Unauthorized action.');
         } 
+        
         $request->validate([
             'location_id' => 'required',
         ]);
-        // try {
-
+        
+        try {
             $business_id = $request->session()->get('user.business_id');
-            $form_fields =['name', 'barcode', 'business_id', 'gift_card_id', 'value', 'barcode_type', 'isActive', 'transaction_id','start_date', 'created_by', 'isUsed'];
-           
+            $form_fields = ['name', 'barcode', 'business_id', 'gift_card_id', 'value', 'barcode_type', 'isActive', 'transaction_id','start_date', 'created_by', 'isUsed'];
+        
             $module_form_fields = $this->moduleUtil->getModuleFormField('product_form_fields');
             if (!empty($module_form_fields)) {
                 $form_fields = array_merge($form_fields, $module_form_fields);
             }
+            
             $objDetails = $request->only($form_fields);
             $objDetails['business_id'] = $business_id;
             $objDetails['orig_value'] = $objDetails['value'];
             $objDetails['created_by'] = $request->session()->get('user.id');
- 
-            $objDetails['isActive'] = 'inactive' ;
-            $objDetails['isUsed'] = '0' ;
-            $objDetails['barcode'] = $objDetails['barcode'];
-            if(empty($objDetails['barcode'])){
-                $objDetails['barcode'] = 1;
+            $objDetails['isActive'] = 'inactive';
+            $objDetails['isUsed'] = '0';
+            
+            // FIX 1: Proper barcode generation logic
+            if (empty($objDetails['barcode'])) {
+                // Generate a temporary barcode first, will be replaced after creation
+                $objDetails['barcode'] = 'TEMP_' . uniqid();
             }
-            if(empty($objDetails['barcode'])){
-                $objDetails['barcode'] = $this->generateUUID(6);
-            }
-            dd($objDetails);
+            
             DB::beginTransaction();
+            
             $GiftCard = Coupon::create($objDetails);
-            if(!empty($objDetails['barcode']) && $GiftCard->barcode == 1 ){
-                    $barcode= $this->productUtil->generateProductSku($GiftCard->id);
-                    $GiftCard->barcode = $barcode;
-                } 
+            
+            // FIX 2: Always generate proper barcode after creation
+            $barcode = $this->productUtil->generateProductSku($GiftCard->id);
+            
+            // FIX 3: Ensure barcode is never null or empty
+            if (empty($barcode)) {
+                $barcode = $this->generateUUID(6);
+            }
+            
+            // FIX 4: Additional fallback
+            if (empty($barcode)) {
+                $barcode = 'COUPON_' . $GiftCard->id . '_' . time();
+            }
+            
+            $GiftCard->barcode = $barcode;
             $GiftCard->save();
+            
             //------ PRODUCT Creation Start
-             
-            $objProductDetails['name'] = "Coupon - ".$GiftCard->barcode;
-            $objProductDetails['business_id'] =$request->session()->get('user.business_id');
-            // $objProductDetails['brand_id'] = 1;
+            $objProductDetails['name'] = "Coupon - " . $GiftCard->barcode;
+            $objProductDetails['business_id'] = $request->session()->get('user.business_id');
             $objProductDetails['unit_id'] = 1;
             $objProductDetails['category_id'] = 1;
             $objProductDetails['barcode_type'] = 'C128';
             $objProductDetails['tax_type'] = 'exclusive';
-            // $objProductDetails['sku'] = "Coupon".$GiftCard->barcode;
             $objProductDetails['sku'] = $GiftCard->barcode;
-            $objProductDetails['alert_quantity'] = '    1';
+            $objProductDetails['alert_quantity'] = '1';
             $objProductDetails['type'] = 'single';
             $objProductDetails['p_type'] = 'coupon';
             $objProductDetails['coupon'] = $GiftCard->id;
             $objProductDetails['created_by'] = $request->session()->get('user.id');
 
-
             $objProduct = Product::create($objProductDetails);
 
-             $product_variation_data = [
-                    'name' => 'DUMMYCOUPON',
-                    'product_id' => $objProduct->id,
-                    'is_dummy' => 1 
-                ];
+            $product_variation_data = [
+                'name' => 'DUMMYCOUPON',
+                'product_id' => $objProduct->id,
+                'is_dummy' => 1 
+            ];
             $product_variation = ProductVariation::create($product_variation_data);
 
             $objVariationDetails['name'] = 'DUMMY';
@@ -860,9 +869,7 @@ coupon ki 3 month expire date
 
             $objVariations = Variation::create($objVariationDetails);
 
-            
             $objVariationLocationDetails['qty_available'] = '1';  
-            // $objVariationLocationDetails['location_id'] = $request->session()->get('user.business_location_id');
             $objVariationLocationDetails['location_id'] = $request->location_id;
             $objVariationLocationDetails['product_id'] = $objProduct->id;
             $objVariationLocationDetails['product_variation_id'] = $product_variation->id;
@@ -872,34 +879,44 @@ coupon ki 3 month expire date
 
             $objVariationsLocation = VariationLocationDetails::create($objVariationLocationDetails);
             //------ PRODUCT Creation Ends
-            
-            // 'msg' => __('coupon.sucess') .'
-            // 'msg' => __('coupon.sucess') .'
-            // <script type="text/javascript"> 
-            //     $("#search_product").val("'.$objProduct->sku.'");
-            //     $("#search_product").autocomplete("search");
-            // </script>'
-             
+
             DB::commit();
+            
             $output = [
                 'success' => 1,
-                'msg' => 'Cupon Added Successfully  
+                'msg' => 'Coupon Added Successfully  
                             <script type="text/javascript"> 
                                 $("#search_product").val("'.$objProduct->sku.'");
                                 $("#search_product").autocomplete("search");
                             </script>'
             ];
-        // } catch (\Exception $e) {
-        //     DB::rollBack();
-        //     \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage().' at line '.$e->getLine());
             
-        //     $output = ['success' => 0,
-        //                     'msg' => __("messages.something_went_wrong"). $e->getMessage()
-        //                 ];
-        //     return redirect('coupon')->with('status', $output);
-        // } 
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
+            
+            // FIX 5: Check if this is an AJAX request
+            if ($request->expectsJson() || $request->ajax()) {
+                $output = [
+                    'success' => 0,
+                    'msg' => __("messages.something_went_wrong") . ': ' . $e->getMessage()
+                ];
+                return response()->json($output, 422);
+            }
+            
+            // For regular form submissions
+            $output = [
+                'success' => 0,
+                'msg' => __("messages.something_went_wrong")
+            ];
+            return redirect('coupon')->with('status', $output);
+        } 
 
-
+        // FIX 6: Always return JSON for AJAX requests
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json($output);
+        }
+        
         return $output;
     }
 
