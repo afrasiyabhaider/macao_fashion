@@ -790,7 +790,7 @@ coupon ki 3 month expire date
         $request->validate([
             'location_id' => 'required',
         ]);
-        try {
+        // try {
 
             $business_id = $request->session()->get('user.business_id');
             $form_fields =['name', 'barcode', 'business_id', 'gift_card_id', 'value', 'barcode_type', 'isActive', 'transaction_id','start_date', 'created_by', 'isUsed'];
@@ -889,15 +889,15 @@ coupon ki 3 month expire date
                                 $("#search_product").autocomplete("search");
                             </script>'
             ];
-        } catch (\Exception $e) {
-            DB::rollBack();
-            \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage().' at line '.$e->getLine());
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage().' at line '.$e->getLine());
             
-            $output = ['success' => 0,
-                            'msg' => __("messages.something_went_wrong"). $e->getMessage()
-                        ];
-            return redirect('coupon')->with('status', $output);
-        } 
+        //     $output = ['success' => 0,
+        //                     'msg' => __("messages.something_went_wrong"). $e->getMessage()
+        //                 ];
+        //     return redirect('coupon')->with('status', $output);
+        // } 
 
 
         return $output;
