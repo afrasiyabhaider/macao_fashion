@@ -784,18 +784,14 @@ coupon ki 3 month expire date
     
     public function saveQuickProduct(Request $request)
     {
-        
-        // return $request;
         if (!auth()->user()->can('coupon.create')) {
             abort(403, 'Unauthorized action.');
         } 
-// dd($request->location_id);
-            $request->validate([
-                'location_id' => 'required',
-            ]);
+        $request->validate([
+            'location_id' => 'required',
+        ]);
         try {
 
-            
             $business_id = $request->session()->get('user.business_id');
             $form_fields =['name', 'barcode', 'business_id', 'gift_card_id', 'value', 'barcode_type', 'isActive', 'transaction_id','start_date', 'created_by', 'isUsed'];
            
@@ -811,14 +807,13 @@ coupon ki 3 month expire date
             $objDetails['isActive'] = 'inactive' ;
             $objDetails['isUsed'] = '0' ;
             $objDetails['barcode'] = $objDetails['barcode'];
-            // if(empty($objDetails['barcode'])){
-            //     $objDetails['barcode'] = 1;
-            // }
+            if(empty($objDetails['barcode'])){
+                $objDetails['barcode'] = 1;
+            }
             if(empty($objDetails['barcode'])){
                 $objDetails['barcode'] = $this->generateUUID(6);
-            // $objDetails['barcode'] = rand(11111,99999);
             }
-            // dd($objDetails);
+            dd($objDetails);
             DB::beginTransaction();
             $GiftCard = Coupon::create($objDetails);
             if(!empty($objDetails['barcode']) && $GiftCard->barcode == 1 ){
