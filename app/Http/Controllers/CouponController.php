@@ -274,12 +274,12 @@ coupon ki 3 month expire date
             // $objDetails['barcode'] = rand(11111,99999);
             $objDetails['barcode'] = $objDetails['barcode'];
             // dd($objDetails);
-            if(empty($objDetails['barcode'])){
-                $objDetails['barcode'] = 1;
-            }
             // if(empty($objDetails['barcode'])){
-            //     $objDetails['barcode'] = $this->generateUUID(6);
+            //     $objDetails['barcode'] = 1;
             // }
+            if(empty($objDetails['barcode'])){
+                $objDetails['barcode'] = $this->generateUUID(6);
+            }
             DB::beginTransaction();
 
             $GiftCard = Coupon::create($objDetails);
@@ -763,17 +763,17 @@ coupon ki 3 month expire date
     }
 
 
-        public function generateUUID($length)
-        {
-            $characters = '0123456789';
-            $uuid = '';
+    public function generateUUID($length)
+    {
+        $characters = '0123456789';
+        $uuid = '';
 
-            for ($i = 0; $i < $length; $i++) {
-                $uuid .= $characters[rand(0, 6)];
-            }
-
-            return $uuid;
+        for ($i = 0; $i < $length; $i++) {
+            $uuid .= $characters[rand(0, 6)];
         }
+
+        return $uuid;
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -811,9 +811,9 @@ coupon ki 3 month expire date
             $objDetails['isActive'] = 'inactive' ;
             $objDetails['isUsed'] = '0' ;
             $objDetails['barcode'] = $objDetails['barcode'];
-            if(empty($objDetails['barcode'])){
-                $objDetails['barcode'] = 1;
-            }
+            // if(empty($objDetails['barcode'])){
+            //     $objDetails['barcode'] = 1;
+            // }
             if(empty($objDetails['barcode'])){
                 $objDetails['barcode'] = $this->generateUUID(6);
             // $objDetails['barcode'] = rand(11111,99999);
